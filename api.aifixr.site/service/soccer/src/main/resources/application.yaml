@@ -1,0 +1,27 @@
+spring:
+  application:
+    name: soccer
+  web:
+    resources:
+      static-locations: classpath:/static/,classpath:/templates/
+  datasource:
+    url: jdbc:postgresql://${DB_HOST:db}:5432/aifixrdb
+    username: aifixr
+    password: Aifixr0930!
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        format_sql: true
+    show-sql: true
+
+
+logging:
+  level:
+    root: INFO
+    org.springframework.web: DEBUG
+    org.springframework.web.servlet: DEBUG
+    site.aifixr.api.soccer: DEBUG
