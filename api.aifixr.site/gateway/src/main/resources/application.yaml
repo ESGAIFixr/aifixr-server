@@ -59,13 +59,6 @@ spring:
             - RewritePath=/docs, /swagger-ui.html
         
         # OpenAPI Docs Proxy Routes (for Swagger UI aggregation)
-        - id: soccer-api-docs
-          uri: http://soccer:8080
-          predicates:
-            - Path=/api-docs/soccer
-          filters:
-            - RewritePath=/api-docs/soccer, /v3/api-docs
-        
         - id: user-api-docs
           uri: http://user:8080
           predicates:
@@ -100,23 +93,6 @@ spring:
             - Path=/api-docs/governance
           filters:
             - RewritePath=/api-docs/governance, /v3/api-docs
-        
-        # Soccer Service - Rate Limiting + Circuit Breaker
-        - id: soccer-service
-          uri: http://soccer:8080
-          predicates:
-            - Path=/api/soccer/**
-          filters:
-            - StripPrefix=2
-            - name: RequestRateLimiter
-              args:
-                redis-rate-limiter.replenishRate: 10  # 초당 10개 요청
-                redis-rate-limiter.burstCapacity: 20  # 최대 20개 버스트
-                redis-rate-limiter.requestedTokens: 1
-                key-resolver: "#{@ipKeyResolver}"
-            - name: CircuitBreaker
-              args:
-                name: soccerCircuitBreaker
         
         # User Service - Rate Limiting + Circuit Breaker
         - id: user-service
@@ -207,12 +183,6 @@ spring:
 resilience4j:
   circuitbreaker:
     instances:
-      soccerCircuitBreaker:
-        sliding-window-size: 10
-        failure-rate-threshold: 50
-        wait-duration-in-open-state: 10s
-        permitted-number-of-calls-in-half-open-state: 3
-        automatic-transition-from-open-to-half-open-enabled: true
       userCircuitBreaker:
         sliding-window-size: 10
         failure-rate-threshold: 50
@@ -272,8 +242,6 @@ springdoc:
     urls:
       - url: /v3/api-docs
         name: Gateway
-      - url: /api-docs/soccer
-        name: Soccer Service
       - url: /api-docs/user
         name: User Service
       - url: /api-docs/common

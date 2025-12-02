@@ -128,26 +128,6 @@ services:
         aliases:
           - governance.local
 
-  soccer-service:
-    build:
-      context: .
-      dockerfile: ./service/soccer/Dockerfile
-    container_name: soccer
-    ports:
-      - "8103:8080"
-    depends_on:
-      - db
-      - redis
-    environment:
-      - SPRING_PROFILES_ACTIVE=default
-      - REDIS_HOST=redis
-      - REDIS_PORT=6379
-      - REDIS_PASSWORD=${REDIS_PASSWORD:-Redis0930!}
-    networks:
-      spring-network:
-        aliases:
-          - soccer.local
-
   user-service:
     build:
       context: .

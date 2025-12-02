@@ -7,7 +7,6 @@ include 'gateway'
 include 'service'
 project(':service').projectDir = file('service')
 include 'service:common'
-include 'service:soccer'
 include 'service:user'
 include 'service:environment'
 include 'service:social'
