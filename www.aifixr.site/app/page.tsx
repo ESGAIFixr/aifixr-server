@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { useRouter } from 'next/navigation';
 import Header from '@/components/Header';
 import MainNavigation from '@/components/MainNavigation';
 import HeroSection from '@/components/HeroSection';
@@ -12,12 +13,18 @@ import Footer from '@/components/Footer';
 import { createMainHandlers } from '@/services/mainservice';
 
 export default function Home() {
+  const router = useRouter();
   const [activeMainTab, setActiveMainTab] = useState('intro');
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
 
   // 이부분 임포트로 안 바꿔도 되는건가?
-  const { handleLoginClick, handleLoginRequired, handleExplore, handleLogin } =  
+  const { handleLoginClick, handleLoginRequired, handleLogin } =  
     createMainHandlers(setIsLoginModalOpen);
+
+  const handleExplore = () => {
+    // /intro 페이지로 이동
+    router.push('/intro');
+  };
 
   return (
     <div className="min-h-screen bg-white">

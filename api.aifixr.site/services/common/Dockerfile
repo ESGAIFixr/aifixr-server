@@ -5,13 +5,13 @@ RUN apk add --no-cache bash
 COPY gradlew .
 COPY gradle gradle
 COPY build.gradle settings.gradle ./
-COPY service/common service/common
-COPY service/build.gradle service/
+COPY services/common services/common
+COPY services/build.gradle services/
 RUN chmod +x ./gradlew
-RUN ./gradlew :service:common:bootJar --no-daemon
+RUN ./gradlew :services:common:bootJar --no-daemon
 
 # Runtime stage
 FROM eclipse-temurin:21-jdk-alpine
 VOLUME /tmp
-COPY --from=build /app/service/common/build/libs/common-*.jar common-service.jar
+COPY --from=build /app/services/common/build/libs/common-*.jar common-service.jar
 ENTRYPOINT ["java", "-jar", "/common-service.jar"]

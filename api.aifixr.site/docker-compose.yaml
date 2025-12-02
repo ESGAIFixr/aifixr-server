@@ -55,7 +55,7 @@ services:
   common-service:
     build:
       context: .
-      dockerfile: ./service/common/Dockerfile
+      dockerfile: ./services/common/Dockerfile
     container_name: common
     ports:
       - "8101:8080"
@@ -74,7 +74,7 @@ services:
   environment-service:
     build:
       context: .
-      dockerfile: ./service/environment/Dockerfile
+      dockerfile: ./services/environment/Dockerfile
     container_name: environment
     ports:
       - "8105:8080"
@@ -93,7 +93,7 @@ services:
   social-service:
     build:
       context: .
-      dockerfile: ./service/social/Dockerfile
+      dockerfile: ./services/social/Dockerfile
     container_name: social
     ports:
       - "8106:8080"
@@ -112,7 +112,7 @@ services:
   governance-service:
     build:
       context: .
-      dockerfile: ./service/governance/Dockerfile
+      dockerfile: ./services/governance/Dockerfile
     container_name: governance
     ports:
       - "8107:8080"
@@ -131,7 +131,7 @@ services:
   user-service:
     build:
       context: .
-      dockerfile: ./service/user/Dockerfile
+      dockerfile: ./services/user/Dockerfile
     container_name: user
     ports:
       - "8104:8080"
