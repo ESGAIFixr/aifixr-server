@@ -1,6 +1,6 @@
 'use client';
 
-import { ArrowRight, Play } from 'lucide-react';
+import { ArrowRight, Play, Sparkles } from 'lucide-react';
 import { useState } from 'react';
 
 interface HeroSectionProps {
@@ -39,9 +39,22 @@ export default function HeroSection({ onStartDiagnosis, onWatchDemo }: HeroSecti
           <div className="grid lg:grid-cols-2 gap-12 items-center">
             {/* Left Column: Content */}
             <div className="text-center lg:text-left">
+              {/* 3D AI Visual Representation */}
+              <div className="mb-8 flex justify-center lg:justify-start">
+                <div className="relative">
+                  <div className="w-32 h-32 rounded-3xl bg-gradient-to-br from-[#0D4ABB] to-[#00D4FF] flex items-center justify-center shadow-2xl" style={{ animation: 'float 3s ease-in-out infinite' }}>
+                    <Sparkles className="w-16 h-16 text-white" />
+                  </div>
+                  {/* Orbiting Elements */}
+                  <div className="absolute -top-4 -right-4 w-12 h-12 rounded-full bg-gradient-to-br from-[#E91E8C] to-[#8B5CF6] animate-pulse" />
+                  <div className="absolute -bottom-4 -left-4 w-16 h-16 rounded-full bg-gradient-to-br from-[#00D4FF] to-[#0D4ABB] opacity-50 blur-sm" />
+                </div>
+              </div>
+
               {/* H1 Headline */}
-              <h1 className="mb-6 text-4xl lg:text-6xl font-bold text-[#1a2332] leading-tight" style={{ fontFamily: 'Inter Tight, Arial, sans-serif' }}>
-                AIFix로 ESG 진단부터 보고서, 공급망 전체까지 한 번에
+              <h1 className="mb-6 text-3xl lg:text-5xl font-bold bg-gradient-to-r from-[#0D4ABB] via-[#E91E8C] to-[#8B5CF6] bg-clip-text text-transparent leading-normal" style={{ fontFamily: 'Inter Tight, Arial, sans-serif' }}>
+                AIFIX로 ESG 진단부터  <br className="hidden lg:block" />
+                보고서, 공급망까지 한 번에
               </h1>
 
               {/* H2 Subheadline */}

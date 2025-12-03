@@ -5,7 +5,7 @@ include 'gateway'
 
 // Service modules
 include 'services'
-project(':services').projectDir = file('services')
+project(':services').projectDir = file('../core.aifixr.site')
 include 'services:common'
 include 'services:user'
 include 'services:environment'

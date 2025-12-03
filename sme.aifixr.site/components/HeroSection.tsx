@@ -42,7 +42,8 @@ export default function HeroSection({ onExplore, onLogin }: HeroSectionProps) {
 
             {/* Title */}
             <h1 className="mb-6 text-4xl lg:text-5xl font-bold bg-gradient-to-r from-[#0D4ABB] via-[#E91E8C] to-[#8B5CF6] bg-clip-text text-transparent leading-tight">
-              AIFix로 ESG 진단부터 보고서, 공급망 전체까지 한 번에
+              AIFix로 ESG 진단부터 보고서,<br className="hidden lg:block" />
+              공급망 전체까지 한 번에
             </h1>
 
             {/* Subtitle */}

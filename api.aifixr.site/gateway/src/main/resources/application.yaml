@@ -178,6 +178,60 @@ spring:
             - name: CircuitBreaker
               args:
                 name: governanceCircuitBreaker
+        
+        # ========================================
+        # FastAPI Services (AI/ML)
+        # ========================================
+        
+        # Crawler Service - Rate Limiting + Circuit Breaker
+        - id: crawler-service
+          uri: http://crawler-service:9001
+          predicates:
+            - Path=/api/crawler/**
+          filters:
+            - StripPrefix=1
+            - name: RequestRateLimiter
+              args:
+                redis-rate-limiter.replenishRate: 10
+                redis-rate-limiter.burstCapacity: 20
+                redis-rate-limiter.requestedTokens: 1
+                key-resolver: "#{@ipKeyResolver}"
+            - name: CircuitBreaker
+              args:
+                name: crawlerCircuitBreaker
+        
+        # Chatbot Service - Rate Limiting + Circuit Breaker
+        - id: chatbot-service
+          uri: http://chatbot-service:9002
+          predicates:
+            - Path=/api/chatbot/**
+          filters:
+            - StripPrefix=1
+            - name: RequestRateLimiter
+              args:
+                redis-rate-limiter.replenishRate: 15
+                redis-rate-limiter.burstCapacity: 30
+                redis-rate-limiter.requestedTokens: 1
+                key-resolver: "#{@ipKeyResolver}"
+            - name: CircuitBreaker
+              args:
+                name: chatbotCircuitBreaker
+        
+        # Crawler Service - OpenAPI Docs
+        - id: crawler-api-docs
+          uri: http://crawler-service:9001
+          predicates:
+            - Path=/api-docs/crawler
+          filters:
+            - RewritePath=/api-docs/crawler, /openapi.json
+        
+        # Chatbot Service - OpenAPI Docs
+        - id: chatbot-api-docs
+          uri: http://chatbot-service:9002
+          predicates:
+            - Path=/api-docs/chatbot
+          filters:
+            - RewritePath=/api-docs/chatbot, /openapi.json
 
 # Resilience4j Circuit Breaker 설정
 resilience4j:
@@ -208,6 +262,18 @@ resilience4j:
         permitted-number-of-calls-in-half-open-state: 3
         automatic-transition-from-open-to-half-open-enabled: true
       governanceCircuitBreaker:
+        sliding-window-size: 10
+        failure-rate-threshold: 50
+        wait-duration-in-open-state: 10s
+        permitted-number-of-calls-in-half-open-state: 3
+        automatic-transition-from-open-to-half-open-enabled: true
+      crawlerCircuitBreaker:
+        sliding-window-size: 10
+        failure-rate-threshold: 50
+        wait-duration-in-open-state: 10s
+        permitted-number-of-calls-in-half-open-state: 3
+        automatic-transition-from-open-to-half-open-enabled: true
+      chatbotCircuitBreaker:
         sliding-window-size: 10
         failure-rate-threshold: 50
         wait-duration-in-open-state: 10s
@@ -252,6 +318,10 @@ springdoc:
         name: Social Service
       - url: /api-docs/governance
         name: Governance Service
+      - url: /api-docs/crawler
+        name: Crawler Service (FastAPI)
+      - url: /api-docs/chatbot
+        name: Chatbot Service (FastAPI)
     # Redirect /docs to swagger-ui.html (handled by route above)
 
 # Netty 서버 튜닝 (기본값이 최적이므로 주석 처리)
