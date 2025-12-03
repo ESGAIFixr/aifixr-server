@@ -17,7 +17,7 @@ export default function MainNavigation({ activeTab, setActiveTab, onLoginRequire
   const pathname = usePathname();
   const tabs = [
     { id: 'intro', label: 'AIFIX 소개', locked: false, href: '/intro' },
-    { id: 'rating', label: '기업 ESG 등급', locked: false, href: '#' },
+    { id: 'rating', label: '기업 ESG 등급', locked: false, href: '/rating' },
     { id: 'news', label: 'ESG 소식', locked: false, href: '#' },
     { id: 'notice', label: '공지사항', locked: false, href: '#' },
     { id: 'self-diagnosis', label: '자가진단', locked: true, href: '#' },
