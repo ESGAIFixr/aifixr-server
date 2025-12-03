@@ -3,7 +3,7 @@ services:
   # Database & Cache
   # ========================================
   db:
-    image: postgres:16-alpine
+    image: postgres:17-alpine
     container_name: aifixr
     environment:
       - POSTGRES_DB=aifixrdb
@@ -47,12 +47,13 @@ services:
     container_name: gateway
     ports:
       - "8080:8080"
-    depends_on:
-      - redis
+    env_file:
+      - .env
     environment:
-      - REDIS_HOST=redis
-      - REDIS_PORT=6379
-      - REDIS_PASSWORD=${REDIS_PASSWORD:-Redis0930!}
+      - REDIS_HOST=${UPSTASH_REDIS_HOST}
+      - REDIS_PORT=${UPSTASH_REDIS_PORT:-6379}
+      - REDIS_PASSWORD=${UPSTASH_REDIS_PASSWORD}
+      - REDIS_SSL_ENABLED=true
     networks:
       aifixr-network:
         aliases:
@@ -71,8 +72,9 @@ services:
       - "8101:8080"
     depends_on:
       - redis
+    env_file:
+      - .env
     environment:
-      - SPRING_PROFILES_ACTIVE=default
       - REDIS_HOST=redis
       - REDIS_PORT=6379
       - REDIS_PASSWORD=${REDIS_PASSWORD:-Redis0930!}
@@ -91,8 +93,9 @@ services:
       - "8105:8080"
     depends_on:
       - redis
+    env_file:
+      - .env
     environment:
-      - SPRING_PROFILES_ACTIVE=default
       - REDIS_HOST=redis
       - REDIS_PORT=6379
       - REDIS_PASSWORD=${REDIS_PASSWORD:-Redis0930!}
@@ -111,8 +114,9 @@ services:
       - "8106:8080"
     depends_on:
       - redis
+    env_file:
+      - .env
     environment:
-      - SPRING_PROFILES_ACTIVE=default
       - REDIS_HOST=redis
       - REDIS_PORT=6379
       - REDIS_PASSWORD=${REDIS_PASSWORD:-Redis0930!}
@@ -131,8 +135,9 @@ services:
       - "8107:8080"
     depends_on:
       - redis
+    env_file:
+      - .env
     environment:
-      - SPRING_PROFILES_ACTIVE=default
       - REDIS_HOST=redis
       - REDIS_PORT=6379
       - REDIS_PASSWORD=${REDIS_PASSWORD:-Redis0930!}
@@ -151,8 +156,9 @@ services:
       - "8104:8080"
     depends_on:
       - redis
+    env_file:
+      - .env
     environment:
-      - SPRING_PROFILES_ACTIVE=default
       - REDIS_HOST=redis
       - REDIS_PORT=6379
       - REDIS_PASSWORD=${REDIS_PASSWORD:-Redis0930!}

@@ -9,6 +9,9 @@ spring:
       port: ${REDIS_PORT:6379}
       password: ${REDIS_PASSWORD:}
       timeout: 2000ms
+      # SSL 설정 (Upstash 사용 시 필수)
+      ssl:
+        enabled: ${REDIS_SSL_ENABLED:false}
       # Lettuce 드라이버는 기본적으로 Reactive 지원
   
   # WebFlux 튜닝
