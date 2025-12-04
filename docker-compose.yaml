@@ -31,7 +31,7 @@ services:
           - redis.local
     restart: unless-stopped
     healthcheck:
-      test: ["CMD", "redis-cli", "ping"]
+      test: [ "CMD", "redis-cli", "ping" ]
       interval: 10s
       timeout: 3s
       retries: 5
@@ -168,6 +168,35 @@ services:
           - user.local
     restart: unless-stopped
 
+  oauth-service:
+    build:
+      context: .
+      dockerfile: ./core.aifixr.site/oauthservice/Dockerfile
+    container_name: oauthservice
+    ports:
+      - "8108:8080"
+    depends_on:
+      - db
+      - redis
+    env_file:
+      - .env
+    environment:
+      - DATABASE_URL=jdbc:postgresql://db:5432/aifixrdb
+      - DATABASE_USER=aifixr
+      - DATABASE_PASSWORD=${POSTGRES_PASSWORD:-Aifixr0930!}
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+      - REDIS_PASSWORD=${REDIS_PASSWORD:-Redis0930!}
+      - KAKAO_CLIENT_ID=${KAKAO_REST_API_KEY:-${KAKAO_CLIENT_ID:-}}
+      - KAKAO_CLIENT_SECRET=${KAKAO_CLIENT_SECRET:-}
+      - KAKAO_REDIRECT_URI=${KAKAO_REDIRECT_URI:-http://localhost:8080/oauth/kakao/callback}
+      - JWT_SECRET=${JWT_SECRET:-your-secret-key-change-this-in-production-minimum-256-bits}
+    networks:
+      aifixr-network:
+        aliases:
+          - oauthservice.local
+    restart: unless-stopped
+
   # ========================================
   # FastAPI Services (AI/ML)
   # ========================================
@@ -210,4 +239,5 @@ networks:
 volumes:
   postgres-data:
   redis-data:
+
 

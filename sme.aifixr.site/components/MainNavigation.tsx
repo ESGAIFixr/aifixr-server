@@ -26,7 +26,10 @@ export default function MainNavigation({ activeTab, setActiveTab, onLoginRequire
   ];
 
   const handleTabClick = (tab: typeof tabs[0], e: React.MouseEvent) => {
-    setActiveTab(tab.id);
+    e.preventDefault();
+    if (tab.href === '#') {
+      setActiveTab(tab.id);
+    }
   };
 
   return (
@@ -82,7 +85,7 @@ export default function MainNavigation({ activeTab, setActiveTab, onLoginRequire
               }`}
             >
               <Sparkles className="w-5 h-5" />
-              <span className="font-medium">AIFIXR Assistant</span>
+              <span className="font-medium">Virtual Human AI</span>
             </button>
           </nav>
         </div>

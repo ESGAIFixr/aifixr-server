@@ -9,6 +9,9 @@ import BenefitsSection from '@/components/BenefitsSection';
 import FloatingAIButton from '@/components/FloatingAIButton';
 import LoginModal from '@/components/LoginModal';
 import Footer from '@/components/Footer';
+import { AutomatedReportView } from '@/components/AutomatedReportView';
+import { ReportTemplateView } from '@/components/ReportTemplateView';
+import { EditingView } from '@/components/EditingView';
 import { createMainHandlers } from '@/services/mainservice';
 
 export default function Home() {
@@ -16,25 +19,116 @@ export default function Home() {
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
 
   // 이부분 임포트로 안 바꿔도 되는건가?
-  const { handleLoginClick, handleLoginRequired, handleExplore, handleLogin } =  
+  const { handleLoginClick, handleLoginRequired, handleExplore, handleLogin } =
     createMainHandlers(setIsLoginModalOpen);
+
+  // SPA 구조: activeMainTab에 따라 컨텐츠 전환
+  if (activeMainTab === 'self-diagnosis') {
+    return (
+      <div className="min-h-screen bg-white">
+        {/* Header */}
+        <Header
+          onLoginClick={handleLoginClick}
+        />
+
+        {/* Main Navigation */}
+        <MainNavigation
+          activeTab={activeMainTab}
+          setActiveTab={setActiveMainTab}
+          onLoginRequired={handleLoginRequired}
+        />
+
+        {/* 자가진단 뷰 */}
+        <div className="pt-[140px]">
+          <AutomatedReportView />
+        </div>
+
+        {/* Login Modal */}
+        <LoginModal
+          isOpen={isLoginModalOpen}
+          onClose={() => setIsLoginModalOpen(false)}
+          onLogin={handleLogin}
+        />
+      </div>
+    );
+  }
+
+  if (activeMainTab === 'auto-report') {
+    return (
+      <div className="min-h-screen bg-white">
+        {/* Header */}
+        <Header
+          onLoginClick={handleLoginClick}
+        />
+
+        {/* Main Navigation */}
+        <MainNavigation
+          activeTab={activeMainTab}
+          setActiveTab={setActiveMainTab}
+          onLoginRequired={handleLoginRequired}
+        />
+
+        {/* 자동화 보고서 뷰 */}
+        <div className="pt-[140px]">
+          <ReportTemplateView />
+        </div>
+
+        {/* Login Modal */}
+        <LoginModal
+          isOpen={isLoginModalOpen}
+          onClose={() => setIsLoginModalOpen(false)}
+          onLogin={handleLogin}
+        />
+      </div>
+    );
+  }
+
+  if (activeMainTab === 'editing') {
+    return (
+      <div className="min-h-screen bg-white">
+        {/* Header */}
+        <Header
+          onLoginClick={handleLoginClick}
+        />
+
+        {/* Main Navigation */}
+        <MainNavigation
+          activeTab={activeMainTab}
+          setActiveTab={setActiveMainTab}
+          onLoginRequired={handleLoginRequired}
+        />
+
+        {/* 윤문 AI 뷰 */}
+        <div className="pt-[140px]">
+          <EditingView />
+        </div>
+
+        {/* Login Modal */}
+        <LoginModal
+          isOpen={isLoginModalOpen}
+          onClose={() => setIsLoginModalOpen(false)}
+          onLogin={handleLogin}
+        />
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-white">
       {/* Header */}
-      <Header 
+      <Header
         onLoginClick={handleLoginClick}
       />
 
       {/* Main Navigation */}
-      <MainNavigation 
+      <MainNavigation
         activeTab={activeMainTab}
         setActiveTab={setActiveMainTab}
         onLoginRequired={handleLoginRequired}
       />
 
       {/* Hero Section */}
-      <HeroSection 
+      <HeroSection
         onExplore={handleExplore}
         onLogin={handleLoginClick}
       />
@@ -51,7 +145,7 @@ export default function Home() {
       <Footer />
 
       {/* Login Modal */}
-      <LoginModal 
+      <LoginModal
         isOpen={isLoginModalOpen}
         onClose={() => setIsLoginModalOpen(false)}
         onLogin={handleLogin}

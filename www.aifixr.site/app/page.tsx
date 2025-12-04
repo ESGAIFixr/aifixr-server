@@ -21,7 +21,7 @@ export default function Home() {
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
 
   // 이부분 임포트로 안 바꿔도 되는건가?
-  const { handleLoginClick, handleLoginRequired, handleLogin } =  
+  const { handleLoginClick, handleLoginRequired, handleLogin, handleKakaoLogin } =
     createMainHandlers(setIsLoginModalOpen);
 
   const handleStartDiagnosis = () => {
@@ -37,19 +37,19 @@ export default function Home() {
   return (
     <div className="min-h-screen bg-white">
       {/* Header */}
-      <Header 
+      <Header
         onLoginClick={handleLoginClick}
       />
 
       {/* Main Navigation */}
-      <MainNavigation 
+      <MainNavigation
         activeTab={activeMainTab}
         setActiveTab={setActiveMainTab}
         onLoginRequired={handleLoginRequired}
       />
 
       {/* ① Hero Section */}
-      <HeroSection 
+      <HeroSection
         onStartDiagnosis={handleStartDiagnosis}
         onWatchDemo={handleWatchDemo}
       />
@@ -76,10 +76,11 @@ export default function Home() {
       <Footer />
 
       {/* Login Modal */}
-      <LoginModal 
+      <LoginModal
         isOpen={isLoginModalOpen}
         onClose={() => setIsLoginModalOpen(false)}
         onLogin={handleLogin}
+        onKakaoLogin={handleKakaoLogin}
       />
     </div>
   );
