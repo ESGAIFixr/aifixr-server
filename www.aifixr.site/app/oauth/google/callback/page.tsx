@@ -41,12 +41,14 @@ export default function GoogleCallbackPage() {
             localStorage.setItem("user_info", JSON.stringify(data.user));
           }
 
+          // 로그인 상태 변경 이벤트 발생
+          window.dispatchEvent(new Event('authStateChanged'));
+
           setStatus("success");
           setMessage("로그인 성공!");
-          // 백엔드에서 제공한 리디렉션 URL 사용
-          const redirectUrl = data.redirectUrl || 'http://localhost:3002/dashboard';
+          // 대시보드로 리다이렉트
           setTimeout(() => {
-            window.location.href = redirectUrl;
+            router.push('/dashboard');
           }, 1500);
         } else {
           throw new Error(data.message || "로그인 실패");
@@ -63,32 +65,55 @@ export default function GoogleCallbackPage() {
   }, [searchParams, router]);
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-[#F6F8FB]">
-      <div className="text-center">
+    <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-[#F6F8FB] to-[#E8F0FE]">
+      <div className="text-center max-w-md mx-4">
         {status === "loading" && (
-          <div className="flex flex-col items-center gap-4">
-            <div className="h-12 w-12 animate-spin rounded-full border-4 border-gray-200 border-t-[#0D4ABB]"></div>
-            <p className="text-lg text-gray-700">{message}</p>
+          <div className="flex flex-col items-center gap-6 bg-white rounded-3xl p-12 shadow-2xl">
+            <div className="relative">
+              <div className="h-16 w-16 animate-spin rounded-full border-4 border-gray-200 border-t-[#0D4ABB]"></div>
+              <div className="absolute inset-0 h-16 w-16 animate-pulse rounded-full bg-[#0D4ABB] opacity-20"></div>
+            </div>
+            <div className="space-y-2">
+              <p className="text-xl font-semibold text-gray-800">{message}</p>
+              <p className="text-sm text-gray-500">잠시만 기다려주세요...</p>
+            </div>
           </div>
         )}
         {status === "success" && (
-          <div className="flex flex-col items-center gap-4">
-            <div className="flex h-12 w-12 items-center justify-center rounded-full bg-green-100">
-              <svg className="h-6 w-6 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-              </svg>
+          <div className="flex flex-col items-center gap-6 bg-white rounded-3xl p-12 shadow-2xl">
+            <div className="relative">
+              <div className="flex h-20 w-20 items-center justify-center rounded-full bg-gradient-to-br from-green-400 to-green-600 shadow-lg">
+                <svg className="h-10 w-10 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
+                </svg>
+              </div>
+              <div className="absolute inset-0 h-20 w-20 animate-ping rounded-full bg-green-400 opacity-30"></div>
             </div>
-            <p className="text-lg font-semibold text-green-600">{message}</p>
+            <div className="space-y-3">
+              <h2 className="text-2xl font-bold text-gray-800">로그인 성공!</h2>
+              <p className="text-gray-600">환영합니다. 곧 메인 페이지로 이동합니다.</p>
+            </div>
+            <div className="flex items-center gap-2 text-sm text-gray-500">
+              <div className="h-1.5 w-1.5 rounded-full bg-[#0D4ABB] animate-bounce"></div>
+              <div className="h-1.5 w-1.5 rounded-full bg-[#0D4ABB] animate-bounce" style={{ animationDelay: '0.2s' }}></div>
+              <div className="h-1.5 w-1.5 rounded-full bg-[#0D4ABB] animate-bounce" style={{ animationDelay: '0.4s' }}></div>
+            </div>
           </div>
         )}
         {status === "error" && (
-          <div className="flex flex-col items-center gap-4">
-            <div className="flex h-12 w-12 items-center justify-center rounded-full bg-red-100">
-              <svg className="h-6 w-6 text-red-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-              </svg>
+          <div className="flex flex-col items-center gap-6 bg-white rounded-3xl p-12 shadow-2xl">
+            <div className="relative">
+              <div className="flex h-20 w-20 items-center justify-center rounded-full bg-gradient-to-br from-red-400 to-red-600 shadow-lg">
+                <svg className="h-10 w-10 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </div>
             </div>
-            <p className="text-lg font-semibold text-red-600">{message}</p>
+            <div className="space-y-3">
+              <h2 className="text-2xl font-bold text-gray-800">로그인 실패</h2>
+              <p className="text-gray-600">{message}</p>
+              <p className="text-sm text-gray-500">잠시 후 메인 페이지로 돌아갑니다.</p>
+            </div>
           </div>
         )}
       </div>

@@ -7,6 +7,9 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.view.RedirectView;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -18,7 +21,7 @@ public class GoogleController {
 	private final GoogleAuthService googleAuthService;
 	private final JwtTokenProvider jwtTokenProvider;
 
-	@Value("${google.frontend-redirect-uri:http://localhost:3002/dashboard}")
+	@Value("${google.frontend-redirect-uri:http://localhost:3000}")
 	private String frontendRedirectUri;
 
 	public GoogleController(GoogleAuthService googleAuthService, JwtTokenProvider jwtTokenProvider) {
@@ -133,10 +136,10 @@ public class GoogleController {
 	}
 
 	/**
-	 * 구글 콜백 (GET 요청)
+	 * 구글 콜백 (GET 요청) - 프론트엔드 콜백 페이지로 리다이렉트
 	 */
 	@GetMapping("/callback")
-	public ResponseEntity<LoginResponse> googleCallback(
+	public RedirectView googleCallback(
 			@RequestParam(required = false) String code,
 			@RequestParam(required = false) String state,
 			@RequestParam(required = false) String error) {
@@ -145,27 +148,43 @@ public class GoogleController {
 		System.out.println("🔄 [Google Callback] 콜백 요청 수신");
 		System.out.println("========================================");
 		
-		if (error != null) {
-			System.out.println("❌ [Error] 구글 로그인 실패: " + error);
+		try {
+			// 프론트엔드 콜백 URL 구성
+			String callbackUrl = frontendRedirectUri;
+			
+			if (error != null) {
+				System.out.println("❌ [Error] 구글 로그인 실패: " + error);
+				System.out.println("========================================\n");
+				// 에러를 쿼리 파라미터로 전달
+				callbackUrl += "?error=" + URLEncoder.encode(error, StandardCharsets.UTF_8);
+			} else if (code != null && !code.isEmpty()) {
+				System.out.println("✅ [Success] 인가 코드 수신, 프론트엔드로 리다이렉트");
+				System.out.println("   - Code: " + code.substring(0, Math.min(20, code.length())) + "...");
+				System.out.println("   - Redirect URL: " + callbackUrl);
+				System.out.println("========================================\n");
+				// code와 state를 쿼리 파라미터로 전달
+				callbackUrl += "?code=" + URLEncoder.encode(code, StandardCharsets.UTF_8);
+				if (state != null && !state.isEmpty()) {
+					callbackUrl += "&state=" + URLEncoder.encode(state, StandardCharsets.UTF_8);
+				}
+			} else {
+				System.out.println("❌ [Error] 인가 코드가 없습니다.");
+				System.out.println("========================================\n");
+				callbackUrl += "?error=" + URLEncoder.encode("인가 코드가 없습니다.", StandardCharsets.UTF_8);
+			}
+			
+			return new RedirectView(callbackUrl);
+			
+		} catch (Exception e) {
+			System.out.println("\n❌ [Error] 콜백 처리 중 오류 발생");
+			System.out.println("   - 오류 메시지: " + e.getMessage());
+			e.printStackTrace();
 			System.out.println("========================================\n");
-			return ResponseEntity.badRequest().body(
-					new LoginResponse(false, "구글 로그인 실패: " + error)
-			);
+			
+			// 에러 발생 시에도 프론트엔드로 리다이렉트
+			String errorUrl = frontendRedirectUri + "?error=" + URLEncoder.encode("콜백 처리 중 오류가 발생했습니다.", StandardCharsets.UTF_8);
+			return new RedirectView(errorUrl);
 		}
-
-		if (code == null || code.isEmpty()) {
-			System.out.println("❌ [Error] 인가 코드가 없습니다.");
-			System.out.println("========================================\n");
-			return ResponseEntity.badRequest().body(
-					new LoginResponse(false, "인가 코드가 필요합니다.")
-			);
-		}
-
-		// POST /login과 동일한 로직 수행
-		Map<String, String> body = new HashMap<>();
-		body.put("code", code);
-		body.put("state", state != null ? state : "");
-		return googleLogin(body);
 	}
 }
 
