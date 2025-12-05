@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Header from '@/components/Header';
 import MainNavigation from '@/components/MainNavigation';
@@ -14,11 +14,19 @@ import FloatingAIButton from '@/components/FloatingAIButton';
 import LoginModal from '@/components/LoginModal';
 import Footer from '@/components/Footer';
 import { createMainHandlers } from '@/services/mainservice';
+import { isAuthenticated } from '@/lib/auth';
 
 export default function Home() {
   const router = useRouter();
   const [activeMainTab, setActiveMainTab] = useState('intro');
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
+
+  // 토큰이 있으면 자동으로 /sme로 리다이렉트
+  useEffect(() => {
+    if (isAuthenticated()) {
+      router.push('/sme');
+    }
+  }, [router]);
 
   // 이부분 임포트로 안 바꿔도 되는건가?
   const { handleLoginClick, handleLoginRequired, handleLogin, handleKakaoLogin } =

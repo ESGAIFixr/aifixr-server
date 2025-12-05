@@ -9,6 +9,8 @@ import org.springframework.web.util.UriComponentsBuilder;
 import site.aifixr.api.oauthservice.config.KakaoConfig;
 import site.aifixr.api.oauthservice.kakao.KakaoService.OAuthUserResponse;
 
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.Map;
 
 @RestController
@@ -63,15 +65,80 @@ public class KakaoController {
     /**
      * 카카오 로그인 콜백 처리
      * GET /kakao/callback?code=AUTHORIZATION_CODE
+     * 토큰을 생성한 후 프론트엔드로 리다이렉트
      */
     @GetMapping("/callback")
-    public ResponseEntity<OAuthUserResponse> kakaoCallback(@RequestParam String code) {
+    public ResponseEntity<?> kakaoCallback(@RequestParam(required = false) String code) {
+        String frontendUrl = "http://localhost:3000/oauth/kakao/callback";
+
+        // code 파라미터 검증
+        if (code == null || code.isEmpty()) {
+            log.error("Kakao callback: code parameter is missing");
+            String redirectUrl = UriComponentsBuilder.fromUriString(frontendUrl)
+                    .queryParam("error", URLEncoder.encode("인증 코드가 없습니다.", StandardCharsets.UTF_8))
+                    .build()
+                    .toUriString();
+            return ResponseEntity.status(HttpStatus.FOUND)
+                    .header("Location", redirectUrl)
+                    .build();
+        }
+
         try {
+            log.info("Processing Kakao login with code: {}", code.substring(0, Math.min(10, code.length())) + "...");
+
             OAuthUserResponse response = kakaoService.processKakaoLogin(code);
-            return ResponseEntity.ok(response);
+            OAuthUserResponse.UserInfo userInfo = response.getUser();
+
+            if (response == null || response.getAccessToken() == null) {
+                throw new RuntimeException("Failed to generate tokens");
+            }
+
+            // 프론트엔드로 리다이렉트하면서 토큰과 사용자 정보를 URL 파라미터로 전달
+            UriComponentsBuilder builder = UriComponentsBuilder.fromUriString(frontendUrl)
+                    .queryParam("accessToken", URLEncoder.encode(response.getAccessToken(), StandardCharsets.UTF_8))
+                    .queryParam("refreshToken", URLEncoder.encode(response.getRefreshToken(), StandardCharsets.UTF_8));
+
+            // 사용자 정보를 개별 파라미터로 전달
+            if (userInfo != null) {
+                if (userInfo.getId() != null) {
+                    builder.queryParam("userId", URLEncoder.encode(userInfo.getId(), StandardCharsets.UTF_8));
+                }
+                if (userInfo.getEmail() != null) {
+                    builder.queryParam("email", URLEncoder.encode(userInfo.getEmail(), StandardCharsets.UTF_8));
+                }
+                if (userInfo.getNickname() != null) {
+                    builder.queryParam("nickname", URLEncoder.encode(userInfo.getNickname(), StandardCharsets.UTF_8));
+                }
+                if (userInfo.getProfileImage() != null) {
+                    builder.queryParam("profileImage",
+                            URLEncoder.encode(userInfo.getProfileImage(), StandardCharsets.UTF_8));
+                }
+                if (userInfo.getProvider() != null) {
+                    builder.queryParam("provider", URLEncoder.encode(userInfo.getProvider(), StandardCharsets.UTF_8));
+                }
+            }
+
+            String redirectUrl = builder.build().toUriString();
+
+            log.info("Successfully processed login, redirecting to frontend");
+            return ResponseEntity.status(HttpStatus.FOUND)
+                    .header("Location", redirectUrl)
+                    .build();
         } catch (Exception e) {
-            log.error("Kakao login failed", e);
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+            log.error("Kakao login failed with error: {}", e.getMessage(), e);
+            // 에러 발생 시 프론트엔드로 리다이렉트하면서 에러 메시지 전달
+            String errorMessage = "로그인 처리 중 오류가 발생했습니다: " + e.getMessage();
+            if (errorMessage.length() > 200) {
+                errorMessage = errorMessage.substring(0, 200);
+            }
+            String redirectUrl = UriComponentsBuilder.fromUriString(frontendUrl)
+                    .queryParam("error", URLEncoder.encode(errorMessage, StandardCharsets.UTF_8))
+                    .build()
+                    .toUriString();
+            log.info("Redirecting to frontend with error: {}", errorMessage);
+            return ResponseEntity.status(HttpStatus.FOUND)
+                    .header("Location", redirectUrl)
+                    .build();
         }
     }
 }
