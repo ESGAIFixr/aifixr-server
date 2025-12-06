@@ -1,67 +1,79 @@
 'use client';
 
-import { useState } from 'react';
-import { useRouter } from 'next/navigation';
 import Header from '@/components/Header';
 import MainNavigation from '@/components/MainNavigation';
 import HeroSection from '@/components/HeroSection';
-import FeatureSection from '@/components/FeatureSection';
-import BenefitsSection from '@/components/BenefitsSection';
+import PainSolutionSection from '@/components/PainSolutionSection';
+import PillarSection from '@/components/PillarSection';
+import FeatureDemoSection from '@/components/FeatureDemoSection';
+import TrustSection from '@/components/TrustSection';
+import PricingSection from '@/components/PricingSection';
 import FloatingAIButton from '@/components/FloatingAIButton';
 import LoginModal from '@/components/LoginModal';
 import Footer from '@/components/Footer';
-import { createMainHandlers } from '@/services/mainservice';
+import { useMainPage } from '@/hooks/mainhook';
+import { AuthService } from '@/lib/oauthservice';
 
 export default function Home() {
-  const router = useRouter();
-  const [activeMainTab, setActiveMainTab] = useState('intro');
-  const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
-
-  // 이부분 임포트로 안 바꿔도 되는건가?
-  const { handleLoginClick, handleLoginRequired, handleLogin } =  
-    createMainHandlers(setIsLoginModalOpen);
-
-  const handleExplore = () => {
-    // /intro 페이지로 이동
-    router.push('/intro');
-  };
+  const {
+    activeMainTab,
+    setActiveMainTab,
+    isLoginModalOpen,
+    setIsLoginModalOpen,
+    handleLoginClick,
+    handleLoginRequired,
+    handleLogin,
+    handleStartDiagnosis,
+    handleWatchDemo,
+  } = useMainPage();
 
   return (
     <div className="min-h-screen bg-white">
       {/* Header */}
-      <Header 
+      <Header
         onLoginClick={handleLoginClick}
       />
 
       {/* Main Navigation */}
-      <MainNavigation 
+      <MainNavigation
         activeTab={activeMainTab}
         setActiveTab={setActiveMainTab}
         onLoginRequired={handleLoginRequired}
       />
 
-      {/* Hero Section */}
-      <HeroSection 
-        onExplore={handleExplore}
-        onLogin={handleLoginClick}
+      {/* ① Hero Section */}
+      <HeroSection
+        onStartDiagnosis={handleStartDiagnosis}
+        onWatchDemo={handleWatchDemo}
       />
 
-      {/* Feature Section */}
-      <div id="features">
-        <FeatureSection />
-      </div>
+      {/* ② Pain → Solution Section (Key Features) */}
+      <PainSolutionSection />
 
-      {/* Benefits Section */}
-      <BenefitsSection />
+      {/* 구분선 */}
+      <div className="border-t border-gray-200"></div>
+
+      {/* ③ AIFix 3 Pillar 솔루션 Section */}
+      <PillarSection />
+
+      {/* ④ 핵심 기능 시연 Section */}
+      <FeatureDemoSection />
+
+      {/* ⑤ 신뢰/검증 Section */}
+      <TrustSection />
+
+      {/* ⑥ 요금제 & CTA Section */}
+      <PricingSection />
 
       {/* Footer */}
       <Footer />
 
       {/* Login Modal */}
-      <LoginModal 
+      <LoginModal
         isOpen={isLoginModalOpen}
         onClose={() => setIsLoginModalOpen(false)}
         onLogin={handleLogin}
+        onKakaoLogin={AuthService.handleKakaoLogin}
       />
     </div>
   );

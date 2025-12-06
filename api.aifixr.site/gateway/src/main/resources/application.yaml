@@ -9,6 +9,9 @@ spring:
       port: ${REDIS_PORT:6379}
       password: ${REDIS_PASSWORD:}
       timeout: 2000ms
+      # SSL 설정 (Upstash 사용 시 필수)
+      ssl:
+        enabled: ${REDIS_SSL_ENABLED:false}
       # Lettuce 드라이버는 기본적으로 Reactive 지원
   
   # WebFlux 튜닝
@@ -18,6 +21,10 @@ spring:
   
   cloud:
     gateway:
+      # HTTP 클라이언트 타임아웃 설정 (OAuth API 호출에 충분한 시간 제공)
+      httpclient:
+        connect-timeout: 5000
+        response-timeout: 30s
       # ============================================
       # Configuration Notes:
       # - CORS: Configured in YAML (globalcors)
@@ -28,24 +35,8 @@ spring:
       # - Circuit Breaker: Uses default error responses (no custom fallback)
       # ============================================
       
-      # Global CORS Configuration
-      globalcors:
-        cors-configurations:
-          '[/**]':
-            allowed-origin-patterns: "*"
-            allowed-methods:
-              - GET
-              - POST
-              - PUT
-              - DELETE
-              - PATCH
-              - OPTIONS
-            allowed-headers: "*"
-            allow-credentials: true
-            max-age: 3600
-            exposed-headers:
-              - Authorization
-              - Content-Type
+      # CORS Configuration is handled in GatewayApplication.java via CorsWebFilter
+      # YAML globalcors can conflict with Java-based CORS filter, so it's disabled here
       
       routes:
         # Swagger UI Redirect Route
@@ -57,6 +48,178 @@ spring:
             - Path=/docs
           filters:
             - RewritePath=/docs, /swagger-ui.html
+        
+        # OAuth Service - Kakao Login URL
+        - id: oauth-kakao-login
+          uri: http://oauth-service:8085
+          predicates:
+            - Path=/api/oauth/kakao/login
+          filters:
+            - RewritePath=/api/oauth/kakao/login, /kakao/login
+            - name: RequestRateLimiter
+              args:
+                redis-rate-limiter.replenishRate: 10
+                redis-rate-limiter.burstCapacity: 20
+                redis-rate-limiter.requestedTokens: 1
+                key-resolver: "#{@ipKeyResolver}"
+        
+        # OAuth Service - Kakao Auth URL (for frontend compatibility)
+        - id: oauth-kakao-auth-url
+          uri: http://oauth-service:8085
+          predicates:
+            - Path=/api/oauth/kakao/auth-url
+          filters:
+            - RewritePath=/api/oauth/kakao/auth-url, /kakao/login
+            - name: RequestRateLimiter
+              args:
+                redis-rate-limiter.replenishRate: 10
+                redis-rate-limiter.burstCapacity: 20
+                redis-rate-limiter.requestedTokens: 1
+                key-resolver: "#{@ipKeyResolver}"
+        
+        # OAuth Service - Kakao Callback (with /api prefix)
+        - id: oauth-kakao-callback-api
+          uri: http://oauth-service:8085
+          predicates:
+            - Path=/api/oauth/kakao/callback
+          filters:
+            - RewritePath=/api/oauth/kakao/callback, /kakao/callback
+            - name: RequestRateLimiter
+              args:
+                redis-rate-limiter.replenishRate: 10
+                redis-rate-limiter.burstCapacity: 20
+                redis-rate-limiter.requestedTokens: 1
+                key-resolver: "#{@ipKeyResolver}"
+            - name: CircuitBreaker
+              args:
+                name: oauthCircuitBreaker
+        
+        # OAuth Service - Kakao Callback (without /api prefix)
+        - id: oauth-kakao-callback
+          uri: http://oauth-service:8085
+          predicates:
+            - Path=/oauth/kakao/callback
+          filters:
+            - RewritePath=/oauth/kakao/callback, /kakao/callback
+            - name: RequestRateLimiter
+              args:
+                redis-rate-limiter.replenishRate: 10
+                redis-rate-limiter.burstCapacity: 20
+                redis-rate-limiter.requestedTokens: 1
+                key-resolver: "#{@ipKeyResolver}"
+            - name: CircuitBreaker
+              args:
+                name: oauthCircuitBreaker
+        
+        # OAuth Service - Google Login URL
+        - id: oauth-google-login
+          uri: http://oauth-service:8085
+          predicates:
+            - Path=/api/oauth/google/login
+          filters:
+            - RewritePath=/api/oauth/google/login, /google/login
+            - name: RequestRateLimiter
+              args:
+                redis-rate-limiter.replenishRate: 10
+                redis-rate-limiter.burstCapacity: 20
+                redis-rate-limiter.requestedTokens: 1
+                key-resolver: "#{@ipKeyResolver}"
+        
+        # OAuth Service - Google Auth URL (for frontend compatibility)
+        - id: oauth-google-auth-url
+          uri: http://oauth-service:8085
+          predicates:
+            - Path=/api/oauth/google/auth-url
+          filters:
+            - RewritePath=/api/oauth/google/auth-url, /google/login
+            - name: RequestRateLimiter
+              args:
+                redis-rate-limiter.replenishRate: 10
+                redis-rate-limiter.burstCapacity: 20
+                redis-rate-limiter.requestedTokens: 1
+                key-resolver: "#{@ipKeyResolver}"
+        
+        # OAuth Service - Google Callback (with /api prefix)
+        - id: oauth-google-callback-api
+          uri: http://oauth-service:8085
+          predicates:
+            - Path=/api/oauth/google/callback
+          filters:
+            - RewritePath=/api/oauth/google/callback, /google/callback
+            - name: RequestRateLimiter
+              args:
+                redis-rate-limiter.replenishRate: 10
+                redis-rate-limiter.burstCapacity: 20
+                redis-rate-limiter.requestedTokens: 1
+                key-resolver: "#{@ipKeyResolver}"
+            - name: CircuitBreaker
+              args:
+                name: oauthCircuitBreaker
+        
+        # OAuth Service - Google Callback (without /api prefix)
+        - id: oauth-google-callback
+          uri: http://oauth-service:8085
+          predicates:
+            - Path=/oauth/google/callback
+          filters:
+            - RewritePath=/oauth/google/callback, /google/callback
+            - name: RequestRateLimiter
+              args:
+                redis-rate-limiter.replenishRate: 10
+                redis-rate-limiter.burstCapacity: 20
+                redis-rate-limiter.requestedTokens: 1
+                key-resolver: "#{@ipKeyResolver}"
+            - name: CircuitBreaker
+              args:
+                name: oauthCircuitBreaker
+        
+        # OAuth Service - Naver Login URL
+        - id: oauth-naver-login
+          uri: http://oauth-service:8085
+          predicates:
+            - Path=/api/oauth/naver/login
+          filters:
+            - RewritePath=/api/oauth/naver/login, /naver/login
+            - name: RequestRateLimiter
+              args:
+                redis-rate-limiter.replenishRate: 10
+                redis-rate-limiter.burstCapacity: 20
+                redis-rate-limiter.requestedTokens: 1
+                key-resolver: "#{@ipKeyResolver}"
+        
+        # OAuth Service - Naver Callback (with /api prefix)
+        - id: oauth-naver-callback-api
+          uri: http://oauth-service:8085
+          predicates:
+            - Path=/api/oauth/naver/callback
+          filters:
+            - RewritePath=/api/oauth/naver/callback, /naver/callback
+            - name: RequestRateLimiter
+              args:
+                redis-rate-limiter.replenishRate: 10
+                redis-rate-limiter.burstCapacity: 20
+                redis-rate-limiter.requestedTokens: 1
+                key-resolver: "#{@ipKeyResolver}"
+            - name: CircuitBreaker
+              args:
+                name: oauthCircuitBreaker
+        
+        # OAuth Service - Naver Callback (without /api prefix)
+        - id: oauth-naver-callback
+          uri: http://oauth-service:8085
+          predicates:
+            - Path=/oauth/naver/callback
+          filters:
+            - RewritePath=/oauth/naver/callback, /naver/callback
+            - name: RequestRateLimiter
+              args:
+                redis-rate-limiter.replenishRate: 10
+                redis-rate-limiter.burstCapacity: 20
+                redis-rate-limiter.requestedTokens: 1
+                key-resolver: "#{@ipKeyResolver}"
+            - name: CircuitBreaker
+              args:
+                name: oauthCircuitBreaker
         
         # OpenAPI Docs Proxy Routes (for Swagger UI aggregation)
         - id: user-api-docs
@@ -178,6 +341,110 @@ spring:
             - name: CircuitBreaker
               args:
                 name: governanceCircuitBreaker
+        
+        # ========================================
+        # FastAPI Services (AI/ML)
+        # ========================================
+        
+        # Crawler Service - Rate Limiting + Circuit Breaker
+        - id: crawler-service
+          uri: http://crawler-service:9001
+          predicates:
+            - Path=/api/crawler/**
+          filters:
+            - StripPrefix=1
+            - name: RequestRateLimiter
+              args:
+                redis-rate-limiter.replenishRate: 10
+                redis-rate-limiter.burstCapacity: 20
+                redis-rate-limiter.requestedTokens: 1
+                key-resolver: "#{@ipKeyResolver}"
+            - name: CircuitBreaker
+              args:
+                name: crawlerCircuitBreaker
+        
+        # Chatbot Service - Rate Limiting + Circuit Breaker
+        - id: chatbot-service
+          uri: http://chatbot-service:9002
+          predicates:
+            - Path=/api/chatbot/**
+          filters:
+            - StripPrefix=1
+            - name: RequestRateLimiter
+              args:
+                redis-rate-limiter.replenishRate: 15
+                redis-rate-limiter.burstCapacity: 30
+                redis-rate-limiter.requestedTokens: 1
+                key-resolver: "#{@ipKeyResolver}"
+            - name: CircuitBreaker
+              args:
+                name: chatbotCircuitBreaker
+        
+        # Crawler Service - OpenAPI Docs
+        - id: crawler-api-docs
+          uri: http://crawler-service:9001
+          predicates:
+            - Path=/api-docs/crawler
+          filters:
+            - RewritePath=/api-docs/crawler, /openapi.json
+        
+        # Chatbot Service - OpenAPI Docs
+        - id: chatbot-api-docs
+          uri: http://chatbot-service:9002
+          predicates:
+            - Path=/api-docs/chatbot
+          filters:
+            - RewritePath=/api-docs/chatbot, /openapi.json
+        
+        # ========================================
+        # OAuth Service (Google Login)
+        # ========================================
+        
+        # OAuth Service - Rate Limiting + Circuit Breaker
+        # /api/oauth/** 경로 (프론트엔드에서 호출)
+        # - /api/oauth/google/auth-url
+        # - /api/oauth/google/login
+        - id: oauth-service
+          uri: http://oauth-service:8085
+          predicates:
+            - Path=/api/oauth/**
+          filters:
+            - StripPrefix=2
+            - name: RequestRateLimiter
+              args:
+                redis-rate-limiter.replenishRate: 10
+                redis-rate-limiter.burstCapacity: 20
+                redis-rate-limiter.requestedTokens: 1
+                key-resolver: "#{@ipKeyResolver}"
+            - name: CircuitBreaker
+              args:
+                name: oauthCircuitBreaker
+        
+        # /oauth/** 경로 (OAuth 콜백용)
+        # - /oauth/google/callback
+        - id: oauth-service-callback
+          uri: http://oauth-service:8085
+          predicates:
+            - Path=/oauth/**
+          filters:
+            - StripPrefix=1
+            - name: RequestRateLimiter
+              args:
+                redis-rate-limiter.replenishRate: 10
+                redis-rate-limiter.burstCapacity: 20
+                redis-rate-limiter.requestedTokens: 1
+                key-resolver: "#{@ipKeyResolver}"
+            - name: CircuitBreaker
+              args:
+                name: oauthCircuitBreaker
+        
+        # OAuth Service - OpenAPI Docs
+        - id: oauth-api-docs
+          uri: http://oauth-service:8085
+          predicates:
+            - Path=/api-docs/oauth
+          filters:
+            - RewritePath=/api-docs/oauth, /v3/api-docs
 
 # Resilience4j Circuit Breaker 설정
 resilience4j:
@@ -213,6 +480,28 @@ resilience4j:
         wait-duration-in-open-state: 10s
         permitted-number-of-calls-in-half-open-state: 3
         automatic-transition-from-open-to-half-open-enabled: true
+      crawlerCircuitBreaker:
+        sliding-window-size: 10
+        failure-rate-threshold: 50
+        wait-duration-in-open-state: 10s
+        permitted-number-of-calls-in-half-open-state: 3
+        automatic-transition-from-open-to-half-open-enabled: true
+      chatbotCircuitBreaker:
+        sliding-window-size: 10
+        failure-rate-threshold: 50
+        wait-duration-in-open-state: 10s
+        permitted-number-of-calls-in-half-open-state: 3
+        automatic-transition-from-open-to-half-open-enabled: true
+      oauthCircuitBreaker:
+        sliding-window-size: 10
+        failure-rate-threshold: 50
+        wait-duration-in-open-state: 30s
+        permitted-number-of-calls-in-half-open-state: 3
+        automatic-transition-from-open-to-half-open-enabled: true
+  timelimiter:
+    instances:
+      oauthCircuitBreaker:
+        timeout-duration: 30s
 
 # Actuator 설정 (모니터링)
 management:
@@ -252,6 +541,12 @@ springdoc:
         name: Social Service
       - url: /api-docs/governance
         name: Governance Service
+      - url: /api-docs/crawler
+        name: Crawler Service (FastAPI)
+      - url: /api-docs/chatbot
+        name: Chatbot Service (FastAPI)
+      - url: /api-docs/oauth
+        name: OAuth Service (Google Login)
     # Redirect /docs to swagger-ui.html (handled by route above)
 
 # Netty 서버 튜닝 (기본값이 최적이므로 주석 처리)
