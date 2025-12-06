@@ -13,6 +13,5 @@ RUN for i in 1 2 3; do ./gradlew :oauthservice:bootJar --no-daemon && break || s
 # Runtime stage
 FROM eclipse-temurin:21-jdk-alpine
 VOLUME /tmp
-COPY --from=build /app/oauthservice/build/libs/oauthservice-*.jar oauth-service.jar
-ENTRYPOINT ["java", "-jar", "/oauth-service.jar"]
-
+COPY --from=build /app/oauthservice/build/libs/oauthservice-*.jar oauthservice.jar
+ENTRYPOINT ["java", "-jar", "/oauthservice.jar"]

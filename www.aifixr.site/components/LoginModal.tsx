@@ -7,9 +7,10 @@ interface LoginModalProps {
   isOpen: boolean;
   onClose: () => void;
   onLogin: () => void;
+  onKakaoLogin?: () => void;
 }
 
-export default function LoginModal({ isOpen, onClose, onLogin }: LoginModalProps) {
+export default function LoginModal({ isOpen, onClose, onLogin, onKakaoLogin }: LoginModalProps) {
   if (!isOpen) return null;
 
   const handleGoogleLogin = () => {
@@ -23,7 +24,7 @@ export default function LoginModal({ isOpen, onClose, onLogin }: LoginModalProps
   return (
     <div className="fixed inset-0 z-[100] flex items-center justify-center">
       {/* Backdrop */}
-      <div 
+      <div
         className="absolute inset-0 bg-black/50 backdrop-blur-sm"
         onClick={onClose}
       />

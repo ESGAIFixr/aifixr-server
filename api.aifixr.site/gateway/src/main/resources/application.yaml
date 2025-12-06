@@ -35,24 +35,8 @@ spring:
       # - Circuit Breaker: Uses default error responses (no custom fallback)
       # ============================================
       
-      # Global CORS Configuration
-      globalcors:
-        cors-configurations:
-          '[/**]':
-            allowed-origin-patterns: "*"
-            allowed-methods:
-              - GET
-              - POST
-              - PUT
-              - DELETE
-              - PATCH
-              - OPTIONS
-            allowed-headers: "*"
-            allow-credentials: true
-            max-age: 3600
-            exposed-headers:
-              - Authorization
-              - Content-Type
+      # CORS Configuration is handled in GatewayApplication.java via CorsWebFilter
+      # YAML globalcors can conflict with Java-based CORS filter, so it's disabled here
       
       routes:
         # Swagger UI Redirect Route
@@ -64,6 +48,57 @@ spring:
             - Path=/docs
           filters:
             - RewritePath=/docs, /swagger-ui.html
+        
+        # OAuth Service - Kakao Login URL
+        - id: oauth-kakao-login
+          uri: http://oauthservice:8080
+          predicates:
+            - Path=/api/oauth/kakao/login
+          filters:
+            - RewritePath=/api/oauth/kakao/login, /kakao/login
+            - name: RequestRateLimiter
+              args:
+                redis-rate-limiter.replenishRate: 10
+                redis-rate-limiter.burstCapacity: 20
+                redis-rate-limiter.requestedTokens: 1
+                key-resolver: "#{@ipKeyResolver}"
+        
+        # OAuth Service - Kakao Callback (with /api prefix)
+        - id: oauth-kakao-callback-api
+          uri: http://oauthservice:8080
+          predicates:
+            - Path=/api/oauth/kakao/callback
+          filters:
+            - RewritePath=/api/oauth/kakao/callback, /kakao/callback
+            - name: RequestRateLimiter
+              args:
+                redis-rate-limiter.replenishRate: 10
+                redis-rate-limiter.burstCapacity: 20
+                redis-rate-limiter.requestedTokens: 1
+                key-resolver: "#{@ipKeyResolver}"
+            - name: CircuitBreaker
+              args:
+                name: oauthCircuitBreaker
+        
+        # OAuth Service - Kakao Callback (without /api prefix)
+        - id: oauth-kakao-callback
+          uri: http://oauthservice:8080
+          predicates:
+            - Path=/oauth/kakao/callback
+          filters:
+            - RewritePath=/oauth/kakao/callback, /kakao/callback
+            - name: RequestRateLimiter
+              args:
+                redis-rate-limiter.replenishRate: 10
+                redis-rate-limiter.burstCapacity: 20
+                redis-rate-limiter.requestedTokens: 1
+                key-resolver: "#{@ipKeyResolver}"
+            - name: CircuitBreaker
+              args:
+                name: oauthCircuitBreaker
+            - name: CircuitBreaker
+              args:
+                name: oauthCircuitBreaker
         
         # OpenAPI Docs Proxy Routes (for Swagger UI aggregation)
         - id: user-api-docs

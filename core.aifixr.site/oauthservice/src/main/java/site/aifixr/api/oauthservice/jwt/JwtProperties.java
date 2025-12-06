@@ -1,37 +1,16 @@
 package site.aifixr.api.oauthservice.jwt;
 
+import lombok.Getter;
+import lombok.Setter;
 import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.stereotype.Component;
+import org.springframework.context.annotation.Configuration;
 
-@Component
+@Configuration
 @ConfigurationProperties(prefix = "jwt")
+@Getter
+@Setter
 public class JwtProperties {
-	private String secret;
-	private Long expiration;
-	private Long refreshExpiration;
-
-	public String getSecret() {
-		return secret;
-	}
-
-	public void setSecret(String secret) {
-		this.secret = secret;
-	}
-
-	public Long getExpiration() {
-		return expiration;
-	}
-
-	public void setExpiration(Long expiration) {
-		this.expiration = expiration;
-	}
-
-	public Long getRefreshExpiration() {
-		return refreshExpiration;
-	}
-
-	public void setRefreshExpiration(Long refreshExpiration) {
-		this.refreshExpiration = refreshExpiration;
-	}
+    private String secret;
+    private Long accessTokenExpiration = 3600000L; // 1시간 (밀리초)
+    private Long refreshTokenExpiration = 604800000L; // 7일 (밀리초)
 }
-
