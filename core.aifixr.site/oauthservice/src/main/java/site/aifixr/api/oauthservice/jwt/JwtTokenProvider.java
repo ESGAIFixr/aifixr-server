@@ -3,77 +3,92 @@ package site.aifixr.api.oauthservice.jwt;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
-import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
-import site.aifixr.api.oauthservice.jwt.JwtProperties;
 
 import javax.crypto.SecretKey;
 import java.nio.charset.StandardCharsets;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 @Component
-@RequiredArgsConstructor
 public class JwtTokenProvider {
-    private final JwtProperties jwtProperties;
 
-    private SecretKey getSigningKey() {
-        byte[] keyBytes = jwtProperties.getSecret().getBytes(StandardCharsets.UTF_8);
-        return Keys.hmacShaKeyFor(keyBytes);
-    }
+	private final JwtProperties jwtProperties;
+	private SecretKey secretKey;
 
-    public String createAccessToken(Long userId, String email) {
-        return createAccessToken(userId.toString(), email);
-    }
+	public JwtTokenProvider(JwtProperties jwtProperties) {
+		this.jwtProperties = jwtProperties;
+		this.secretKey = Keys.hmacShaKeyFor(jwtProperties.getSecret().getBytes(StandardCharsets.UTF_8));
+	}
 
-    public String createAccessToken(String userId, String email) {
-        Date now = new Date();
-        Date expiration = new Date(now.getTime() + jwtProperties.getAccessTokenExpiration());
+	/**
+	 * JWT 토큰 생성
+	 */
+	public String generateToken(String subject, Map<String, Object> claims) {
+		Date now = new Date();
+		Date expiryDate = new Date(now.getTime() + jwtProperties.getExpiration());
 
-        return Jwts.builder()
-                .subject(userId)
-                .claim("email", email)
-                .claim("type", "access")
-                .issuedAt(now)
-                .expiration(expiration)
-                .signWith(getSigningKey())
-                .compact();
-    }
+		// Claims에 subject 포함
+		Map<String, Object> finalClaims = claims != null ? new HashMap<>(claims) : new HashMap<>();
+		finalClaims.put("sub", subject);
 
-    public String createRefreshToken(Long userId) {
-        return createRefreshToken(userId.toString());
-    }
+		return Jwts.builder()
+				.subject(subject)
+				.claims(finalClaims)
+				.issuedAt(now)
+				.expiration(expiryDate)
+				.signWith(secretKey)
+				.compact();
+	}
 
-    public String createRefreshToken(String userId) {
-        Date now = new Date();
-        Date expiration = new Date(now.getTime() + jwtProperties.getRefreshTokenExpiration());
+	/**
+	 * Refresh Token 생성
+	 */
+	public String generateRefreshToken(String subject) {
+		Date now = new Date();
+		Date expiryDate = new Date(now.getTime() + jwtProperties.getRefreshExpiration());
 
-        return Jwts.builder()
-                .subject(userId)
-                .claim("type", "refresh")
-                .issuedAt(now)
-                .expiration(expiration)
-                .signWith(getSigningKey())
-                .compact();
-    }
+		return Jwts.builder()
+				.subject(subject)
+				.issuedAt(now)
+				.expiration(expiryDate)
+				.signWith(secretKey)
+				.compact();
+	}
 
-    public boolean validateToken(String token) {
-        try {
-            Jwts.parser()
-                    .verifyWith(getSigningKey())
-                    .build()
-                    .parseSignedClaims(token);
-            return true;
-        } catch (Exception e) {
-            return false;
-        }
-    }
+	/**
+	 * JWT 토큰에서 사용자 ID 추출
+	 */
+	public String getUserIdFromToken(String token) {
+		Claims claims = getClaimsFromToken(token);
+		return claims.getSubject();
+	}
 
-    public Long getUserIdFromToken(String token) {
-        Claims claims = Jwts.parser()
-                .verifyWith(getSigningKey())
-                .build()
-                .parseSignedClaims(token)
-                .getPayload();
-        return Long.parseLong(claims.getSubject());
-    }
+	/**
+	 * JWT 토큰에서 Claims 추출
+	 */
+	public Claims getClaimsFromToken(String token) {
+		return Jwts.parser()
+				.verifyWith(secretKey)
+				.build()
+				.parseSignedClaims(token)
+				.getPayload();
+	}
+
+	/**
+	 * JWT 토큰 유효성 검증
+	 */
+	public boolean validateToken(String token) {
+		try {
+			Jwts.parser()
+					.verifyWith(secretKey)
+					.build()
+					.parseSignedClaims(token);
+			return true;
+		} catch (Exception e) {
+			return false;
+		}
+	}
 }
+

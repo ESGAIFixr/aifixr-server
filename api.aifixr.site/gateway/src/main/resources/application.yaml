@@ -21,6 +21,10 @@ spring:
   
   cloud:
     gateway:
+      # HTTP 클라이언트 타임아웃 설정 (OAuth API 호출에 충분한 시간 제공)
+      httpclient:
+        connect-timeout: 5000
+        response-timeout: 30s
       # ============================================
       # Configuration Notes:
       # - CORS: Configured in YAML (globalcors)
@@ -270,6 +274,56 @@ spring:
             - Path=/api-docs/chatbot
           filters:
             - RewritePath=/api-docs/chatbot, /openapi.json
+        
+        # ========================================
+        # OAuth Service (Google Login)
+        # ========================================
+        
+        # OAuth Service - Rate Limiting + Circuit Breaker
+        # /api/oauth/** 경로 (프론트엔드에서 호출)
+        # - /api/oauth/google/auth-url
+        # - /api/oauth/google/login
+        - id: oauth-service
+          uri: http://oauth-service:8085
+          predicates:
+            - Path=/api/oauth/**
+          filters:
+            - StripPrefix=2
+            - name: RequestRateLimiter
+              args:
+                redis-rate-limiter.replenishRate: 10
+                redis-rate-limiter.burstCapacity: 20
+                redis-rate-limiter.requestedTokens: 1
+                key-resolver: "#{@ipKeyResolver}"
+            - name: CircuitBreaker
+              args:
+                name: oauthCircuitBreaker
+        
+        # /oauth/** 경로 (OAuth 콜백용)
+        # - /oauth/google/callback
+        - id: oauth-service-callback
+          uri: http://oauth-service:8085
+          predicates:
+            - Path=/oauth/**
+          filters:
+            - StripPrefix=1
+            - name: RequestRateLimiter
+              args:
+                redis-rate-limiter.replenishRate: 10
+                redis-rate-limiter.burstCapacity: 20
+                redis-rate-limiter.requestedTokens: 1
+                key-resolver: "#{@ipKeyResolver}"
+            - name: CircuitBreaker
+              args:
+                name: oauthCircuitBreaker
+        
+        # OAuth Service - OpenAPI Docs
+        - id: oauth-api-docs
+          uri: http://oauth-service:8085
+          predicates:
+            - Path=/api-docs/oauth
+          filters:
+            - RewritePath=/api-docs/oauth, /v3/api-docs
 
 # Resilience4j Circuit Breaker 설정
 resilience4j:
@@ -320,9 +374,13 @@ resilience4j:
       oauthCircuitBreaker:
         sliding-window-size: 10
         failure-rate-threshold: 50
-        wait-duration-in-open-state: 10s
+        wait-duration-in-open-state: 30s
         permitted-number-of-calls-in-half-open-state: 3
         automatic-transition-from-open-to-half-open-enabled: true
+  timelimiter:
+    instances:
+      oauthCircuitBreaker:
+        timeout-duration: 30s
 
 # Actuator 설정 (모니터링)
 management:
@@ -366,6 +424,8 @@ springdoc:
         name: Crawler Service (FastAPI)
       - url: /api-docs/chatbot
         name: Chatbot Service (FastAPI)
+      - url: /api-docs/oauth
+        name: OAuth Service (Google Login)
     # Redirect /docs to swagger-ui.html (handled by route above)
 
 # Netty 서버 튜닝 (기본값이 최적이므로 주석 처리)

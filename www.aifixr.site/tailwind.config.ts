@@ -15,7 +15,7 @@ const config: Config = {
         "courage-pink": "#E91E8C",
         "agility-cyan": "#00D4FF",
         "collaboration-purple": "#8B5CF6",
-        // AIFIX Colors (from sme.aifixr.site)
+        // AIFIX Colors
         "aifix-primary": "#5B3BFA",
         "aifix-primary-hover": "#6A7CFD",
         "aifix-primary-light": "#A58DFF",
@@ -51,8 +51,8 @@ const config: Config = {
         "aifix-gradient-hover": "linear-gradient(135deg, #6A7CFD 0%, #60D1FF 100%)",
       },
       boxShadow: {
-        "aifix": "0 4px 14px 0 rgba(91, 59, 250, 0.15)",
-        "aifix-lg": "0 10px 40px 0 rgba(91, 59, 250, 0.2)",
+        "aifix": "0 4px 20px rgba(91, 59, 250, 0.15)",
+        "aifix-lg": "0 8px 30px rgba(91, 59, 250, 0.2)",
       },
     },
   },

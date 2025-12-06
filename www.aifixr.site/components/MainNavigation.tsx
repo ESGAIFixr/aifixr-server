@@ -1,10 +1,11 @@
 'use client';
 
 import { Lock, Sparkles } from 'lucide-react';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import AIFIXRPanel from './AIFIXRPanel';
+import { AuthService } from '@/services/authservice';
 
 interface MainNavigationProps {
   activeTab: string;
@@ -14,19 +15,42 @@ interface MainNavigationProps {
 
 export default function MainNavigation({ activeTab, setActiveTab, onLoginRequired }: MainNavigationProps) {
   const [isAIPanelOpen, setIsAIPanelOpen] = useState(false);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
   const pathname = usePathname();
+
+  useEffect(() => {
+    const checkAuthStatus = () => {
+      setIsAuthenticated(AuthService.isAuthenticated());
+    };
+
+    // 초기 체크
+    checkAuthStatus();
+
+    // storage 이벤트 리스너
+    window.addEventListener('storage', checkAuthStatus);
+    
+    // 커스텀 이벤트 리스너
+    window.addEventListener('authStateChanged', checkAuthStatus);
+
+    return () => {
+      window.removeEventListener('storage', checkAuthStatus);
+      window.removeEventListener('authStateChanged', checkAuthStatus);
+    };
+  }, []);
+
   const tabs = [
-    { id: 'intro', label: 'AIFIX 소개', locked: false, href: '/intro' },
-    { id: 'rating', label: '기업 ESG 등급', locked: false, href: '#' },
-    { id: 'news', label: 'ESG 소식', locked: false, href: '#' },
-    { id: 'notice', label: '공지사항', locked: false, href: '#' },
-    { id: 'self-diagnosis', label: '자가진단', locked: true, href: '#' },
-    { id: 'auto-report', label: '자동화 보고서', locked: true, href: '#' },
-    { id: 'editing', label: '윤문 AI', locked: true, href: '#' },
+    { id: 'intro', label: 'AIFIX 소개', requiresAuth: false, href: '/intro' },
+    { id: 'rating', label: '기업 ESG 등급', requiresAuth: false, href: '#' },
+    { id: 'news', label: 'ESG 소식', requiresAuth: false, href: '#' },
+    { id: 'notice', label: '공지사항', requiresAuth: false, href: '#' },
+    { id: 'self-diagnosis', label: '자가진단', requiresAuth: true, href: '/diagnosis' },
+    { id: 'auto-report', label: '자동화 보고서', requiresAuth: true, href: '/reports' },
+    { id: 'editing', label: '윤문 AI', requiresAuth: true, href: '/editing' },
   ];
 
   const handleTabClick = (tab: typeof tabs[0], e: React.MouseEvent) => {
-    if (tab.locked) {
+    // 인증이 필요한 탭인데 로그인 안 되어 있으면
+    if (tab.requiresAuth && !isAuthenticated) {
       e.preventDefault();
       onLoginRequired();
     } else {
@@ -41,27 +65,29 @@ export default function MainNavigation({ activeTab, setActiveTab, onLoginRequire
           <nav className="flex items-center gap-2 py-4 overflow-x-auto">
             {tabs.map((tab) => {
               const isActive = pathname === tab.href || (activeTab === tab.id && tab.id !== 'intro');
+              const isLocked = tab.requiresAuth && !isAuthenticated;
+              
               return (
               <Link
                 key={tab.id}
                 href={tab.href}
                 onClick={(e) => handleTabClick(tab, e)}
                 className={`relative px-6 py-2.5 rounded-xl whitespace-nowrap transition-all ${
-                  tab.locked
+                  isLocked
                     ? 'text-gray-400 hover:text-[#0D4ABB] hover:bg-gray-50'
                     : isActive
                     ? 'text-white bg-[#0D4ABB] shadow-md'
                     : 'text-[#1a2332] hover:text-[#0D4ABB] hover:bg-gray-50'
                 }`}
                 style={{
-                  background: !tab.locked && !isActive
+                  background: !isLocked && !isActive
                     ? undefined 
                     : isActive
                     ? undefined
                     : undefined
                 }}
                 onMouseEnter={(e) => {
-                  if (!tab.locked && !isActive) {
+                  if (!isLocked && !isActive) {
                     e.currentTarget.style.background = 'linear-gradient(90deg, #0D4ABB, #E91E8C, #00D4FF, #8B5CF6, #0D4ABB)';
                     e.currentTarget.style.backgroundSize = '200% 100%';
                     e.currentTarget.style.animation = 'ripple 2s linear infinite';
@@ -71,7 +97,7 @@ export default function MainNavigation({ activeTab, setActiveTab, onLoginRequire
                   }
                 }}
                 onMouseLeave={(e) => {
-                  if (!tab.locked && !isActive) {
+                  if (!isLocked && !isActive) {
                     e.currentTarget.style.background = '';
                     e.currentTarget.style.backgroundSize = '';
                     e.currentTarget.style.animation = '';
@@ -83,7 +109,7 @@ export default function MainNavigation({ activeTab, setActiveTab, onLoginRequire
               >
                 <div className="flex items-center gap-2">
                   {tab.label}
-                  {tab.locked && <Lock className="w-4 h-4" />}
+                  {isLocked && <Lock className="w-4 h-4" />}
                 </div>
               </Link>
             );
