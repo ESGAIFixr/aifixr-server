@@ -54,7 +54,7 @@ public class KakaoController {
                     .toUriString();
 
             log.info("Generated Kakao login URL: {}", loginUrl.replaceAll("client_id=[^&]+", "client_id=***"));
-            return ResponseEntity.ok(Map.of("url", loginUrl));
+            return ResponseEntity.ok(Map.of("authUrl", loginUrl));
         } catch (Exception e) {
             log.error("Error generating Kakao login URL", e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)

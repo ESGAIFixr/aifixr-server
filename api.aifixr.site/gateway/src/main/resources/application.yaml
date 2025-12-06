@@ -51,7 +51,7 @@ spring:
         
         # OAuth Service - Kakao Login URL
         - id: oauth-kakao-login
-          uri: http://oauthservice:8080
+          uri: http://oauth-service:8085
           predicates:
             - Path=/api/oauth/kakao/login
           filters:
@@ -63,9 +63,23 @@ spring:
                 redis-rate-limiter.requestedTokens: 1
                 key-resolver: "#{@ipKeyResolver}"
         
+        # OAuth Service - Kakao Auth URL (for frontend compatibility)
+        - id: oauth-kakao-auth-url
+          uri: http://oauth-service:8085
+          predicates:
+            - Path=/api/oauth/kakao/auth-url
+          filters:
+            - RewritePath=/api/oauth/kakao/auth-url, /kakao/login
+            - name: RequestRateLimiter
+              args:
+                redis-rate-limiter.replenishRate: 10
+                redis-rate-limiter.burstCapacity: 20
+                redis-rate-limiter.requestedTokens: 1
+                key-resolver: "#{@ipKeyResolver}"
+        
         # OAuth Service - Kakao Callback (with /api prefix)
         - id: oauth-kakao-callback-api
-          uri: http://oauthservice:8080
+          uri: http://oauth-service:8085
           predicates:
             - Path=/api/oauth/kakao/callback
           filters:
@@ -82,7 +96,7 @@ spring:
         
         # OAuth Service - Kakao Callback (without /api prefix)
         - id: oauth-kakao-callback
-          uri: http://oauthservice:8080
+          uri: http://oauth-service:8085
           predicates:
             - Path=/oauth/kakao/callback
           filters:
@@ -93,9 +107,6 @@ spring:
                 redis-rate-limiter.burstCapacity: 20
                 redis-rate-limiter.requestedTokens: 1
                 key-resolver: "#{@ipKeyResolver}"
-            - name: CircuitBreaker
-              args:
-                name: oauthCircuitBreaker
             - name: CircuitBreaker
               args:
                 name: oauthCircuitBreaker

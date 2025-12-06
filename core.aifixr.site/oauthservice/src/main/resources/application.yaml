@@ -1,6 +1,6 @@
 spring:
   application:
-    name: oauthservice
+    name: oauth-service
   
   datasource:
     url: ${DATABASE_URL:jdbc:postgresql://localhost:5432/aifixrdb}
@@ -18,7 +18,7 @@ spring:
         format_sql: true
 
 server:
-  port: 8080
+  port: 8085
 
 # OAuth 설정
 oauth:
@@ -30,22 +30,10 @@ oauth:
     user-info-uri: https://kapi.kakao.com/v2/user/me
     authorize-uri: https://kauth.kakao.com/oauth/authorize
 
-# JWT 설정
-jwt:
-  secret: ${JWT_SECRET:your-secret-key-change-this-in-production-minimum-256-bits}
-  access-token-expiration: 3600000  # 1시간 (밀리초)
-  refresh-token-expiration: 604800000  # 7일 (밀리초)
-server:
-  port: 8085
-
-spring:
-  application: 
-    name: oauth-service
-
 # 구글 OAuth 설정
 google:
-  client-id: ${GOOGLE_CLIENT_ID}
-  client-secret: ${GOOGLE_CLIENT_SECRET}
+  client-id: ${GOOGLE_CLIENT_ID:}
+  client-secret: ${GOOGLE_CLIENT_SECRET:}
   redirect-uri: ${GOOGLE_REDIRECT_URI:http://localhost:8080/oauth/google/callback}
   # 로그인 성공 후 이동할 프론트엔드 주소 (www.aifixr.site)
   frontend-redirect-uri: ${GOOGLE_FRONTEND_REDIRECT_URI:http://localhost:3000/oauth/google/callback}
@@ -55,10 +43,12 @@ jwt:
   secret: ${JWT_SECRET:your-super-secret-jwt-key-at-least-256-bits-long-for-hs256-algorithm-please-change-this-in-production}
   expiration: ${JWT_EXPIRATION:86400000}  # 24시간 (밀리초)
   refresh-expiration: ${JWT_REFRESH_EXPIRATION:2592000000}  # 30일 (밀리초)
+  # 카카오용 별도 설정 (호환성을 위해 유지)
+  access-token-expiration: ${JWT_ACCESS_TOKEN_EXPIRATION:3600000}  # 1시간 (밀리초)
+  refresh-token-expiration: ${JWT_REFRESH_TOKEN_EXPIRATION:604800000}  # 7일 (밀리초)
 
 # Logging
 logging:
   level:
     site.aifixr.api.oauthservice: DEBUG
     org.springframework.web: INFO
-

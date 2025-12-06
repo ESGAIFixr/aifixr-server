@@ -48,7 +48,7 @@ export default function DashboardPage() {
               </div>
               <div>
                 <h1 className="text-4xl font-bold text-[#1a2332] mb-2">
-                  환영합니다, {user.name}님! 👋
+                  환영합니다, {user.nickname || user.name || '사용자'}님! 👋
                 </h1>
                 <p className="text-gray-600 text-lg">
                   AIFix로 ESG 경영을 시작하세요
@@ -93,7 +93,7 @@ export default function DashboardPage() {
           {/* Main Features Grid */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-12">
             {/* Self Diagnosis */}
-            <div 
+            <div
               onClick={() => router.push('/diagnosis')}
               className="bg-white rounded-2xl p-8 shadow-lg hover:shadow-2xl transition-all cursor-pointer group hover:scale-[1.02]"
             >
@@ -111,7 +111,7 @@ export default function DashboardPage() {
             </div>
 
             {/* Automated Reports */}
-            <div 
+            <div
               onClick={() => router.push('/reports')}
               className="bg-white rounded-2xl p-8 shadow-lg hover:shadow-2xl transition-all cursor-pointer group hover:scale-[1.02]"
             >
@@ -129,7 +129,7 @@ export default function DashboardPage() {
             </div>
 
             {/* AI Editing */}
-            <div 
+            <div
               onClick={() => router.push('/editing')}
               className="bg-white rounded-2xl p-8 shadow-lg hover:shadow-2xl transition-all cursor-pointer group hover:scale-[1.02]"
             >
@@ -166,21 +166,21 @@ export default function DashboardPage() {
             <h2 className="text-2xl font-bold mb-6">내 정보</h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div className="flex items-center gap-4">
-                {user.picture && (
-                  <img 
-                    src={user.picture} 
-                    alt={user.name} 
+                {(user.profileImage || user.picture) && (
+                  <img
+                    src={user.profileImage || user.picture}
+                    alt={user.nickname || user.name || '사용자'}
                     className="w-20 h-20 rounded-full border-4 border-white/30"
                   />
                 )}
                 <div>
                   <p className="text-sm opacity-90 mb-1">이름</p>
-                  <p className="text-xl font-semibold">{user.name}</p>
+                  <p className="text-xl font-semibold">{user.nickname || user.name || '사용자'}</p>
                 </div>
               </div>
               <div>
                 <p className="text-sm opacity-90 mb-1">이메일</p>
-                <p className="text-xl font-semibold">{user.email}</p>
+                <p className="text-xl font-semibold">{user.email || '이메일 없음'}</p>
               </div>
             </div>
           </div>

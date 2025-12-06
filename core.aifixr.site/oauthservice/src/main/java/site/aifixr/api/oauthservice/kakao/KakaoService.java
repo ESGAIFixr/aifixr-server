@@ -16,6 +16,10 @@ import site.aifixr.api.oauthservice.jwt.JwtTokenProvider;
 import site.aifixr.api.oauthservice.kakao.dto.KakaoTokenResponse;
 import site.aifixr.api.oauthservice.kakao.dto.KakaoUserInfo;
 
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Objects;
+
 @Service
 @RequiredArgsConstructor
 @Slf4j
@@ -41,8 +45,12 @@ public class KakaoService {
         HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<>(params, headers);
 
         try {
+            String tokenUri = kakaoConfig.getTokenUri();
+            if (tokenUri == null) {
+                throw new IllegalStateException("Kakao token URI is not configured");
+            }
             ResponseEntity<KakaoTokenResponse> response = restTemplate.postForEntity(
-                    kakaoConfig.getTokenUri(),
+                    tokenUri,
                     request,
                     KakaoTokenResponse.class);
 
@@ -62,6 +70,15 @@ public class KakaoService {
      * Access Token으로 사용자 정보 조회
      */
     public KakaoUserInfo getUserInfo(String accessToken) {
+        if (accessToken == null) {
+            throw new IllegalArgumentException("Access token cannot be null");
+        }
+
+        String userInfoUri = kakaoConfig.getUserInfoUri();
+        if (userInfoUri == null) {
+            throw new IllegalStateException("Kakao user info URI is not configured");
+        }
+
         HttpHeaders headers = new HttpHeaders();
         headers.setBearerAuth(accessToken);
         headers.setContentType(MediaType.APPLICATION_JSON);
@@ -69,9 +86,10 @@ public class KakaoService {
         HttpEntity<Void> request = new HttpEntity<>(headers);
 
         try {
+            HttpMethod method = Objects.requireNonNull(HttpMethod.GET);
             ResponseEntity<KakaoUserInfo> response = restTemplate.exchange(
-                    kakaoConfig.getUserInfoUri(),
-                    HttpMethod.GET,
+                    userInfoUri,
+                    method,
                     request,
                     KakaoUserInfo.class);
 
@@ -112,8 +130,12 @@ public class KakaoService {
                         : null;
 
         // 4. JWT 토큰 생성 (카카오 ID를 String으로 사용)
-        String jwtAccessToken = jwtTokenProvider.createAccessToken(kakaoId, email);
-        String jwtRefreshToken = jwtTokenProvider.createRefreshToken(kakaoId);
+        Map<String, Object> claims = new HashMap<>();
+        if (email != null) {
+            claims.put("email", email);
+        }
+        String jwtAccessToken = jwtTokenProvider.generateToken(kakaoId, claims);
+        String jwtRefreshToken = jwtTokenProvider.generateRefreshToken(kakaoId);
 
         // 5. 응답 생성
         return OAuthUserResponse.builder()

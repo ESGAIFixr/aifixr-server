@@ -14,17 +14,17 @@ import FloatingAIButton from '@/components/FloatingAIButton';
 import LoginModal from '@/components/LoginModal';
 import Footer from '@/components/Footer';
 import { createMainHandlers } from '@/services/mainservice';
-import { isAuthenticated } from '@/lib/auth';
+import { AuthService } from '@/services/authservice';
 
 export default function Home() {
   const router = useRouter();
   const [activeMainTab, setActiveMainTab] = useState('intro');
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
 
-  // 토큰이 있으면 자동으로 /sme로 리다이렉트
+  // 토큰이 있으면 자동으로 대시보드로 리다이렉트
   useEffect(() => {
-    if (isAuthenticated()) {
-      router.push('/sme');
+    if (AuthService.isAuthenticated()) {
+      router.push('/dashboard');
     }
   }, [router]);
 
