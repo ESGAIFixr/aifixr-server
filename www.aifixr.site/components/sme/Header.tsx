@@ -4,7 +4,7 @@ import { Sparkles, User, Settings, LogOut, ChevronDown } from 'lucide-react';
 import Link from 'next/link';
 import { useState, useRef, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { clearAuth } from '@/lib/auth';
+import { clearAuth } from '@/lib/oauthservice';
 
 export default function Header() {
   const [isProfileOpen, setIsProfileOpen] = useState(false);

@@ -4,7 +4,7 @@ import { Sparkles, User, LogOut, ChevronDown, Settings } from 'lucide-react';
 import Link from 'next/link';
 import { useEffect, useState, useRef } from 'react';
 import { useRouter } from 'next/navigation';
-import { AuthService } from '@/services/authservice';
+import { AuthService } from '@/lib/oauthservice';
 
 interface HeaderProps {
   onLoginClick: () => void;
@@ -21,7 +21,7 @@ export default function Header({ onLoginClick }: HeaderProps) {
     const checkAuthStatus = () => {
       const authenticated = AuthService.isAuthenticated();
       setIsAuthenticated(authenticated);
-      
+
       if (authenticated) {
         setUser(AuthService.getCurrentUser());
       }
@@ -32,7 +32,7 @@ export default function Header({ onLoginClick }: HeaderProps) {
 
     // storage 이벤트 리스너 (다른 탭에서 로그인/로그아웃 시)
     window.addEventListener('storage', checkAuthStatus);
-    
+
     // 커스텀 이벤트 리스너 (같은 탭에서 로그인/로그아웃 시)
     window.addEventListener('authStateChanged', checkAuthStatus);
 
@@ -63,10 +63,10 @@ export default function Header({ onLoginClick }: HeaderProps) {
     setIsAuthenticated(false);
     setUser(null);
     setIsProfileOpen(false);
-    
+
     // 로그아웃 상태 변경 이벤트 발생
     window.dispatchEvent(new Event('authStateChanged'));
-    
+
     router.push('/');
   };
 

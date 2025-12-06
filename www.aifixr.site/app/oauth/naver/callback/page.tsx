@@ -3,11 +3,11 @@
 import { useEffect, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 
-export default function GoogleCallbackPage() {
+export default function NaverCallbackPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [status, setStatus] = useState<"loading" | "success" | "error">("loading");
-  const [message, setMessage] = useState("구글 로그인 처리 중...");
+  const [message, setMessage] = useState("네이버 로그인 처리 중...");
 
   useEffect(() => {
     const handleCallback = async () => {
@@ -30,14 +30,11 @@ export default function GoogleCallbackPage() {
             id: searchParams.get('userId') || '',
             email: searchParams.get('email') || null,
             name: searchParams.get('name') || null,
-            givenName: searchParams.get('givenName') || null,
-            familyName: searchParams.get('familyName') || null,
-            picture: searchParams.get('picture') || null,
-            locale: searchParams.get('locale') || null,
-            provider: searchParams.get('provider') || 'google',
+            nickname: searchParams.get('nickname') || null,
+            provider: searchParams.get('provider') || 'naver',
           };
 
-          // localStorage에 토큰 저장
+          // 구글과 동일한 키로 localStorage에 토큰 저장
           localStorage.setItem("access_token", decodeURIComponent(accessToken));
           if (refreshToken) {
             localStorage.setItem("refresh_token", decodeURIComponent(refreshToken));
@@ -66,7 +63,7 @@ export default function GoogleCallbackPage() {
 
         // 백엔드에서 토큰 받기
         const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080';
-        const response = await fetch(`${API_URL}/api/oauth/google/callback?code=${code}`, {
+        const response = await fetch(`${API_URL}/api/oauth/naver/callback?code=${code}`, {
           method: 'GET',
           headers: {
             'Content-Type': 'application/json',
@@ -82,19 +79,16 @@ export default function GoogleCallbackPage() {
 
         const data = await response.json();
 
-        // 사용자 정보 변환
+        // 구글과 동일한 형식으로 변환
         const userInfo = {
           id: data.user?.id || '',
           email: data.user?.email || null,
           name: data.user?.name || null,
-          givenName: data.user?.givenName || null,
-          familyName: data.user?.familyName || null,
-          picture: data.user?.picture || null,
-          locale: data.user?.locale || null,
-          provider: data.user?.provider || 'google',
+          nickname: data.user?.nickname || null,
+          provider: data.user?.provider || 'naver',
         };
 
-        // localStorage에 토큰 저장
+        // 구글과 동일한 키로 localStorage에 토큰 저장
         localStorage.setItem("access_token", data.accessToken);
         if (data.refreshToken) {
           localStorage.setItem("refresh_token", data.refreshToken);
@@ -179,4 +173,3 @@ export default function GoogleCallbackPage() {
     </div>
   );
 }
-

@@ -1,24 +1,22 @@
 'use client';
 
 import { useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { ArrowRight, BarChart3, FileText, Scale, Lightbulb, Rocket, TrendingUp, Wrench } from 'lucide-react';
 import Header from '@/components/Header';
 import MainNavigation from '@/components/MainNavigation';
 import Footer from '@/components/Footer';
 import LoginModal from '@/components/LoginModal';
 import { createMainHandlers } from '@/services/mainservice';
+import { AuthService } from '@/lib/oauthservice';
 
 export default function IntroPage() {
+  const router = useRouter();
   const [activeMainTab, setActiveMainTab] = useState('intro');
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
 
-  const { handleLoginClick, handleLoginRequired, handleLogin, handleKakaoLogin } =
-    createMainHandlers(setIsLoginModalOpen);
-
-  const handleStartDiagnosis = () => {
-    // ESG 진단 시작 로직
-    console.log('ESG 진단 시작');
-  };
+  const { handleLoginClick, handleLoginRequired, handleLogin, handleStartDiagnosis } =
+    createMainHandlers(setIsLoginModalOpen, router);
 
   return (
     <div className="min-h-screen bg-white">
@@ -284,7 +282,7 @@ export default function IntroPage() {
         isOpen={isLoginModalOpen}
         onClose={() => setIsLoginModalOpen(false)}
         onLogin={handleLogin}
-        onKakaoLogin={handleKakaoLogin}
+        onKakaoLogin={AuthService.handleKakaoLogin}
       />
     </div>
   );

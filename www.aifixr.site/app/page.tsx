@@ -1,7 +1,5 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
 import Header from '@/components/Header';
 import MainNavigation from '@/components/MainNavigation';
 import HeroSection from '@/components/HeroSection';
@@ -13,34 +11,21 @@ import PricingSection from '@/components/PricingSection';
 import FloatingAIButton from '@/components/FloatingAIButton';
 import LoginModal from '@/components/LoginModal';
 import Footer from '@/components/Footer';
-import { createMainHandlers } from '@/services/mainservice';
-import { AuthService } from '@/services/authservice';
+import { useMainPage } from '@/hooks/mainhook';
+import { AuthService } from '@/lib/oauthservice';
 
 export default function Home() {
-  const router = useRouter();
-  const [activeMainTab, setActiveMainTab] = useState('intro');
-  const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
-
-  // 토큰이 있으면 자동으로 대시보드로 리다이렉트
-  useEffect(() => {
-    if (AuthService.isAuthenticated()) {
-      router.push('/dashboard');
-    }
-  }, [router]);
-
-  // 이부분 임포트로 안 바꿔도 되는건가?
-  const { handleLoginClick, handleLoginRequired, handleLogin, handleKakaoLogin } =
-    createMainHandlers(setIsLoginModalOpen);
-
-  const handleStartDiagnosis = () => {
-    // SME 진단 페이지로 이동 (추후 구현)
-    router.push('/intro');
-  };
-
-  const handleWatchDemo = () => {
-    // 데모 영상 모달은 HeroSection 내부에서 처리
-    console.log('데모 영상 보기');
-  };
+  const {
+    activeMainTab,
+    setActiveMainTab,
+    isLoginModalOpen,
+    setIsLoginModalOpen,
+    handleLoginClick,
+    handleLoginRequired,
+    handleLogin,
+    handleStartDiagnosis,
+    handleWatchDemo,
+  } = useMainPage();
 
   return (
     <div className="min-h-screen bg-white">
@@ -88,7 +73,7 @@ export default function Home() {
         isOpen={isLoginModalOpen}
         onClose={() => setIsLoginModalOpen(false)}
         onLogin={handleLogin}
-        onKakaoLogin={handleKakaoLogin}
+        onKakaoLogin={AuthService.handleKakaoLogin}
       />
     </div>
   );

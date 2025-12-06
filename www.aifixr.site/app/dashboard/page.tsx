@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { AuthService } from "@/services/authservice";
+import { AuthService } from "@/lib/oauthservice";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { Sparkles, FileText, Edit3, BarChart3, Clock, CheckCircle2 } from "lucide-react";

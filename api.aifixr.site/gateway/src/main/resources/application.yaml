@@ -111,6 +111,116 @@ spring:
               args:
                 name: oauthCircuitBreaker
         
+        # OAuth Service - Google Login URL
+        - id: oauth-google-login
+          uri: http://oauth-service:8085
+          predicates:
+            - Path=/api/oauth/google/login
+          filters:
+            - RewritePath=/api/oauth/google/login, /google/login
+            - name: RequestRateLimiter
+              args:
+                redis-rate-limiter.replenishRate: 10
+                redis-rate-limiter.burstCapacity: 20
+                redis-rate-limiter.requestedTokens: 1
+                key-resolver: "#{@ipKeyResolver}"
+        
+        # OAuth Service - Google Auth URL (for frontend compatibility)
+        - id: oauth-google-auth-url
+          uri: http://oauth-service:8085
+          predicates:
+            - Path=/api/oauth/google/auth-url
+          filters:
+            - RewritePath=/api/oauth/google/auth-url, /google/login
+            - name: RequestRateLimiter
+              args:
+                redis-rate-limiter.replenishRate: 10
+                redis-rate-limiter.burstCapacity: 20
+                redis-rate-limiter.requestedTokens: 1
+                key-resolver: "#{@ipKeyResolver}"
+        
+        # OAuth Service - Google Callback (with /api prefix)
+        - id: oauth-google-callback-api
+          uri: http://oauth-service:8085
+          predicates:
+            - Path=/api/oauth/google/callback
+          filters:
+            - RewritePath=/api/oauth/google/callback, /google/callback
+            - name: RequestRateLimiter
+              args:
+                redis-rate-limiter.replenishRate: 10
+                redis-rate-limiter.burstCapacity: 20
+                redis-rate-limiter.requestedTokens: 1
+                key-resolver: "#{@ipKeyResolver}"
+            - name: CircuitBreaker
+              args:
+                name: oauthCircuitBreaker
+        
+        # OAuth Service - Google Callback (without /api prefix)
+        - id: oauth-google-callback
+          uri: http://oauth-service:8085
+          predicates:
+            - Path=/oauth/google/callback
+          filters:
+            - RewritePath=/oauth/google/callback, /google/callback
+            - name: RequestRateLimiter
+              args:
+                redis-rate-limiter.replenishRate: 10
+                redis-rate-limiter.burstCapacity: 20
+                redis-rate-limiter.requestedTokens: 1
+                key-resolver: "#{@ipKeyResolver}"
+            - name: CircuitBreaker
+              args:
+                name: oauthCircuitBreaker
+        
+        # OAuth Service - Naver Login URL
+        - id: oauth-naver-login
+          uri: http://oauth-service:8085
+          predicates:
+            - Path=/api/oauth/naver/login
+          filters:
+            - RewritePath=/api/oauth/naver/login, /naver/login
+            - name: RequestRateLimiter
+              args:
+                redis-rate-limiter.replenishRate: 10
+                redis-rate-limiter.burstCapacity: 20
+                redis-rate-limiter.requestedTokens: 1
+                key-resolver: "#{@ipKeyResolver}"
+        
+        # OAuth Service - Naver Callback (with /api prefix)
+        - id: oauth-naver-callback-api
+          uri: http://oauth-service:8085
+          predicates:
+            - Path=/api/oauth/naver/callback
+          filters:
+            - RewritePath=/api/oauth/naver/callback, /naver/callback
+            - name: RequestRateLimiter
+              args:
+                redis-rate-limiter.replenishRate: 10
+                redis-rate-limiter.burstCapacity: 20
+                redis-rate-limiter.requestedTokens: 1
+                key-resolver: "#{@ipKeyResolver}"
+            - name: CircuitBreaker
+              args:
+                name: oauthCircuitBreaker
+        
+        # OAuth Service - Naver Callback (without /api prefix)
+        - id: oauth-naver-callback
+          uri: http://oauth-service:8085
+          predicates:
+            - Path=/oauth/naver/callback
+          filters:
+            - RewritePath=/oauth/naver/callback, /naver/callback
+            - name: RequestRateLimiter
+              args:
+                redis-rate-limiter.replenishRate: 10
+                redis-rate-limiter.burstCapacity: 20
+                redis-rate-limiter.requestedTokens: 1
+                key-resolver: "#{@ipKeyResolver}"
+            - name: CircuitBreaker
+              args:
+                name: oauthCircuitBreaker
+        
         # OpenAPI Docs Proxy Routes (for Swagger UI aggregation)
         - id: user-api-docs
           uri: http://user:8080
