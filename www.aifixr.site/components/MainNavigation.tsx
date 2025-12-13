@@ -41,8 +41,8 @@ export default function MainNavigation({ activeTab, setActiveTab, onLoginRequire
   const tabs = [
     { id: 'intro', label: 'AIFIX 소개', requiresAuth: false, href: '/intro' },
     { id: 'rating', label: '기업 ESG 등급', requiresAuth: false, href: '/rating' },
-    { id: 'news', label: 'ESG 소식', requiresAuth: false, href: '#' },
-    { id: 'notice', label: '공지사항', requiresAuth: false, href: '#' },
+    { id: 'news', label: 'ESG 소식', requiresAuth: false, href: '/news' },
+    { id: 'notice', label: '공지사항', requiresAuth: false, href: '/notice' },
     { id: 'self-diagnosis', label: '자가진단', requiresAuth: true, href: '/diagnosis' },
     { id: 'auto-report', label: '자동화 보고서', requiresAuth: true, href: '/reports' },
     { id: 'editing', label: '윤문 AI', requiresAuth: true, href: '/editing' },

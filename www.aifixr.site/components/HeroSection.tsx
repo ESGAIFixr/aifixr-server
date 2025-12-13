@@ -52,15 +52,15 @@ export default function HeroSection({ onStartDiagnosis, onWatchDemo }: HeroSecti
               </div>
 
               {/* H1 Headline */}
-              <h1 className="mb-6 text-3xl lg:text-5xl font-bold bg-gradient-to-r from-[#0D4ABB] via-[#E91E8C] to-[#8B5CF6] bg-clip-text text-transparent leading-normal" style={{ fontFamily: 'Inter Tight, Arial, sans-serif' }}>
-                AIFIX로 ESG 진단부터  <br className="hidden lg:block" />
-                보고서, 공급망까지 한 번에
+              <h1 className="mb-6 text-3xl lg:text-[2.625rem] font-bold bg-gradient-to-r from-[#0D4ABB] via-[#E91E8C] to-[#8B5CF6] bg-clip-text text-transparent leading-normal" style={{ fontFamily: 'Inter Tight, Arial, sans-serif',lineHeight: '1.1'  }}>
+                진단 → 보고 → 공유,  <br className="hidden lg:block" />
+                ESG의 모든 흐름을 하나의 플랫폼에서
               </h1>
 
               {/* H2 Subheadline */}
               <h2 className="mb-8 text-xl lg:text-2xl font-semibold text-gray-700 leading-relaxed">
-                중소기업은 자가진단·자동 보고서·개선 가이드를 한 플랫폼에서.<br />
-                대기업은 협력사 ESG 현황을 정확하고 투명하게 모니터링합니다.
+                ESG 자가진단과 자동 보고서를 손쉽게 생성하고,<br />
+                요청 기반 데이터 공유로 공급망 협력을 강화합니다.
               </h2>
 
               {/* CTA Buttons */}
