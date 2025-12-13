@@ -58,7 +58,7 @@ export function ReportCenter({ onNavigate, onLogout }: ReportCenterProps) {
   return (
     <div className="flex min-h-screen bg-[#F6F8FB]">
       <Sidebar currentPage="report-center" onNavigate={onNavigate} onLogout={onLogout} />
-      
+
       <div className="flex-1 ml-64">
         <div className="max-w-7xl mx-auto px-6 py-8">
           {/* Header */}
@@ -130,9 +130,8 @@ export function ReportCenter({ onNavigate, onLogout }: ReportCenterProps) {
                 return (
                   <Card
                     key={report.id}
-                    className={`p-6 rounded-[20px] shadow-[0_4px_20px_rgba(91,59,250,0.1)] hover:shadow-[0_6px_30px_rgba(91,59,250,0.2)] transition-all cursor-pointer ${
-                      isSelected ? 'ring-2 ring-[#5B3BFA]' : ''
-                    }`}
+                    className={`p-6 rounded-[20px] shadow-[0_4px_20px_rgba(91,59,250,0.1)] hover:shadow-[0_6px_30px_rgba(91,59,250,0.2)] transition-all cursor-pointer ${isSelected ? 'ring-2 ring-[#5B3BFA]' : ''
+                      }`}
                     onClick={() => toggleReportSelection(report.id)}
                   >
                     <div className="flex items-start justify-between mb-4">
@@ -160,11 +159,10 @@ export function ReportCenter({ onNavigate, onLogout }: ReportCenterProps) {
                     <div className="space-y-2 mb-4">
                       <div className="flex items-center justify-between text-sm">
                         <span className="text-[#8C8C8C]">ESG 등급</span>
-                        <span className={`px-3 py-1 rounded-full ${
-                          report.grade === 'A' ? 'bg-[#00B4FF]/10 text-[#00B4FF]' :
-                          report.grade === 'B' ? 'bg-[#5B3BFA]/10 text-[#5B3BFA]' :
-                          'bg-[#8C8C8C]/10 text-[#8C8C8C]'
-                        }`}>
+                        <span className={`px-3 py-1 rounded-full ${report.grade === 'A' ? 'bg-[#00B4FF]/10 text-[#00B4FF]' :
+                            report.grade === 'B' ? 'bg-[#5B3BFA]/10 text-[#5B3BFA]' :
+                              'bg-[#8C8C8C]/10 text-[#8C8C8C]'
+                          }`}>
                           {report.grade}
                         </span>
                       </div>

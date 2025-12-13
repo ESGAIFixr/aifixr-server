@@ -41,7 +41,7 @@ export function SMEList({ onNavigate, onLogout }: SMEListProps) {
 
   const filteredCompanies = companies.filter(company => {
     const matchesSearch = company.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                         company.industry.toLowerCase().includes(searchQuery.toLowerCase());
+      company.industry.toLowerCase().includes(searchQuery.toLowerCase());
     const matchesGrade = gradeFilter === 'all' || company.grade === gradeFilter;
     const matchesIndustry = industryFilter === 'all' || company.industry === industryFilter;
     return matchesSearch && matchesGrade && matchesIndustry;
@@ -50,7 +50,7 @@ export function SMEList({ onNavigate, onLogout }: SMEListProps) {
   return (
     <div className="flex min-h-screen bg-[#F6F8FB]">
       <Sidebar currentPage="sme-list" onNavigate={onNavigate} onLogout={onLogout} />
-      
+
       <div className="flex-1 ml-64">
         <div className="max-w-7xl mx-auto px-6 py-8">
           {/* Header */}
@@ -138,8 +138,8 @@ export function SMEList({ onNavigate, onLogout }: SMEListProps) {
               <Button
                 variant={viewMode === 'table' ? 'default' : 'outline'}
                 onClick={() => setViewMode('table')}
-                className={viewMode === 'table' 
-                  ? 'bg-gradient-to-r from-[#5B3BFA] to-[#00B4FF] rounded-xl' 
+                className={viewMode === 'table'
+                  ? 'bg-gradient-to-r from-[#5B3BFA] to-[#00B4FF] rounded-xl'
                   : 'rounded-xl'}
               >
                 테이블형
@@ -147,8 +147,8 @@ export function SMEList({ onNavigate, onLogout }: SMEListProps) {
               <Button
                 variant={viewMode === 'card' ? 'default' : 'outline'}
                 onClick={() => setViewMode('card')}
-                className={viewMode === 'card' 
-                  ? 'bg-gradient-to-r from-[#5B3BFA] to-[#00B4FF] rounded-xl' 
+                className={viewMode === 'card'
+                  ? 'bg-gradient-to-r from-[#5B3BFA] to-[#00B4FF] rounded-xl'
                   : 'rounded-xl'}
               >
                 카드형
@@ -191,20 +191,18 @@ export function SMEList({ onNavigate, onLogout }: SMEListProps) {
                           </td>
                           <td className="p-4 text-[#8C8C8C]">{company.industry}</td>
                           <td className="p-4 text-center">
-                            <span className={`px-4 py-1 rounded-full inline-block ${
-                              company.grade === 'A' ? 'bg-[#00B4FF]/10 text-[#00B4FF]' :
-                              company.grade === 'B' ? 'bg-[#5B3BFA]/10 text-[#5B3BFA]' :
-                              'bg-[#8C8C8C]/10 text-[#8C8C8C]'
-                            }`}>
+                            <span className={`px-4 py-1 rounded-full inline-block ${company.grade === 'A' ? 'bg-[#00B4FF]/10 text-[#00B4FF]' :
+                                company.grade === 'B' ? 'bg-[#5B3BFA]/10 text-[#5B3BFA]' :
+                                  'bg-[#8C8C8C]/10 text-[#8C8C8C]'
+                              }`}>
                               {company.grade}
                             </span>
                           </td>
                           <td className="p-4 text-center">
-                            <span className={`px-4 py-1 rounded-full inline-block ${
-                              riskLevel === 'high' ? 'bg-[#E30074]/10 text-[#E30074]' :
-                              riskLevel === 'medium' ? 'bg-[#A58DFF]/10 text-[#A58DFF]' :
-                              'bg-[#00B4FF]/10 text-[#00B4FF]'
-                            }`}>
+                            <span className={`px-4 py-1 rounded-full inline-block ${riskLevel === 'high' ? 'bg-[#E30074]/10 text-[#E30074]' :
+                                riskLevel === 'medium' ? 'bg-[#A58DFF]/10 text-[#A58DFF]' :
+                                  'bg-[#00B4FF]/10 text-[#00B4FF]'
+                              }`}>
                               {riskLevel === 'high' ? '높음' : riskLevel === 'medium' ? '중간' : '낮음'}
                             </span>
                           </td>
@@ -266,11 +264,10 @@ export function SMEList({ onNavigate, onLogout }: SMEListProps) {
                   <div className="space-y-3">
                     <div className="flex items-center justify-between">
                       <span className="text-[#8C8C8C]">ESG 등급</span>
-                      <span className={`px-4 py-1 rounded-full ${
-                        company.grade === 'A' ? 'bg-[#00B4FF]/10 text-[#00B4FF]' :
-                        company.grade === 'B' ? 'bg-[#5B3BFA]/10 text-[#5B3BFA]' :
-                        'bg-[#8C8C8C]/10 text-[#8C8C8C]'
-                      }`}>
+                      <span className={`px-4 py-1 rounded-full ${company.grade === 'A' ? 'bg-[#00B4FF]/10 text-[#00B4FF]' :
+                          company.grade === 'B' ? 'bg-[#5B3BFA]/10 text-[#5B3BFA]' :
+                            'bg-[#8C8C8C]/10 text-[#8C8C8C]'
+                        }`}>
                         {company.grade}등급
                       </span>
                     </div>

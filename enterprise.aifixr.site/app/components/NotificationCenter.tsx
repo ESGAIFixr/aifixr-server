@@ -80,7 +80,7 @@ export function NotificationCenter({ onNavigate, onLogout }: NotificationCenterP
   return (
     <div className="flex min-h-screen bg-[#F6F8FB]">
       <Sidebar currentPage="notifications" onNavigate={onNavigate} onLogout={onLogout} />
-      
+
       <div className="flex-1 ml-64">
         <div className="max-w-5xl mx-auto px-6 py-8">
           {/* Header */}
@@ -96,14 +96,12 @@ export function NotificationCenter({ onNavigate, onLogout }: NotificationCenterP
               {announcements.map((announcement) => (
                 <Card
                   key={announcement.id}
-                  className={`p-6 rounded-[20px] shadow-[0_4px_20px_rgba(91,59,250,0.1)] border-l-4 ${
-                    announcement.type === 'info' ? 'border-[#00B4FF]' : 'border-[#A58DFF]'
-                  }`}
+                  className={`p-6 rounded-[20px] shadow-[0_4px_20px_rgba(91,59,250,0.1)] border-l-4 ${announcement.type === 'info' ? 'border-[#00B4FF]' : 'border-[#A58DFF]'
+                    }`}
                 >
                   <div className="flex items-start gap-4">
-                    <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${
-                      announcement.type === 'info' ? 'bg-[#00B4FF]/10' : 'bg-[#A58DFF]/10'
-                    }`}>
+                    <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${announcement.type === 'info' ? 'bg-[#00B4FF]/10' : 'bg-[#A58DFF]/10'
+                      }`}>
                       {announcement.type === 'info' ? (
                         <Info className={`w-5 h-5 ${announcement.type === 'info' ? 'text-[#00B4FF]' : 'text-[#A58DFF]'}`} />
                       ) : (
@@ -135,16 +133,14 @@ export function NotificationCenter({ onNavigate, onLogout }: NotificationCenterP
               {notifications.map((notification) => (
                 <Card
                   key={notification.id}
-                  className={`p-4 rounded-[20px] shadow-[0_4px_20px_rgba(91,59,250,0.1)] transition-all cursor-pointer hover:shadow-[0_6px_30px_rgba(91,59,250,0.15)] ${
-                    !notification.read ? 'bg-white' : 'bg-[#F6F8FB]'
-                  }`}
+                  className={`p-4 rounded-[20px] shadow-[0_4px_20px_rgba(91,59,250,0.1)] transition-all cursor-pointer hover:shadow-[0_6px_30px_rgba(91,59,250,0.15)] ${!notification.read ? 'bg-white' : 'bg-[#F6F8FB]'
+                    }`}
                 >
                   <div className="flex items-start gap-4">
-                    <div className={`w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0 ${
-                      notification.type === 'completed' ? 'bg-[#00B4FF]/10' :
-                      notification.type === 'alert' ? 'bg-[#E30074]/10' :
-                      'bg-[#5B3BFA]/10'
-                    }`}>
+                    <div className={`w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0 ${notification.type === 'completed' ? 'bg-[#00B4FF]/10' :
+                        notification.type === 'alert' ? 'bg-[#E30074]/10' :
+                          'bg-[#5B3BFA]/10'
+                      }`}>
                       {notification.type === 'completed' ? (
                         <CheckCircle2 className="w-5 h-5 text-[#00B4FF]" />
                       ) : notification.type === 'alert' ? (
@@ -165,13 +161,12 @@ export function NotificationCenter({ onNavigate, onLogout }: NotificationCenterP
                       </div>
                       <p className="text-[#8C8C8C]">{notification.message}</p>
                       <div className="flex items-center gap-2 mt-3">
-                        <span className={`px-3 py-1 rounded-full text-xs ${
-                          notification.type === 'completed' ? 'bg-[#00B4FF]/10 text-[#00B4FF]' :
-                          notification.type === 'alert' ? 'bg-[#E30074]/10 text-[#E30074]' :
-                          'bg-[#5B3BFA]/10 text-[#5B3BFA]'
-                        }`}>
+                        <span className={`px-3 py-1 rounded-full text-xs ${notification.type === 'completed' ? 'bg-[#00B4FF]/10 text-[#00B4FF]' :
+                            notification.type === 'alert' ? 'bg-[#E30074]/10 text-[#E30074]' :
+                              'bg-[#5B3BFA]/10 text-[#5B3BFA]'
+                          }`}>
                           {notification.type === 'completed' ? '완료' :
-                           notification.type === 'alert' ? '경고' : '업데이트'}
+                            notification.type === 'alert' ? '경고' : '업데이트'}
                         </span>
                         {!notification.read && (
                           <Button
