@@ -62,7 +62,7 @@ export function CompanyDetail({ companyId, onNavigate, onLogout }: CompanyDetail
   return (
     <div className="flex min-h-screen bg-[#F6F8FB]">
       <Sidebar currentPage="sme-list" onNavigate={onNavigate} onLogout={onLogout} />
-
+      
       <div className="flex-1 ml-64">
         <div className="max-w-7xl mx-auto px-6 py-8">
           {/* Back Button */}
@@ -193,18 +193,20 @@ export function CompanyDetail({ companyId, onNavigate, onLogout }: CompanyDetail
               {highRisks.map((risk, idx) => (
                 <div
                   key={idx}
-                  className={`p-4 rounded-xl border-l-4 ${risk.severity === 'high'
+                  className={`p-4 rounded-xl border-l-4 ${
+                    risk.severity === 'high'
                       ? 'border-[#E30074] bg-[#E30074]/5'
                       : 'border-[#A58DFF] bg-[#A58DFF]/5'
-                    }`}
+                  }`}
                 >
                   <div className="flex items-start justify-between">
                     <div>
                       <div className="flex items-center gap-2 mb-1">
-                        <span className={`px-3 py-1 rounded-full text-sm ${risk.severity === 'high'
+                        <span className={`px-3 py-1 rounded-full text-sm ${
+                          risk.severity === 'high'
                             ? 'bg-[#E30074] text-white'
                             : 'bg-[#A58DFF] text-white'
-                          }`}>
+                        }`}>
                           {risk.severity === 'high' ? '높은 위험' : '중간 위험'}
                         </span>
                         <span className="text-[#8C8C8C]">{risk.category}</span>
@@ -330,10 +332,10 @@ export function CompanyDetail({ companyId, onNavigate, onLogout }: CompanyDetail
                   <XAxis dataKey="year" stroke="#8C8C8C" />
                   <YAxis stroke="#8C8C8C" domain={[60, 100]} />
                   <Tooltip />
-                  <Line
-                    type="monotone"
-                    dataKey="score"
-                    stroke="url(#colorGradient)"
+                  <Line 
+                    type="monotone" 
+                    dataKey="score" 
+                    stroke="url(#colorGradient)" 
                     strokeWidth={3}
                     dot={{ fill: '#5B3BFA', r: 6 }}
                   />

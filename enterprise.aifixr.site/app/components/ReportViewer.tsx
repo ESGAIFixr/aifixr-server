@@ -22,7 +22,7 @@ export function ReportViewer({ reportId, onNavigate, onLogout }: ReportViewerPro
   return (
     <div className="flex min-h-screen bg-[#F6F8FB]">
       <Sidebar currentPage="report-center" onNavigate={onNavigate} onLogout={onLogout} />
-
+      
       <div className="flex-1 ml-64">
         <div className="max-w-7xl mx-auto px-6 py-8">
           {/* Back Button */}
@@ -44,21 +44,24 @@ export function ReportViewer({ reportId, onNavigate, onLogout }: ReportViewerPro
                   {reportList.map((report) => (
                     <div
                       key={report.id}
-                      className={`p-3 rounded-xl cursor-pointer transition-all ${report.id === reportId
+                      className={`p-3 rounded-xl cursor-pointer transition-all ${
+                        report.id === reportId
                           ? 'bg-gradient-to-r from-[#5B3BFA] to-[#00B4FF] text-white'
                           : 'bg-[#F6F8FB] hover:bg-gray-100'
-                        }`}
+                      }`}
                       onClick={() => onNavigate('report-viewer', '1', report.id)}
                     >
                       <div className="flex items-start gap-2">
                         <FileText className="w-4 h-4 mt-1 flex-shrink-0" />
                         <div>
-                          <p className={`text-sm mb-1 ${report.id === reportId ? 'text-white' : 'text-[#0F172A]'
-                            }`}>
+                          <p className={`text-sm mb-1 ${
+                            report.id === reportId ? 'text-white' : 'text-[#0F172A]'
+                          }`}>
                             {report.title}
                           </p>
-                          <p className={`text-xs ${report.id === reportId ? 'text-white/80' : 'text-[#8C8C8C]'
-                            }`}>
+                          <p className={`text-xs ${
+                            report.id === reportId ? 'text-white/80' : 'text-[#8C8C8C]'
+                          }`}>
                             {report.date} · {report.pages}페이지
                           </p>
                         </div>
@@ -101,8 +104,8 @@ export function ReportViewer({ reportId, onNavigate, onLogout }: ReportViewerPro
                       <section>
                         <h3 className="mb-4 pb-3 border-b border-gray-200">1. 개요</h3>
                         <p className="text-[#8C8C8C] leading-relaxed">
-                          본 보고서는 테크솔루션 주식회사의 ESG(환경·사회·지배구조) 성과를
-                          종합적으로 평가한 문서입니다. AIFIX ESG 평가 시스템을 통해 수집된
+                          본 보고서는 테크솔루션 주식회사의 ESG(환경·사회·지배구조) 성과를 
+                          종합적으로 평가한 문서입니다. AIFIX ESG 평가 시스템을 통해 수집된 
                           데이터를 기반으로 작성되었으며, 국제 ESG 평가 기준을 준수합니다.
                         </p>
                       </section>
@@ -142,7 +145,7 @@ export function ReportViewer({ reportId, onNavigate, onLogout }: ReportViewerPro
                       <section>
                         <h3 className="mb-4 pb-3 border-b border-gray-200">3. 환경 성과 (Environmental)</h3>
                         <p className="text-[#8C8C8C] leading-relaxed mb-4">
-                          테크솔루션은 탄소 배출 저감을 위한 적극적인 노력을 기울이고 있으며,
+                          테크솔루션은 탄소 배출 저감을 위한 적극적인 노력을 기울이고 있으며, 
                           재생에너지 사용 비율을 지속적으로 확대하고 있습니다.
                         </p>
                         <ul className="list-disc list-inside space-y-2 text-[#8C8C8C]">
@@ -156,7 +159,7 @@ export function ReportViewer({ reportId, onNavigate, onLogout }: ReportViewerPro
                       <section>
                         <h3 className="mb-4 pb-3 border-b border-gray-200">4. 사회 성과 (Social)</h3>
                         <p className="text-[#8C8C8C] leading-relaxed mb-4">
-                          직원 복지와 다양성 증진을 위한 다양한 프로그램을 운영하고 있으며,
+                          직원 복지와 다양성 증진을 위한 다양한 프로그램을 운영하고 있으며, 
                           지역사회 공헌 활동을 활발히 전개하고 있습니다.
                         </p>
                         <ul className="list-disc list-inside space-y-2 text-[#8C8C8C]">
@@ -170,7 +173,7 @@ export function ReportViewer({ reportId, onNavigate, onLogout }: ReportViewerPro
                       <section>
                         <h3 className="mb-4 pb-3 border-b border-gray-200">5. 지배구조 성과 (Governance)</h3>
                         <p className="text-[#8C8C8C] leading-relaxed mb-4">
-                          투명한 경영과 윤리경영을 실천하며, 이사회의 독립성과 전문성을
+                          투명한 경영과 윤리경영을 실천하며, 이사회의 독립성과 전문성을 
                           지속적으로 강화하고 있습니다.
                         </p>
                         <ul className="list-disc list-inside space-y-2 text-[#8C8C8C]">
