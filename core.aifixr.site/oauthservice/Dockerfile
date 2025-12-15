@@ -7,11 +7,11 @@ COPY api.aifixr.site/gradle gradle
 COPY core.aifixr.site/build.gradle core.aifixr.site/settings.gradle ./
 COPY core.aifixr.site/oauthservice oauthservice
 RUN chmod +x ./gradlew
-# Retry Gradle build up to 3 times in case of network issues
-RUN for i in 1 2 3; do ./gradlew :oauthservice:bootJar --no-daemon && break || sleep 5; done
+# Clean and build
+RUN ./gradlew :oauthservice:clean :oauthservice:bootJar --no-daemon
 
 # Runtime stage
 FROM eclipse-temurin:21-jdk-alpine
 VOLUME /tmp
-COPY --from=build /app/oauthservice/build/libs/oauthservice-*.jar oauthservice.jar
-ENTRYPOINT ["java", "-jar", "/oauthservice.jar"]
+COPY --from=build /app/oauthservice/build/libs/oauthservice-*.jar oauth-service.jar
+ENTRYPOINT ["java", "-jar", "/oauth-service.jar"]
