@@ -13,6 +13,14 @@ interface MainNavigationProps {
   onLoginRequired: () => void;
 }
 
+interface Tab {
+  id: string;
+  label: string;
+  requiresAuth: boolean;
+  href: string;
+  isExternal?: boolean;
+}
+
 export default function MainNavigation({ activeTab, setActiveTab, onLoginRequired }: MainNavigationProps) {
   const [isAIPanelOpen, setIsAIPanelOpen] = useState(false);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -41,14 +49,15 @@ export default function MainNavigation({ activeTab, setActiveTab, onLoginRequire
   const tabs = [
     { id: 'intro', label: 'AIFIX 소개', requiresAuth: false, href: '/intro' },
     { id: 'rating', label: '기업 ESG 등급', requiresAuth: false, href: '/rating' },
-    { id: 'news', label: 'ESG 소식', requiresAuth: false, href: '#' },
-    { id: 'notice', label: '공지사항', requiresAuth: false, href: '#' },
+    { id: 'news', label: 'ESG 소식', requiresAuth: false, href: '/news' },
+    { id: 'notice', label: '공지사항', requiresAuth: false, href: '/notice' },
     { id: 'self-diagnosis', label: '자가진단', requiresAuth: true, href: '/diagnosis' },
     { id: 'auto-report', label: '자동화 보고서', requiresAuth: true, href: '/reports' },
     { id: 'editing', label: '윤문 AI', requiresAuth: true, href: '/editing' },
+    { id: 'supply-chain', label: '공급망 모니터링', requiresAuth: false, href: 'http://localhost:3003', isExternal: true },
   ];
 
-  const handleTabClick = (tab: typeof tabs[0], e: React.MouseEvent) => {
+  const handleTabClick = (tab: Tab, e: React.MouseEvent) => {
     // 인증이 필요한 탭인데 로그인 안 되어 있으면
     if (tab.requiresAuth && !isAuthenticated) {
       e.preventDefault();
@@ -65,7 +74,56 @@ export default function MainNavigation({ activeTab, setActiveTab, onLoginRequire
           <nav className="flex items-center gap-2 py-4 overflow-x-auto">
             {tabs.map((tab) => {
               const isActive = pathname === tab.href || (activeTab === tab.id && tab.id !== 'intro');
-              const isLocked = tab.requiresAuth && !isAuthenticated;
+              // 외부 링크인 경우 잠금 표시 안 함 (해당 사이트에서 로그인 처리)
+              const isLocked = !tab.isExternal && tab.requiresAuth && !isAuthenticated;
+
+              // 외부 링크인 경우
+              if (tab.isExternal) {
+                return (
+                  <a
+                    key={tab.id}
+                    href={tab.href}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    onClick={(e) => {
+                      // 외부 링크인 경우 인증 체크 건너뛰기 (해당 사이트에서 로그인 처리)
+                      if (!tab.isExternal && tab.requiresAuth && !isAuthenticated) {
+                        e.preventDefault();
+                        onLoginRequired();
+                      }
+                    }}
+                    className={`relative px-6 py-2.5 rounded-xl whitespace-nowrap transition-all ${isLocked
+                      ? 'text-gray-400 hover:text-[#0D4ABB] hover:bg-gray-50'
+                      : 'text-[#1a2332] hover:text-[#0D4ABB] hover:bg-gray-50'
+                      }`}
+                    onMouseEnter={(e) => {
+                      if (!isLocked) {
+                        e.currentTarget.style.background = 'linear-gradient(90deg, #0D4ABB, #E91E8C, #00D4FF, #8B5CF6, #0D4ABB)';
+                        e.currentTarget.style.backgroundSize = '200% 100%';
+                        e.currentTarget.style.animation = 'ripple 2s linear infinite';
+                        e.currentTarget.style.backgroundClip = 'text';
+                        e.currentTarget.style.webkitBackgroundClip = 'text';
+                        e.currentTarget.style.webkitTextFillColor = 'transparent';
+                      }
+                    }}
+                    onMouseLeave={(e) => {
+                      if (!isLocked) {
+                        e.currentTarget.style.background = '';
+                        e.currentTarget.style.backgroundSize = '';
+                        e.currentTarget.style.animation = '';
+                        e.currentTarget.style.backgroundClip = '';
+                        e.currentTarget.style.webkitBackgroundClip = '';
+                        e.currentTarget.style.webkitTextFillColor = '';
+                      }
+                    }}
+                  >
+                    <div className="flex items-center gap-2">
+                      {tab.label}
+                      {isLocked && <Lock className="w-4 h-4" />}
+                    </div>
+                  </a>
+                );
+              }
 
               return (
                 <Link

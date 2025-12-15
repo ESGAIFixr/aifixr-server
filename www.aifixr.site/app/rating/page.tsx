@@ -180,35 +180,13 @@ export default function RatingPage() {
       <div className="pt-[180px] pb-20 px-8">
         <div className="max-w-[1440px] mx-auto">
           {/* Header Section */}
-          <div className="mb-8">
+          <div className="mb-6 text-center">
             <h1 className="text-3xl font-bold text-[#1a2332] mb-2">기업 ESG 등급</h1>
             <p className="text-gray-600">매월 업데이트 · 독립적 지속가능성 평가</p>
           </div>
 
-          {/* Filters Section */}
-          <div className="flex items-center gap-4 mb-6 flex-wrap">
-            {/* Evaluation Standard Toggle */}
-            <div className="flex items-center gap-2 bg-gray-100 rounded-lg p-1">
-              <button
-                onClick={() => setEvaluationStandard('K-ESG')}
-                className={`px-4 py-2 rounded-md transition-all ${evaluationStandard === 'K-ESG'
-                  ? 'bg-white text-[#0D4ABB] shadow-sm font-medium'
-                  : 'text-gray-600 hover:text-gray-900'
-                  }`}
-              >
-                K-ESG
-              </button>
-              <button
-                onClick={() => setEvaluationStandard('ESRS')}
-                className={`px-4 py-2 rounded-md transition-all ${evaluationStandard === 'ESRS'
-                  ? 'bg-white text-[#0D4ABB] shadow-sm font-medium'
-                  : 'text-gray-600 hover:text-gray-900'
-                  }`}
-              >
-                ESRS
-              </button>
-            </div>
-
+          {/* Date and Search Section - Centered */}
+          <div className="mb-6 flex items-center gap-4 justify-center flex-wrap">
             {/* Reference Date Dropdown */}
             <div className="relative">
               <button
@@ -242,73 +220,114 @@ export default function RatingPage() {
                 </>
               )}
             </div>
+
+            {/* Search Bar */}
+            <div className="flex items-center gap-3">
+              <div className="relative flex-1 min-w-[300px] max-w-md">
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
+                <input
+                  type="text"
+                  placeholder="회사명 검색"
+                  value={searchInput}
+                  onChange={(e) => setSearchInput(e.target.value)}
+                  onKeyPress={handleKeyPress}
+                  className="w-full pl-10 pr-4 py-2.5 bg-white text-gray-900 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#0D4ABB] focus:border-transparent"
+                />
+              </div>
+              <button
+                onClick={handleSearch}
+                className="px-6 py-2.5 bg-[#0D4ABB] text-white rounded-lg hover:bg-[#0a3a9b] transition-colors font-medium whitespace-nowrap"
+              >
+                조회
+              </button>
+            </div>
           </div>
 
-          {/* Table Section */}
-          <div>
-            {/* Search Bar and Rating Guide - Same Row */}
-            <div className="mb-4 flex items-start gap-4 flex-wrap">
-              {/* Search Bar */}
-              <div className="flex items-center gap-3 flex-1 min-w-[300px]">
-                <div className="relative flex-1 max-w-md">
-                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
-                  <input
-                    type="text"
-                    placeholder="회사명 검색"
-                    value={searchInput}
-                    onChange={(e) => setSearchInput(e.target.value)}
-                    onKeyPress={handleKeyPress}
-                    className="w-full pl-10 pr-4 py-2.5 bg-white text-gray-900 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#0D4ABB] focus:border-transparent"
-                  />
-                </div>
-                <button
-                  onClick={handleSearch}
-                  className="px-6 py-2.5 bg-[#0D4ABB] text-white rounded-lg hover:bg-[#0a3a9b] transition-colors font-medium whitespace-nowrap"
+          {/* Toggle and Rating Guide Section - Same Row */}
+          <div className="mb-4 flex items-start gap-4 flex-wrap justify-between">
+            {/* Evaluation Standard Toggle - Left */}
+            <div 
+              className="relative inline-flex items-center h-11 rounded-lg cursor-pointer transition-colors duration-300 overflow-hidden bg-gray-100"
+              style={{
+                width: '120px',
+                padding: '4px',
+              }}
+              onClick={() => setEvaluationStandard(evaluationStandard === 'K-ESG' ? 'ESRS' : 'K-ESG')}
+            >
+              {/* Background Labels Container */}
+              <div className="absolute inset-0 flex items-center" style={{ zIndex: 1 }}>
+                <span
+                  className={`flex-1 text-center text-sm font-medium transition-opacity duration-300 ${
+                    evaluationStandard === 'K-ESG' ? 'text-gray-600 opacity-0' : 'text-gray-600'
+                  }`}
                 >
-                  조회
-                </button>
+                  K-ESG
+                </span>
+                <span
+                  className={`flex-1 text-center text-sm font-medium transition-opacity duration-300 ${
+                    evaluationStandard === 'ESRS' ? 'text-gray-600 opacity-0' : 'text-gray-600'
+                  }`}
+                >
+                  ESRS
+                </span>
               </div>
-
-              {/* Rating Guide - Next to Search Bar */}
-              <div className="bg-white border border-gray-200 rounded-lg p-2.5 shadow-sm flex-1 min-w-[500px]">
-                <div className="flex items-center gap-1.5 mb-1.5">
-                  <Info className="w-3.5 h-3.5 text-[#0D4ABB]" />
-                  <h3 className="font-semibold text-gray-900 text-sm">평가등급표</h3>
-                </div>
-                <div className="flex items-center gap-3 flex-wrap text-xs">
-                  <div className="flex items-center gap-1.5">
-                    <span className="px-1.5 py-0.5 rounded bg-green-100 text-green-800 border border-green-200 font-medium text-[10px]">S</span>
-                    <span className="text-gray-600 text-xs">100점</span>
-                  </div>
-                  <div className="flex items-center gap-1.5">
-                    <span className="px-1.5 py-0.5 rounded bg-green-100 text-green-800 border border-green-200 font-medium text-[10px]">A+</span>
-                    <span className="text-gray-600 text-xs">95점 이상</span>
-                  </div>
-                  <div className="flex items-center gap-1.5">
-                    <span className="px-1.5 py-0.5 rounded bg-green-100 text-green-800 border border-green-200 font-medium text-[10px]">A</span>
-                    <span className="text-gray-600 text-xs">90점 이상</span>
-                  </div>
-                  <div className="flex items-center gap-1.5">
-                    <span className="px-1.5 py-0.5 rounded bg-blue-100 text-blue-800 border border-blue-200 font-medium text-[10px]">B+</span>
-                    <span className="text-gray-600 text-xs">85점 이상</span>
-                  </div>
-                  <div className="flex items-center gap-1.5">
-                    <span className="px-1.5 py-0.5 rounded bg-blue-100 text-blue-800 border border-blue-200 font-medium text-[10px]">B</span>
-                    <span className="text-gray-600 text-xs">80점 이상</span>
-                  </div>
-                  <div className="flex items-center gap-1.5">
-                    <span className="px-1.5 py-0.5 rounded bg-yellow-100 text-yellow-800 border border-yellow-200 font-medium text-[10px]">C+</span>
-                    <span className="text-gray-600 text-xs">75점 이상</span>
-                  </div>
-                  <div className="flex items-center gap-1.5">
-                    <span className="px-1.5 py-0.5 rounded bg-yellow-100 text-yellow-800 border border-yellow-200 font-medium text-[10px]">C</span>
-                    <span className="text-gray-600 text-xs">70점 이상</span>
-                  </div>
-                </div>
+              {/* Sliding Handle */}
+              <div
+                className="absolute top-[4px] bottom-[4px] w-[56px] bg-white rounded-md shadow-sm transition-all duration-300 ease-in-out flex items-center justify-center"
+                style={{
+                  left: evaluationStandard === 'K-ESG' ? '4px' : 'auto',
+                  right: evaluationStandard === 'ESRS' ? '4px' : 'auto',
+                  zIndex: 2,
+                }}
+              >
+                {/* Selected Label on Handle */}
+                <span className="text-sm font-medium text-[#0D4ABB] whitespace-nowrap">
+                  {evaluationStandard === 'K-ESG' ? 'K-ESG' : 'ESRS'}
+                </span>
               </div>
             </div>
 
-            <div className="bg-white border border-gray-200 rounded-lg overflow-hidden">
+            {/* Rating Guide - Right */}
+            <div className="bg-white border border-gray-200 rounded-lg p-2.5 shadow-sm">
+              <div className="flex items-center gap-1.5 mb-1.5">
+                <Info className="w-3.5 h-3.5 text-[#0D4ABB]" />
+                <h3 className="font-semibold text-gray-900 text-sm">평가등급표</h3>
+              </div>
+              <div className="flex items-center gap-3 flex-wrap text-xs">
+                <div className="flex items-center gap-1.5">
+                  <span className="px-1.5 py-0.5 rounded bg-green-100 text-green-800 border border-green-200 font-medium text-[10px]">S</span>
+                  <span className="text-gray-600 text-xs">100점</span>
+                </div>
+                <div className="flex items-center gap-1.5">
+                  <span className="px-1.5 py-0.5 rounded bg-green-100 text-green-800 border border-green-200 font-medium text-[10px]">A+</span>
+                  <span className="text-gray-600 text-xs">95점 이상</span>
+                </div>
+                <div className="flex items-center gap-1.5">
+                  <span className="px-1.5 py-0.5 rounded bg-green-100 text-green-800 border border-green-200 font-medium text-[10px]">A</span>
+                  <span className="text-gray-600 text-xs">90점 이상</span>
+                </div>
+                <div className="flex items-center gap-1.5">
+                  <span className="px-1.5 py-0.5 rounded bg-blue-100 text-blue-800 border border-blue-200 font-medium text-[10px]">B+</span>
+                  <span className="text-gray-600 text-xs">85점 이상</span>
+                </div>
+                <div className="flex items-center gap-1.5">
+                  <span className="px-1.5 py-0.5 rounded bg-blue-100 text-blue-800 border border-blue-200 font-medium text-[10px]">B</span>
+                  <span className="text-gray-600 text-xs">80점 이상</span>
+                </div>
+                <div className="flex items-center gap-1.5">
+                  <span className="px-1.5 py-0.5 rounded bg-yellow-100 text-yellow-800 border border-yellow-200 font-medium text-[10px]">C+</span>
+                  <span className="text-gray-600 text-xs">75점 이상</span>
+                </div>
+                <div className="flex items-center gap-1.5">
+                  <span className="px-1.5 py-0.5 rounded bg-yellow-100 text-yellow-800 border border-yellow-200 font-medium text-[10px]">C</span>
+                  <span className="text-gray-600 text-xs">70점 이상</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Company Rating Table */}
+          <div className="bg-white border border-gray-200 rounded-lg overflow-hidden">
               <div className="overflow-x-auto">
                 <table className="w-full">
                   <thead className="bg-[#0D4ABB] text-white">
@@ -386,7 +405,6 @@ export default function RatingPage() {
                   </tbody>
                 </table>
               </div>
-            </div>
           </div>
         </div>
       </div>
