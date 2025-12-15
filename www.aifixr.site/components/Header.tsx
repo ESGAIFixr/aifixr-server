@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { useEffect, useState, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { AuthService } from '@/lib/oauthservice';
+import AIFIXRPanel from '@/components/AIFIXRPanel';
 
 interface HeaderProps {
   onLoginClick: () => void;
@@ -15,6 +16,7 @@ export default function Header({ onLoginClick }: HeaderProps) {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [user, setUser] = useState<any>(null);
   const [isProfileOpen, setIsProfileOpen] = useState(false);
+  const [isAIPanelOpen, setIsAIPanelOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -88,6 +90,18 @@ export default function Header({ onLoginClick }: HeaderProps) {
           {isAuthenticated && user ? (
             // 로그인 후 - 드롭다운 메뉴
             <>
+              {/* AIFIXR Assistant Button */}
+              <button
+                onClick={() => setIsAIPanelOpen(!isAIPanelOpen)}
+                className={`flex items-center gap-2 px-4 py-2 rounded-xl transition-all whitespace-nowrap ${isAIPanelOpen
+                    ? 'bg-[#0D4ABB] text-white'
+                    : 'bg-gradient-to-r from-[#00D4FF] to-[#0D4ABB] text-white hover:shadow-lg hover:scale-105'
+                  }`}
+              >
+                <Sparkles className="w-5 h-5" />
+                <span className="font-medium">AIFIXR Assistant</span>
+              </button>
+
               <button
                 onClick={() => setIsProfileOpen(!isProfileOpen)}
                 className="flex items-center gap-2 px-4 py-2 rounded-xl bg-gradient-to-r from-[#0D4ABB] to-[#00D4FF] text-white hover:shadow-lg hover:scale-105 transition-all whitespace-nowrap"
@@ -144,6 +158,11 @@ export default function Header({ onLoginClick }: HeaderProps) {
           )}
         </div>
       </div>
+
+      {/* AIFIXR Panel - 로그인 후에만 표시 */}
+      {isAuthenticated && user && (
+        <AIFIXRPanel isOpen={isAIPanelOpen} onClose={() => setIsAIPanelOpen(false)} />
+      )}
     </header>
   );
 }
