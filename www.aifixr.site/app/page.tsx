@@ -10,6 +10,8 @@ import TrustSection from '@/components/TrustSection';
 import PricingSection from '@/components/PricingSection';
 import FloatingAIButton from '@/components/FloatingAIButton';
 import LoginModal from '@/components/LoginModal';
+import UserTypeModal from '@/components/UserTypeModal';
+import EnterpriseLoginModal from '@/components/EnterpriseLoginModal';
 import Footer from '@/components/Footer';
 import { useMainPage } from '@/hooks/mainhook';
 import { AuthService } from '@/lib/oauthservice';
@@ -18,11 +20,18 @@ export default function Home() {
   const {
     activeMainTab,
     setActiveMainTab,
+    isUserTypeModalOpen,
+    setIsUserTypeModalOpen,
     isLoginModalOpen,
     setIsLoginModalOpen,
+    isEnterpriseLoginModalOpen,
+    setIsEnterpriseLoginModalOpen,
     handleLoginClick,
     handleLoginRequired,
     handleLogin,
+    handleSMEStart,
+    handleEnterpriseStart,
+    handleEnterpriseLogin,
     handleStartDiagnosis,
     handleWatchDemo,
   } = useMainPage();
@@ -68,12 +77,27 @@ export default function Home() {
       {/* Footer */}
       <Footer />
 
+      {/* User Type Selection Modal */}
+      <UserTypeModal
+        isOpen={isUserTypeModalOpen}
+        onClose={() => setIsUserTypeModalOpen(false)}
+        onSMEStart={handleSMEStart}
+        onEnterpriseStart={handleEnterpriseStart}
+      />
+
       {/* Login Modal */}
       <LoginModal
         isOpen={isLoginModalOpen}
         onClose={() => setIsLoginModalOpen(false)}
         onLogin={handleLogin}
         onKakaoLogin={AuthService.handleKakaoLogin}
+      />
+
+      {/* Enterprise Login Modal */}
+      <EnterpriseLoginModal
+        isOpen={isEnterpriseLoginModalOpen}
+        onClose={() => setIsEnterpriseLoginModalOpen(false)}
+        onLogin={handleEnterpriseLogin}
       />
     </div>
   );
