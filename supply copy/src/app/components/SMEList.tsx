@@ -11,7 +11,6 @@ import { Tooltip, TooltipContent, TooltipTrigger } from './ui/tooltip';
 interface SMEListProps {
   onNavigate: (screen: any, companyId?: string, reportId?: string) => void;
   onLogout: () => void;
-  hideSidebar?: boolean;
 }
 
 const companies = [
@@ -32,7 +31,7 @@ interface CompanyRequestStatus {
   rejectionReason?: string;
 }
 
-export function SMEList({ onNavigate, onLogout, hideSidebar = false }: SMEListProps) {
+export function SMEList({ onNavigate, onLogout }: SMEListProps) {
   const [viewMode, setViewMode] = useState<'table' | 'card'>('table');
   const [searchQuery, setSearchQuery] = useState('');
   const [gradeFilter, setGradeFilter] = useState<string>('all');
@@ -76,16 +75,16 @@ export function SMEList({ onNavigate, onLogout, hideSidebar = false }: SMEListPr
       const nextStatus: CompanyRequestStatus =
         companyId === '1'
           ? {
-            status: 'rejected',
-            rejectionReason:
-              '요청하신 데이터는 현재 보안상의 이유로 제공이 제한되어 있습니다. 데이터 접근 권한이 필요한 경우 관리자에게 별도로 문의해주시기 바랍니다.',
-          }
-          : companyId === '2'
-            ? {
               status: 'rejected',
               rejectionReason:
-                '해당 기업의 ESG 데이터는 아직 검토 단계에 있어 제공할 수 없습니다. 검토가 완료되는 대로 알려드리겠습니다.',
+                '요청하신 데이터는 현재 보안상의 이유로 제공이 제한되어 있습니다. 데이터 접근 권한이 필요한 경우 관리자에게 별도로 문의해주시기 바랍니다.',
             }
+          : companyId === '2'
+            ? {
+                status: 'rejected',
+                rejectionReason:
+                  '해당 기업의 ESG 데이터는 아직 검토 단계에 있어 제공할 수 없습니다. 검토가 완료되는 대로 알려드리겠습니다.',
+              }
             : { status: 'pending' };
 
       return {
@@ -98,7 +97,7 @@ export function SMEList({ onNavigate, onLogout, hideSidebar = false }: SMEListPr
 
   const filteredCompanies = companies.filter(company => {
     const matchesSearch = company.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      company.industry.toLowerCase().includes(searchQuery.toLowerCase());
+                         company.industry.toLowerCase().includes(searchQuery.toLowerCase());
     const matchesGrade = gradeFilter === 'all' || company.grade === gradeFilter;
     const matchesIndustry = industryFilter === 'all' || company.industry === industryFilter;
     return matchesSearch && matchesGrade && matchesIndustry;
@@ -106,9 +105,9 @@ export function SMEList({ onNavigate, onLogout, hideSidebar = false }: SMEListPr
 
   return (
     <div className="flex min-h-screen bg-[#F6F8FB]">
-      {!hideSidebar && <Sidebar currentPage="sme-list" onNavigate={onNavigate} onLogout={onLogout} />}
-
-      <div className={`flex-1 ${!hideSidebar ? 'ml-64' : ''}`}>
+      <Sidebar currentPage="sme-list" onNavigate={onNavigate} onLogout={onLogout} />
+      
+      <div className="flex-1 ml-64">
         <div className="max-w-7xl mx-auto px-6 py-8">
           {/* Header */}
           <div className="mb-8">
@@ -203,8 +202,8 @@ export function SMEList({ onNavigate, onLogout, hideSidebar = false }: SMEListPr
               <Button
                 variant={viewMode === 'table' ? 'default' : 'outline'}
                 onClick={() => setViewMode('table')}
-                className={viewMode === 'table'
-                  ? 'bg-gradient-to-r from-[#5B3BFA] to-[#00B4FF] rounded-xl'
+                className={viewMode === 'table' 
+                  ? 'bg-gradient-to-r from-[#5B3BFA] to-[#00B4FF] rounded-xl' 
                   : 'rounded-xl'}
               >
                 테이블형
@@ -212,8 +211,8 @@ export function SMEList({ onNavigate, onLogout, hideSidebar = false }: SMEListPr
               <Button
                 variant={viewMode === 'card' ? 'default' : 'outline'}
                 onClick={() => setViewMode('card')}
-                className={viewMode === 'card'
-                  ? 'bg-gradient-to-r from-[#5B3BFA] to-[#00B4FF] rounded-xl'
+                className={viewMode === 'card' 
+                  ? 'bg-gradient-to-r from-[#5B3BFA] to-[#00B4FF] rounded-xl' 
                   : 'rounded-xl'}
               >
                 카드형
@@ -275,22 +274,24 @@ export function SMEList({ onNavigate, onLogout, hideSidebar = false }: SMEListPr
                               ) : isDetailReveal ? (
                                 <div className="flex flex-wrap items-center justify-center gap-3 text-sm">
                                   <span
-                                    className={`px-3 py-1 rounded-full ${company.grade === 'A'
-                                      ? 'bg-[#00B4FF]/10 text-[#00B4FF]'
-                                      : company.grade === 'B'
-                                        ? 'bg-[#5B3BFA]/10 text-[#5B3BFA]'
-                                        : 'bg-[#8C8C8C]/10 text-[#8C8C8C]'
-                                      }`}
+                                    className={`px-3 py-1 rounded-full ${
+                                      company.grade === 'A'
+                                        ? 'bg-[#00B4FF]/10 text-[#00B4FF]'
+                                        : company.grade === 'B'
+                                          ? 'bg-[#5B3BFA]/10 text-[#5B3BFA]'
+                                          : 'bg-[#8C8C8C]/10 text-[#8C8C8C]'
+                                    }`}
                                   >
                                     ESG {company.grade}
                                   </span>
                                   <span
-                                    className={`px-3 py-1 rounded-full ${riskLevel === 'high'
-                                      ? 'bg-[#E30074]/10 text-[#E30074]'
-                                      : riskLevel === 'medium'
-                                        ? 'bg-[#A58DFF]/10 text-[#A58DFF]'
-                                        : 'bg-[#00B4FF]/10 text-[#00B4FF]'
-                                      }`}
+                                    className={`px-3 py-1 rounded-full ${
+                                      riskLevel === 'high'
+                                        ? 'bg-[#E30074]/10 text-[#E30074]'
+                                        : riskLevel === 'medium'
+                                          ? 'bg-[#A58DFF]/10 text-[#A58DFF]'
+                                          : 'bg-[#00B4FF]/10 text-[#00B4FF]'
+                                    }`}
                                   >
                                     위험도 {riskLevel === 'high' ? '높음' : riskLevel === 'medium' ? '중간' : '낮음'}
                                   </span>
@@ -366,10 +367,11 @@ export function SMEList({ onNavigate, onLogout, hideSidebar = false }: SMEListPr
                   <div className="space-y-3">
                     <div className="flex items-center justify-between">
                       <span className="text-[#8C8C8C]">ESG 등급</span>
-                      <span className={`px-4 py-1 rounded-full ${company.grade === 'A' ? 'bg-[#00B4FF]/10 text-[#00B4FF]' :
+                      <span className={`px-4 py-1 rounded-full ${
+                        company.grade === 'A' ? 'bg-[#00B4FF]/10 text-[#00B4FF]' :
                         company.grade === 'B' ? 'bg-[#5B3BFA]/10 text-[#5B3BFA]' :
-                          'bg-[#8C8C8C]/10 text-[#8C8C8C]'
-                        }`}>
+                        'bg-[#8C8C8C]/10 text-[#8C8C8C]'
+                      }`}>
                         {company.grade}등급
                       </span>
                     </div>
@@ -399,3 +401,4 @@ export function SMEList({ onNavigate, onLogout, hideSidebar = false }: SMEListPr
     </div>
   );
 }
+

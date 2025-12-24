@@ -7,7 +7,6 @@ interface ReportViewerProps {
   reportId: string;
   onNavigate: (screen: any, companyId?: string) => void;
   onLogout: () => void;
-  hideSidebar?: boolean;
 }
 
 const reportList = [
@@ -17,14 +16,14 @@ const reportList = [
   { id: 'r4', title: '지배구조 평가 리포트', date: '2024.10.15', pages: 24 },
 ];
 
-export function ReportViewer({ reportId, onNavigate, onLogout, hideSidebar = false }: ReportViewerProps) {
+export function ReportViewer({ reportId, onNavigate, onLogout }: ReportViewerProps) {
   const currentReport = reportList.find(r => r.id === reportId) || reportList[0];
 
   return (
     <div className="flex min-h-screen bg-[#F6F8FB]">
-      {!hideSidebar && <Sidebar currentPage="report-center" onNavigate={onNavigate} onLogout={onLogout} />}
+      <Sidebar currentPage="report-center" onNavigate={onNavigate} onLogout={onLogout} />
       
-      <div className={`flex-1 ${!hideSidebar ? 'ml-64' : ''}`}>
+      <div className="flex-1 ml-64">
         <div className="max-w-7xl mx-auto px-6 py-8">
           {/* Back Button */}
           <Button
@@ -202,3 +201,4 @@ export function ReportViewer({ reportId, onNavigate, onLogout, hideSidebar = fal
     </div>
   );
 }
+

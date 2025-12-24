@@ -1,25 +1,87 @@
-"use client";
+'use client';
 
-import EnterprisePortal from "./components/enterprise-portal";
+import { useState, useEffect } from 'react';
+import { LoginScreen } from './components/LoginScreen';
+import { EnterpriseDashboard } from './components/EnterpriseDashboard';
+import { SMEList } from './components/SMEList';
+import { CompanyDetail } from './components/CompanyDetail';
+import { ReportViewer } from './components/ReportViewer';
+import { ReportCenter } from './components/ReportCenter';
+import { NotificationCenter } from './components/NotificationCenter';
+import { ProfilePage } from './components/ProfilePage';
+
+type Screen = 'login' | 'dashboard' | 'sme-list' | 'company-detail' | 'report-viewer' | 'report-center' | 'notifications' | 'profile';
 
 export default function Home() {
-  return (
-    <div>
-      {/* Header */}
-      <header className="bg-gradient-to-r from-[#0B2562] to-[#5B3BFA] text-white sticky top-0 z-50 shadow-lg">
-        <div className="max-w-7xl mx-auto px-6 py-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-4">
-              <h2 className="text-white">AIFIXR</h2>
-              <span className="px-3 py-1 bg-white bg-opacity-20 rounded-full text-sm">
-                대기업 포털
-              </span>
-            </div>
-          </div>
-        </div>
-      </header>
+  const [currentScreen, setCurrentScreen] = useState<Screen>('login');
+  const [selectedCompanyId, setSelectedCompanyId] = useState<string | null>(null);
+  const [selectedReportId, setSelectedReportId] = useState<string | null>(null);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
 
-      <EnterprisePortal />
+  useEffect(() => {
+    // Check authentication from localStorage
+    const auth = localStorage.getItem('isAuthenticated');
+    if (auth === 'true') {
+      setIsAuthenticated(true);
+      setCurrentScreen('dashboard');
+    }
+  }, []);
+
+  const handleLogin = () => {
+    setIsAuthenticated(true);
+    setCurrentScreen('dashboard');
+    localStorage.setItem('isAuthenticated', 'true');
+  };
+
+  const handleNavigate = (screen: Screen, companyId?: string, reportId?: string) => {
+    setCurrentScreen(screen);
+    if (companyId) setSelectedCompanyId(companyId);
+    if (reportId) setSelectedReportId(reportId);
+  };
+
+  const handleLogout = () => {
+    setIsAuthenticated(false);
+    setCurrentScreen('login');
+    setSelectedCompanyId(null);
+    setSelectedReportId(null);
+    localStorage.removeItem('isAuthenticated');
+  };
+
+  if (!isAuthenticated) {
+    return <LoginScreen onLogin={handleLogin} />;
+  }
+
+  return (
+    <div className="min-h-screen bg-[#F6F8FB]">
+      {currentScreen === 'dashboard' && (
+        <EnterpriseDashboard onNavigate={handleNavigate} onLogout={handleLogout} />
+      )}
+      {currentScreen === 'sme-list' && (
+        <SMEList onNavigate={handleNavigate} onLogout={handleLogout} />
+      )}
+      {currentScreen === 'company-detail' && selectedCompanyId && (
+        <CompanyDetail 
+          companyId={selectedCompanyId} 
+          onNavigate={handleNavigate} 
+          onLogout={handleLogout}
+        />
+      )}
+      {currentScreen === 'report-viewer' && selectedReportId && (
+        <ReportViewer 
+          reportId={selectedReportId} 
+          onNavigate={handleNavigate}
+          onLogout={handleLogout}
+        />
+      )}
+      {currentScreen === 'report-center' && (
+        <ReportCenter onNavigate={handleNavigate} onLogout={handleLogout} />
+      )}
+      {currentScreen === 'notifications' && (
+        <NotificationCenter onNavigate={handleNavigate} onLogout={handleLogout} />
+      )}
+      {currentScreen === 'profile' && (
+        <ProfilePage onNavigate={handleNavigate} onLogout={handleLogout} />
+      )}
     </div>
   );
 }

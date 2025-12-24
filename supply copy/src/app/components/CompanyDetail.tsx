@@ -12,7 +12,6 @@ interface CompanyDetailProps {
   companyId: string;
   onNavigate: (screen: any, companyId?: string, reportId?: string) => void;
   onLogout: () => void;
-  hideSidebar?: boolean;
 }
 
 const yearlyData = [
@@ -59,12 +58,12 @@ const esgIndicators = {
   ],
 };
 
-export function CompanyDetail({ companyId, onNavigate, onLogout, hideSidebar = false }: CompanyDetailProps) {
+export function CompanyDetail({ companyId, onNavigate, onLogout }: CompanyDetailProps) {
   return (
     <div className="flex min-h-screen bg-[#F6F8FB]">
-      {!hideSidebar && <Sidebar currentPage="sme-list" onNavigate={onNavigate} onLogout={onLogout} />}
+      <Sidebar currentPage="sme-list" onNavigate={onNavigate} onLogout={onLogout} />
       
-      <div className={`flex-1 ${!hideSidebar ? 'ml-64' : ''}`}>
+      <div className="flex-1 ml-64">
         <div className="max-w-7xl mx-auto px-6 py-8">
           {/* Back Button */}
           <Button
@@ -384,3 +383,4 @@ export function CompanyDetail({ companyId, onNavigate, onLogout, hideSidebar = f
     </div>
   );
 }
+
