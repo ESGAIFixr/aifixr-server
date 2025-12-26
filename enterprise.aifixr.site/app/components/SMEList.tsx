@@ -12,6 +12,7 @@ interface SMEListProps {
   onNavigate: (screen: any, companyId?: string, reportId?: string) => void;
   onLogout: () => void;
   hideSidebar?: boolean;
+  cardOnly?: boolean; // 카드형만 보여주는 모드
 }
 
 const companies = [
@@ -32,8 +33,8 @@ interface CompanyRequestStatus {
   rejectionReason?: string;
 }
 
-export function SMEList({ onNavigate, onLogout, hideSidebar = false }: SMEListProps) {
-  const [viewMode, setViewMode] = useState<'table' | 'card'>('table');
+export function SMEList({ onNavigate, onLogout, hideSidebar = false, cardOnly = false }: SMEListProps) {
+  const [viewMode, setViewMode] = useState<'table' | 'card'>(cardOnly ? 'card' : 'table');
   const [searchQuery, setSearchQuery] = useState('');
   const [gradeFilter, setGradeFilter] = useState<string>('all');
   const [industryFilter, setIndustryFilter] = useState<string>('all');
@@ -112,17 +113,20 @@ export function SMEList({ onNavigate, onLogout, hideSidebar = false }: SMEListPr
         <div className="max-w-7xl mx-auto px-6 py-8">
           {/* Header */}
           <div className="mb-8">
-            <h1 className="text-[#0F172A] mb-2">관계사 목록</h1>
+            <h1 className="text-[#0F172A] mb-2">{cardOnly ? "관계사 진단 관리" : "관계사 목록"}</h1>
             <div className="flex items-center justify-between">
-              <p className="text-[#8C8C8C]">ESG 평가가 완료된 중소기업 관계사 목록입니다</p>
-              <Button
-                onClick={handleRequestAll}
-                className="bg-gradient-to-r from-[#5B3BFA] to-[#00B4FF] rounded-xl px-5 hover:shadow-[0_4px_20px_rgba(91,59,250,0.4)] transition-all"
-              >
-                전체 관계사 데이터 요청
-              </Button>
+              <p className="text-[#8C8C8C]">{cardOnly ? "관계사 진단 관리를 위한 화면입니다" : "ESG 평가가 완료된 중소기업 관계사 목록입니다"}</p>
+              {!cardOnly && (
+                <Button
+                  onClick={handleRequestAll}
+                  className="bg-gradient-to-r from-[#5B3BFA] to-[#00B4FF] rounded-xl px-5 hover:shadow-[0_4px_20px_rgba(91,59,250,0.4)] transition-all"
+                >
+                  전체 관계사 데이터 요청
+                </Button>
+              )}
             </div>
           </div>
+
 
           {/* Filters */}
           <Card className="p-6 rounded-[20px] shadow-[0_4px_20px_rgba(91,59,250,0.1)] mb-6">
@@ -143,7 +147,7 @@ export function SMEList({ onNavigate, onLogout, hideSidebar = false }: SMEListPr
 
               {/* Industry Filter */}
               <Select value={industryFilter} onValueChange={setIndustryFilter}>
-                <SelectTrigger className="h-12 rounded-xl">
+                <SelectTrigger className="h-12 rounded-xl border-2">
                   <SelectValue placeholder="업종" />
                 </SelectTrigger>
                 <SelectContent>
@@ -159,7 +163,7 @@ export function SMEList({ onNavigate, onLogout, hideSidebar = false }: SMEListPr
 
               {/* Grade Filter */}
               <Select value={gradeFilter} onValueChange={setGradeFilter}>
-                <SelectTrigger className="h-12 rounded-xl">
+                <SelectTrigger className="h-12 rounded-xl border-2">
                   <SelectValue placeholder="ESG 등급" />
                 </SelectTrigger>
                 <SelectContent>
@@ -173,7 +177,7 @@ export function SMEList({ onNavigate, onLogout, hideSidebar = false }: SMEListPr
 
               {/* Risk Level Filter */}
               <Select value={riskFilter} onValueChange={setRiskFilter}>
-                <SelectTrigger className="h-12 rounded-xl">
+                <SelectTrigger className="h-12 rounded-xl border-2">
                   <SelectValue placeholder="위험도" />
                 </SelectTrigger>
                 <SelectContent>
@@ -197,32 +201,20 @@ export function SMEList({ onNavigate, onLogout, hideSidebar = false }: SMEListPr
           </Card>
 
           {/* View Mode Toggle */}
-          <div className="flex items-center justify-between mb-6">
-            <p className="text-[#8C8C8C]">총 {filteredCompanies.length}개 기업</p>
-            <div className="flex gap-2">
-              <Button
-                variant={viewMode === 'table' ? 'default' : 'outline'}
-                onClick={() => setViewMode('table')}
-                className={viewMode === 'table'
-                  ? 'bg-gradient-to-r from-[#5B3BFA] to-[#00B4FF] rounded-xl'
-                  : 'rounded-xl'}
-              >
-                테이블형
-              </Button>
-              <Button
-                variant={viewMode === 'card' ? 'default' : 'outline'}
-                onClick={() => setViewMode('card')}
-                className={viewMode === 'card'
-                  ? 'bg-gradient-to-r from-[#5B3BFA] to-[#00B4FF] rounded-xl'
-                  : 'rounded-xl'}
-              >
-                카드형
-              </Button>
+          {cardOnly ? (
+            // 카드형만 보여주는 모드 (관계사 진단 관리)
+            <div className="flex items-center justify-between mb-6">
+              <p className="text-[#8C8C8C]">총 {filteredCompanies.length}개 기업</p>
             </div>
-          </div>
+          ) : (
+            // 일반 모드 (관계사 목록)
+            <div className="flex items-center justify-between mb-6">
+              <p className="text-[#8C8C8C]">총 {filteredCompanies.length}개 기업</p>
+            </div>
+          )}
 
-          {/* Table View */}
-          {viewMode === 'table' && (
+          {/* Table View - Only for table mode, not for cardOnly mode */}
+          {!cardOnly && viewMode === 'table' && (
             <Card className="rounded-[20px] shadow-[0_4px_20px_rgba(91,59,250,0.1)] overflow-hidden">
               <div className="overflow-x-auto">
                 <table className="w-full">
@@ -342,8 +334,8 @@ export function SMEList({ onNavigate, onLogout, hideSidebar = false }: SMEListPr
             </Card>
           )}
 
-          {/* Card View */}
-          {viewMode === 'card' && (
+          {/* Card View - Show for cardOnly mode OR card mode */}
+          {(cardOnly || viewMode === 'card') && (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {filteredCompanies.map((company) => (
                 <Card
@@ -386,9 +378,10 @@ export function SMEList({ onNavigate, onLogout, hideSidebar = false }: SMEListPr
                   </div>
 
                   <Button
+                    onClick={() => onNavigate('company-detail', company.id)}
                     className="w-full mt-4 bg-gradient-to-r from-[#5B3BFA] to-[#00B4FF] rounded-xl hover:shadow-[0_4px_20px_rgba(91,59,250,0.4)] transition-all"
                   >
-                    보고서 보기 →
+                    상세보기 →
                   </Button>
                 </Card>
               ))}

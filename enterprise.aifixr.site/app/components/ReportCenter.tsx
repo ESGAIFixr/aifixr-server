@@ -64,8 +64,8 @@ export function ReportCenter({ onNavigate, onLogout, hideSidebar = false }: Repo
         <div className="max-w-7xl mx-auto px-6 py-8">
           {/* Header */}
           <div className="mb-8">
-            <h1 className="text-[#0F172A] mb-2">보고서 다운로드 센터</h1>
-            <p className="text-[#8C8C8C]">모든 ESG 평가 보고서를 다운로드할 수 있습니다</p>
+            <h1 className="text-[#0F172A] mb-2">관계사 보고서 관리</h1>
+            <p className="text-[#8C8C8C]">관계사별 ESG 평가 보고서를 관리 및 다운로드 할 수 있습니다.</p>
           </div>
 
           {/* Filters & Actions */}

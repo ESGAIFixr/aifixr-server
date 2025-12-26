@@ -29,11 +29,11 @@ export function ReportViewer({ reportId, onNavigate, onLogout, hideSidebar = fal
           {/* Back Button */}
           <Button
             variant="ghost"
-            onClick={() => onNavigate('company-detail', '1')}
+            onClick={() => onNavigate('report-center')}
             className="mb-6 rounded-xl text-[#5B3BFA]"
           >
             <ArrowLeft className="w-4 h-4 mr-2" />
-            기업 상세로 돌아가기
+            보고서 관리 페이지로 돌아가기
           </Button>
 
           <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">

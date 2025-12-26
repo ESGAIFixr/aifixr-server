@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Search, Filter, AlertTriangle, TrendingUp, FileDown, Building2 } from "lucide-react";
+import { Search, Filter, AlertTriangle, TrendingUp, FileDown, Building2, ChevronRight } from "lucide-react";
 
 interface Supplier {
   id: string;
@@ -91,8 +91,13 @@ const heatmapData = [
   { category: "G", high: 22, medium: 48, low: 30 },
 ];
 
-export default function EnterprisePortal() {
+interface EnterprisePortalProps {
+  onNavigate?: (screen: string) => void;
+}
+
+export default function EnterprisePortal({ onNavigate }: EnterprisePortalProps) {
   const [selectedSupplier, setSelectedSupplier] = useState<Supplier | null>(null);
+  const [showHighRiskModal, setShowHighRiskModal] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
   const [industryFilter, setIndustryFilter] = useState("all");
 
@@ -147,7 +152,10 @@ export default function EnterprisePortal() {
             <p className="text-sm text-gray-500 mt-1">Level 1 제출 완료</p>
           </div>
 
-          <div className="bg-gradient-to-br from-red-50 to-red-100 rounded-xl shadow-sm p-6 border-2 border-red-200">
+          <div 
+            className="bg-gradient-to-br from-red-50 to-red-100 rounded-xl shadow-sm p-6 border-2 border-red-200 cursor-pointer hover:shadow-md transition-all"
+            onClick={() => setShowHighRiskModal(true)}
+          >
             <div className="flex items-center justify-between mb-2">
               <p className="text-sm text-red-700">고위험 협력사</p>
               <AlertTriangle className="w-5 h-5 text-red-600" />
@@ -181,7 +189,18 @@ export default function EnterprisePortal() {
 
         {/* Section 1: 공급망 리스크 히트맵 */}
         <div className="bg-white rounded-xl shadow-sm p-8 mb-6">
-          <h2 className="mb-6">공급망 리스크 히트맵</h2>
+          <div className="flex items-center justify-between mb-6">
+            <h2>공급망 리스크 히트맵</h2>
+            {onNavigate && (
+              <button
+                onClick={() => onNavigate('sme-list')}
+                className="flex items-center gap-2 px-4 py-2 text-[#0B2562] hover:bg-gray-50 rounded-lg transition-colors"
+              >
+                <span>더보기</span>
+                <ChevronRight className="w-4 h-4" />
+              </button>
+            )}
+          </div>
 
           <div className="grid grid-cols-3 gap-6 mb-8">
             {heatmapData.map((item) => (
@@ -272,82 +291,6 @@ export default function EnterprisePortal() {
           </div>
         </div>
 
-        {/* Section 2: 개선 시급 협력사 목록 */}
-        <div className="bg-white rounded-xl shadow-sm p-8 mb-6">
-          <h2 className="mb-6">개선 시급 협력사 목록 (Top 10)</h2>
-
-          <div className="overflow-x-auto">
-            <table className="w-full">
-              <thead>
-                <tr className="border-b-2 border-gray-200">
-                  <th className="text-left p-4">순위</th>
-                  <th className="text-left p-4">협력사명</th>
-                  <th className="text-left p-4">산업</th>
-                  <th className="text-left p-4">지역</th>
-                  <th className="text-center p-4">E 리스크</th>
-                  <th className="text-center p-4">S 리스크</th>
-                  <th className="text-center p-4">G 리스크</th>
-                  <th className="text-center p-4">종합 점수</th>
-                  <th className="text-center p-4">액션</th>
-                </tr>
-              </thead>
-              <tbody>
-                {highRiskSuppliers.map((supplier, idx) => (
-                  <tr key={supplier.id} className="border-b border-gray-100 hover:bg-gray-50">
-                    <td className="p-4">
-                      <span className="flex items-center justify-center w-8 h-8 rounded-full bg-gray-100">
-                        {idx + 1}
-                      </span>
-                    </td>
-                    <td className="p-4">
-                      <p>{supplier.name}</p>
-                      <p className="text-sm text-gray-500">{supplier.revenue}</p>
-                    </td>
-                    <td className="p-4 text-sm">{supplier.industry}</td>
-                    <td className="p-4 text-sm">{supplier.region}</td>
-                    <td className="p-4 text-center">
-                      <span
-                        className="inline-block px-3 py-1 rounded-full text-white text-sm"
-                        style={{ backgroundColor: getRiskColor(supplier.eRisk) }}
-                      >
-                        {getRiskText(supplier.eRisk)}
-                      </span>
-                    </td>
-                    <td className="p-4 text-center">
-                      <span
-                        className="inline-block px-3 py-1 rounded-full text-white text-sm"
-                        style={{ backgroundColor: getRiskColor(supplier.sRisk) }}
-                      >
-                        {getRiskText(supplier.sRisk)}
-                      </span>
-                    </td>
-                    <td className="p-4 text-center">
-                      <span
-                        className="inline-block px-3 py-1 rounded-full text-white text-sm"
-                        style={{ backgroundColor: getRiskColor(supplier.gRisk) }}
-                      >
-                        {getRiskText(supplier.gRisk)}
-                      </span>
-                    </td>
-                    <td className="p-4 text-center">
-                      <span className="text-lg" style={{ color: getRiskColor(supplier.overallRisk >= 70 ? "high" : supplier.overallRisk >= 50 ? "medium" : "low") }}>
-                        {supplier.overallRisk}점
-                      </span>
-                    </td>
-                    <td className="p-4 text-center">
-                      <button
-                        onClick={() => setSelectedSupplier(supplier)}
-                        className="px-4 py-2 rounded-lg bg-[#0B2562] text-white hover:bg-opacity-90 transition-colors"
-                      >
-                        상세 보기
-                      </button>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </div>
 
         {/* Compliance Report Section */}
         <div className="bg-gradient-to-br from-[#0B2562] to-[#5B3BFA] rounded-xl shadow-sm p-8 text-white">
@@ -361,6 +304,103 @@ export default function EnterprisePortal() {
           </button>
         </div>
       </div>
+
+      {/* High Risk Suppliers List Modal */}
+      {showHighRiskModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+          <div className="bg-white rounded-xl shadow-2xl max-w-6xl w-full max-h-[90vh] overflow-y-auto">
+            <div className="p-8">
+              <div className="flex items-start justify-between mb-6">
+                <div className="flex-1">
+                  <h2 className="text-2xl mb-2">개선 시급 협력사 목록 (Top 10)</h2>
+                  <p className="text-gray-600">고위험 협력사들의 상세 정보를 확인하세요</p>
+                </div>
+                <button
+                  onClick={() => setShowHighRiskModal(false)}
+                  className="text-gray-400 hover:text-gray-600 text-3xl leading-none"
+                >
+                  ×
+                </button>
+              </div>
+
+              <div className="overflow-x-auto">
+                <table className="w-full">
+                  <thead>
+                    <tr className="border-b-2 border-gray-200">
+                      <th className="text-left p-4">순위</th>
+                      <th className="text-left p-4">협력사명</th>
+                      <th className="text-left p-4">산업</th>
+                      <th className="text-left p-4">지역</th>
+                      <th className="text-center p-4">E 리스크</th>
+                      <th className="text-center p-4">S 리스크</th>
+                      <th className="text-center p-4">G 리스크</th>
+                      <th className="text-center p-4">종합 점수</th>
+                      <th className="text-center p-4">액션</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {highRiskSuppliers.map((supplier, idx) => (
+                      <tr key={supplier.id} className="border-b border-gray-100 hover:bg-gray-50">
+                        <td className="p-4">
+                          <span className="flex items-center justify-center w-8 h-8 rounded-full bg-gray-100">
+                            {idx + 1}
+                          </span>
+                        </td>
+                        <td className="p-4">
+                          <p className="font-medium">{supplier.name}</p>
+                          <p className="text-sm text-gray-500">{supplier.revenue}</p>
+                        </td>
+                        <td className="p-4 text-sm">{supplier.industry}</td>
+                        <td className="p-4 text-sm">{supplier.region}</td>
+                        <td className="p-4 text-center">
+                          <span
+                            className="inline-block px-3 py-1 rounded-full text-white text-sm"
+                            style={{ backgroundColor: getRiskColor(supplier.eRisk) }}
+                          >
+                            {getRiskText(supplier.eRisk)}
+                          </span>
+                        </td>
+                        <td className="p-4 text-center">
+                          <span
+                            className="inline-block px-3 py-1 rounded-full text-white text-sm"
+                            style={{ backgroundColor: getRiskColor(supplier.sRisk) }}
+                          >
+                            {getRiskText(supplier.sRisk)}
+                          </span>
+                        </td>
+                        <td className="p-4 text-center">
+                          <span
+                            className="inline-block px-3 py-1 rounded-full text-white text-sm"
+                            style={{ backgroundColor: getRiskColor(supplier.gRisk) }}
+                          >
+                            {getRiskText(supplier.gRisk)}
+                          </span>
+                        </td>
+                        <td className="p-4 text-center">
+                          <span className="text-lg font-medium" style={{ color: getRiskColor(supplier.overallRisk >= 70 ? "high" : supplier.overallRisk >= 50 ? "medium" : "low") }}>
+                            {supplier.overallRisk}점
+                          </span>
+                        </td>
+                        <td className="p-4 text-center">
+                          <button
+                            onClick={() => {
+                              setShowHighRiskModal(false);
+                              setSelectedSupplier(supplier);
+                            }}
+                            className="px-4 py-2 rounded-lg bg-[#0B2562] text-white hover:bg-opacity-90 transition-colors"
+                          >
+                            상세 보기
+                          </button>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Supplier Detail Modal */}
       {selectedSupplier && (
