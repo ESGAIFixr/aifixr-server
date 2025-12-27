@@ -9,14 +9,15 @@ import { ReadOnlyTooltip } from './ReadOnlyTooltip';
 interface ProfilePageProps {
   onNavigate: (screen: any) => void;
   onLogout: () => void;
+  hideSidebar?: boolean;
 }
 
-export function ProfilePage({ onNavigate, onLogout }: ProfilePageProps) {
+export function ProfilePage({ onNavigate, onLogout, hideSidebar = false }: ProfilePageProps) {
   return (
     <div className="flex min-h-screen bg-[#F6F8FB]">
-      <Sidebar currentPage="profile" onNavigate={onNavigate} onLogout={onLogout} />
+      {!hideSidebar && <Sidebar currentPage="profile" onNavigate={onNavigate} onLogout={onLogout} />}
       
-      <div className="flex-1 ml-64">
+      <div className={`flex-1 ${!hideSidebar ? 'ml-64' : ''}`}>
         <div className="max-w-5xl mx-auto px-6 py-8">
           {/* Header */}
           <div className="mb-8">

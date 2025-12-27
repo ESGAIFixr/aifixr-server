@@ -13,6 +13,14 @@ interface MainNavigationProps {
   onLoginRequired: () => void;
 }
 
+interface Tab {
+  id: string;
+  label: string;
+  requiresAuth: boolean;
+  href: string;
+  isExternal?: boolean;
+}
+
 export default function MainNavigation({ activeTab, setActiveTab, onLoginRequired }: MainNavigationProps) {
   const [isAIPanelOpen, setIsAIPanelOpen] = useState(false);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -39,15 +47,6 @@ export default function MainNavigation({ activeTab, setActiveTab, onLoginRequire
   }, []);
 
   const tabs = [
-<<<<<<< HEAD
-    { id: 'intro', label: 'AIFIX 소개', locked: false, href: '/intro' },
-    { id: 'rating', label: '기업 ESG 등급', locked: false, href: '/rating' },
-    { id: 'news', label: 'ESG 소식', locked: false, href: '#' },
-    { id: 'notice', label: '공지사항', locked: false, href: '#' },
-    { id: 'self-diagnosis', label: '자가진단', locked: true, href: '#' },
-    { id: 'auto-report', label: '자동화 보고서', locked: true, href: '#' },
-    { id: 'editing', label: '윤문 AI', locked: true, href: '#' },
-=======
     { id: 'intro', label: 'AIFIX 소개', requiresAuth: false, href: '/intro' },
     { id: 'rating', label: '기업 ESG 등급', requiresAuth: false, href: '/rating' },
     { id: 'news', label: 'ESG 소식', requiresAuth: false, href: '#' },
@@ -55,10 +54,9 @@ export default function MainNavigation({ activeTab, setActiveTab, onLoginRequire
     { id: 'self-diagnosis', label: '자가진단', requiresAuth: true, href: '/diagnosis' },
     { id: 'auto-report', label: '자동화 보고서', requiresAuth: true, href: '/reports' },
     { id: 'editing', label: '윤문 AI', requiresAuth: true, href: '/editing' },
->>>>>>> 4875f7c431c65c43c771c95bde452e5a47987597
   ];
 
-  const handleTabClick = (tab: typeof tabs[0], e: React.MouseEvent) => {
+  const handleTabClick = (tab: Tab, e: React.MouseEvent) => {
     // 인증이 필요한 탭인데 로그인 안 되어 있으면
     if (tab.requiresAuth && !isAuthenticated) {
       e.preventDefault();

@@ -1,57 +1,13 @@
 'use client';
 
-<<<<<<< HEAD
-import { useState, useMemo } from 'react';
-=======
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Search, ChevronDown, ArrowUp, ArrowDown, Minus, Info } from 'lucide-react';
->>>>>>> 4875f7c431c65c43c771c95bde452e5a47987597
 import Header from '@/components/Header';
 import MainNavigation from '@/components/MainNavigation';
 import Footer from '@/components/Footer';
 import LoginModal from '@/components/LoginModal';
 import { createMainHandlers } from '@/services/mainservice';
-<<<<<<< HEAD
-import { generateMockData, getAvailableMonths } from '@/services/esgRatingService';
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from '@/components/ui/table';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
-import { Input } from '@/components/ui/input';
-import { ArrowUp, ArrowDown, Minus } from 'lucide-react';
-
-export default function RatingPage() {
-  const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
-  const [standard, setStandard] = useState<'K-ESG' | 'ESRS'>('K-ESG');
-  const [selectedMonth, setSelectedMonth] = useState<string>(getAvailableMonths()[0]);
-  const [searchQuery, setSearchQuery] = useState<string>('');
-  const [searchInput, setSearchInput] = useState<string>('');
-
-  const { handleLoginClick, handleLoginRequired, handleLogin } =
-    createMainHandlers(setIsLoginModalOpen);
-
-  const companies = useMemo(() => {
-    const allCompanies = generateMockData(selectedMonth, 'all', standard);
-    if (!searchQuery.trim()) return allCompanies;
-
-    const lower = searchQuery.trim().toLowerCase();
-    return allCompanies.filter((company) =>
-      company.name.toLowerCase().includes(lower),
-    );
-  }, [selectedMonth, standard, searchQuery]);
-=======
 import { AuthService } from '@/lib/oauthservice';
 
 interface CompanyData {
@@ -197,73 +153,11 @@ export default function RatingPage() {
     '2025년 8월',
     '2025년 7월',
   ];
->>>>>>> 4875f7c431c65c43c771c95bde452e5a47987597
 
   const handleSearch = () => {
     setSearchQuery(searchInput);
   };
 
-<<<<<<< HEAD
-  const getTrendIcon = (trend: 'up' | 'down' | 'stable') => {
-    switch (trend) {
-      case 'up':
-        return <ArrowUp className="w-4 h-4 text-green-600" />;
-      case 'down':
-        return <ArrowDown className="w-4 h-4 text-red-600" />;
-      case 'stable':
-        return <Minus className="w-4 h-4 text-gray-400" />;
-    }
-  };
-
-  return (
-    <div className="min-h-screen bg-white">
-      {/* Header */}
-      <Header onLoginClick={handleLoginClick} />
-
-      {/* Main Navigation */}
-      <MainNavigation
-        activeTab="rating"
-        setActiveTab={() => { }}
-        onLoginRequired={handleLoginRequired}
-      />
-
-      {/* Main Content */}
-      <main className="pt-[160px] pb-16 px-8">
-        <div className="max-w-[1440px] mx-auto">
-          {/* Page Title */}
-          <div className="mb-8 scroll-mt-[160px]">
-            <h1 className="text-4xl font-bold text-[#1a2332] mb-2">
-              기업 ESG 등급
-            </h1>
-            <p className="text-lg text-gray-600">
-              매월 업데이트 · 독립적 지속가능성 평가
-            </p>
-          </div>
-
-          {/* Filters */}
-          <div className="flex flex-wrap items-center gap-4 mb-8 pb-6 border-b border-gray-200">
-            {/* 회사명 검색 */}
-            <div className="flex items-center gap-2 flex-1 min-w-[260px]">
-              <label className="text-sm font-medium text-gray-700 whitespace-nowrap">
-                회사명
-              </label>
-              <div className="flex items-center gap-2 max-w-md w-full">
-                <Input
-                  placeholder="회사명을 입력해주세요."
-                  value={searchInput}
-                  onChange={(e) => setSearchInput(e.target.value)}
-                  onKeyDown={(e) => {
-                    if (e.key === 'Enter') {
-                      handleSearch();
-                    }
-                  }}
-                  className="flex-1"
-                />
-                <button
-                  type="button"
-                  onClick={handleSearch}
-                  className="px-4 py-2 rounded-md bg-[#0D4ABB] text-white text-sm font-medium hover:bg-[#0b3b95] transition-colors whitespace-nowrap"
-=======
   const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter') {
       handleSearch();
@@ -286,35 +180,13 @@ export default function RatingPage() {
       <div className="pt-[180px] pb-20 px-8">
         <div className="max-w-[1440px] mx-auto">
           {/* Header Section */}
-          <div className="mb-8">
+          <div className="mb-6 text-center">
             <h1 className="text-3xl font-bold text-[#1a2332] mb-2">기업 ESG 등급</h1>
             <p className="text-gray-600">매월 업데이트 · 독립적 지속가능성 평가</p>
           </div>
 
-          {/* Filters Section */}
-          <div className="flex items-center gap-4 mb-6 flex-wrap">
-            {/* Evaluation Standard Toggle */}
-            <div className="flex items-center gap-2 bg-gray-100 rounded-lg p-1">
-              <button
-                onClick={() => setEvaluationStandard('K-ESG')}
-                className={`px-4 py-2 rounded-md transition-all ${evaluationStandard === 'K-ESG'
-                  ? 'bg-white text-[#0D4ABB] shadow-sm font-medium'
-                  : 'text-gray-600 hover:text-gray-900'
-                  }`}
-              >
-                K-ESG
-              </button>
-              <button
-                onClick={() => setEvaluationStandard('ESRS')}
-                className={`px-4 py-2 rounded-md transition-all ${evaluationStandard === 'ESRS'
-                  ? 'bg-white text-[#0D4ABB] shadow-sm font-medium'
-                  : 'text-gray-600 hover:text-gray-900'
-                  }`}
-              >
-                ESRS
-              </button>
-            </div>
-
+          {/* Date and Search Section - Centered */}
+          <div className="mb-6 flex items-center gap-4 justify-center flex-wrap">
             {/* Reference Date Dropdown */}
             <div className="relative">
               <button
@@ -348,6 +220,27 @@ export default function RatingPage() {
                 </>
               )}
             </div>
+
+            {/* Search Bar */}
+            <div className="flex items-center gap-3">
+              <div className="relative flex-1 min-w-[300px] max-w-md">
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
+                <input
+                  type="text"
+                  placeholder="회사명 검색"
+                  value={searchInput}
+                  onChange={(e) => setSearchInput(e.target.value)}
+                  onKeyPress={handleKeyPress}
+                  className="w-full pl-10 pr-4 py-2.5 bg-white text-gray-900 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#0D4ABB] focus:border-transparent"
+                />
+              </div>
+              <button
+                onClick={handleSearch}
+                className="px-6 py-2.5 bg-[#0D4ABB] text-white rounded-lg hover:bg-[#0a3a9b] transition-colors font-medium whitespace-nowrap"
+              >
+                조회
+              </button>
+            </div>
           </div>
 
           {/* Table Section */}
@@ -370,113 +263,42 @@ export default function RatingPage() {
                 <button
                   onClick={handleSearch}
                   className="px-6 py-2.5 bg-[#0D4ABB] text-white rounded-lg hover:bg-[#0a3a9b] transition-colors font-medium whitespace-nowrap"
->>>>>>> 4875f7c431c65c43c771c95bde452e5a47987597
-                >
-                  조회
-                </button>
-              </div>
-<<<<<<< HEAD
-            </div>
-
-            <div className="flex items-center gap-3">
-              <span className="text-sm font-medium text-gray-700 whitespace-nowrap">
-                평가 기준:
-              </span>
-              {/* 평가 기준 토글 */}
-              <div className="relative inline-flex items-center rounded-full bg-gray-100 p-1">
-                <span
-                  className={`absolute top-1 bottom-1 w-1/2 rounded-full bg-white shadow transition-transform duration-200 ${standard === 'K-ESG' ? 'translate-x-0' : 'translate-x-full'
-                    }`}
-                />
-                <button
-                  type="button"
-                  onClick={() => setStandard('K-ESG')}
-                  className={`relative z-10 px-4 py-1 text-sm font-medium rounded-full transition-colors ${standard === 'K-ESG'
-                    ? 'text-[#0D4ABB]'
-                    : 'text-gray-500'
-                    }`}
                 >
                   K-ESG
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setStandard('ESRS')}
-                  className={`relative z-10 px-4 py-1 text-sm font-medium rounded-full transition-colors ${standard === 'ESRS'
-                    ? 'text-[#0D4ABB]'
-                    : 'text-gray-500'
-                    }`}
+                </span>
+                <span
+                  className={`flex-1 text-center text-sm font-medium transition-opacity duration-300 ${
+                    evaluationStandard === 'ESRS' ? 'text-gray-600 opacity-0' : 'text-gray-600'
+                  }`}
                 >
                   ESRS
-                </button>
+                </span>
               </div>
-            </div>
-
-            <div className="flex items-center gap-2">
-              <label className="text-sm font-medium text-gray-700 whitespace-nowrap">
-                기준 날짜:
-              </label>
-              <Select
-                value={selectedMonth}
-                onValueChange={setSelectedMonth}
+              {/* Sliding Handle */}
+              <div
+                className="absolute top-[4px] bottom-[4px] w-[56px] bg-white rounded-md shadow-sm transition-all duration-300 ease-in-out flex items-center justify-center"
+                style={{
+                  left: evaluationStandard === 'K-ESG' ? '4px' : 'auto',
+                  right: evaluationStandard === 'ESRS' ? '4px' : 'auto',
+                  zIndex: 2,
+                }}
               >
-                <SelectTrigger className="w-[160px]">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  {getAvailableMonths().map((month) => (
-                    <SelectItem key={month} value={month}>
-                      {month}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
+                {/* Selected Label on Handle */}
+                <span className="text-sm font-medium text-[#0D4ABB] whitespace-nowrap">
+                  {evaluationStandard === 'K-ESG' ? 'K-ESG' : 'ESRS'}
+                </span>
+              </div>
 
-            {/* 등급 기준표 */}
-            <div className="flex items-center gap-2 ml-auto">
-              <div className="border border-gray-200 rounded-lg bg-white px-4 py-2 shadow-sm">
-                <div className="flex items-center gap-4">
-                  <span className="text-sm font-semibold text-gray-900 whitespace-nowrap">등급 기준:</span>
-                  <div className="flex items-center gap-3 text-xs">
-                    <div className="flex items-center gap-1">
-                      <span className="font-semibold text-gray-900">S</span>
-                      <span className="text-gray-600">95점 이상</span>
-                    </div>
-                    <div className="flex items-center gap-1">
-                      <span className="font-semibold text-gray-900">A+</span>
-                      <span className="text-gray-600">90점 이상</span>
-                    </div>
-                    <div className="flex items-center gap-1">
-                      <span className="font-semibold text-gray-900">A</span>
-                      <span className="text-gray-600">85점 이상</span>
-                    </div>
-                    <div className="flex items-center gap-1">
-                      <span className="font-semibold text-gray-900">B+</span>
-                      <span className="text-gray-600">80점 이상</span>
-                    </div>
-                    <div className="flex items-center gap-1">
-                      <span className="font-semibold text-gray-900">B</span>
-                      <span className="text-gray-600">75점 이상</span>
-                    </div>
-                    <div className="flex items-center gap-1">
-                      <span className="font-semibold text-gray-900">C+</span>
-                      <span className="text-gray-600">70점 이상</span>
-                    </div>
-                    <div className="flex items-center gap-1">
-                      <span className="font-semibold text-gray-900">C</span>
-                      <span className="text-gray-600">65점 이상</span>
-                    </div>
-                    <div className="flex items-center gap-1">
-                      <span className="font-semibold text-gray-900">D</span>
-                      <span className="text-gray-600">65점 미만</span>
-                    </div>
-=======
-
-              {/* Rating Guide - Next to Search Bar */}
-              <div className="bg-white border border-gray-200 rounded-lg p-2.5 shadow-sm flex-1 min-w-[500px]">
-                <div className="flex items-center gap-1.5 mb-1.5">
-                  <Info className="w-3.5 h-3.5 text-[#0D4ABB]" />
-                  <h3 className="font-semibold text-gray-900 text-sm">평가등급표</h3>
+            {/* Rating Guide - Right */}
+            <div className="bg-white border border-gray-200 rounded-lg p-2.5 shadow-sm">
+              <div className="flex items-center gap-1.5 mb-1.5">
+                <Info className="w-3.5 h-3.5 text-[#0D4ABB]" />
+                <h3 className="font-semibold text-gray-900 text-sm">평가등급표</h3>
+              </div>
+              <div className="flex items-center gap-3 flex-wrap text-xs">
+                <div className="flex items-center gap-1.5">
+                  <span className="px-1.5 py-0.5 rounded bg-green-100 text-green-800 border border-green-200 font-medium text-[10px]">S</span>
+                  <span className="text-gray-600 text-xs">100점</span>
                 </div>
                 <div className="flex items-center gap-3 flex-wrap text-xs">
                   <div className="flex items-center gap-1.5">
@@ -506,79 +328,13 @@ export default function RatingPage() {
                   <div className="flex items-center gap-1.5">
                     <span className="px-1.5 py-0.5 rounded bg-yellow-100 text-yellow-800 border border-yellow-200 font-medium text-[10px]">C</span>
                     <span className="text-gray-600 text-xs">70점 이상</span>
->>>>>>> 4875f7c431c65c43c771c95bde452e5a47987597
                   </div>
                 </div>
               </div>
             </div>
-<<<<<<< HEAD
-          </div>
 
-          {/* Table */}
-          <div className="border border-gray-200 rounded-lg overflow-hidden relative z-0">
-            <Table>
-              <TableHeader>
-                <TableRow className="bg-gray-50">
-                  <TableHead className="font-semibold text-gray-900">기업명</TableHead>
-                  <TableHead className="font-semibold text-gray-900 text-center">종합 ESG 등급</TableHead>
-                  <TableHead className="font-semibold text-gray-900 text-center">환경 (E)</TableHead>
-                  <TableHead className="font-semibold text-gray-900 text-center">사회 (S)</TableHead>
-                  <TableHead className="font-semibold text-gray-900 text-center">지배구조 (G)</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {companies.map((company, index) => (
-                  <TableRow key={index} className="hover:bg-gray-50">
-                    <TableCell>
-                      <div>
-                        <div className="font-medium text-gray-900">{company.name}</div>
-                        <div className="text-sm text-gray-500">{company.industry}</div>
-                      </div>
-                    </TableCell>
-                    <TableCell className="text-center">
-                      <div className="flex items-center justify-center gap-1">
-                        <span className="font-semibold text-gray-900">{company.overallGrade}</span>
-                        {getTrendIcon(company.overallTrend)}
-                      </div>
-                    </TableCell>
-                    <TableCell className="text-center">
-                      <div className="flex items-center justify-center gap-1">
-                        <span className="font-semibold text-gray-900">{company.environmental}</span>
-                        {getTrendIcon(company.environmentalTrend)}
-                      </div>
-                    </TableCell>
-                    <TableCell className="text-center">
-                      <div className="flex items-center justify-center gap-1">
-                        <span className="font-semibold text-gray-900">{company.social}</span>
-                        {getTrendIcon(company.socialTrend)}
-                      </div>
-                    </TableCell>
-                    <TableCell className="text-center">
-                      <div className="flex items-center justify-center gap-1">
-                        <span className="font-semibold text-gray-900">{company.governance}</span>
-                        {getTrendIcon(company.governanceTrend)}
-                      </div>
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </div>
-
-          {/* Disclaimer */}
-          <div className="mt-6 text-sm text-gray-500">
-            등급은 환경, 사회, 지배구조 요인에 대한 종합적인 분석을 기반으로 평가됩니다. 현재 기준: {standard}
-          </div>
-        </div>
-      </main>
-
-      {/* Footer */}
-      <Footer />
-
-      {/* Login Modal */}
-=======
-
-            <div className="bg-white border border-gray-200 rounded-lg overflow-hidden">
+          {/* Company Rating Table */}
+          <div className="bg-white border border-gray-200 rounded-lg overflow-hidden">
               <div className="overflow-x-auto">
                 <table className="w-full">
                   <thead className="bg-[#0D4ABB] text-white">
@@ -656,26 +412,17 @@ export default function RatingPage() {
                   </tbody>
                 </table>
               </div>
-            </div>
           </div>
         </div>
       </div>
 
       <Footer />
->>>>>>> 4875f7c431c65c43c771c95bde452e5a47987597
       <LoginModal
         isOpen={isLoginModalOpen}
         onClose={() => setIsLoginModalOpen(false)}
         onLogin={handleLogin}
-<<<<<<< HEAD
-=======
         onKakaoLogin={AuthService.handleKakaoLogin}
->>>>>>> 4875f7c431c65c43c771c95bde452e5a47987597
       />
     </div>
   );
 }
-<<<<<<< HEAD
-
-=======
->>>>>>> 4875f7c431c65c43c771c95bde452e5a47987597
