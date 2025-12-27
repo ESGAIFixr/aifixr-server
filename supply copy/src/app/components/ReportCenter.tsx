@@ -8,7 +8,6 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '.
 interface ReportCenterProps {
   onNavigate: (screen: any, companyId?: string, reportId?: string) => void;
   onLogout: () => void;
-  hideSidebar?: boolean;
 }
 
 const allReports = [
@@ -22,7 +21,7 @@ const allReports = [
   { id: 'r8', company: '스마트 물류', title: 'ESG 종합 평가 보고서', date: '2024.11.10', grade: 'C', size: '1.8 MB' },
 ];
 
-export function ReportCenter({ onNavigate, onLogout, hideSidebar = false }: ReportCenterProps) {
+export function ReportCenter({ onNavigate, onLogout }: ReportCenterProps) {
   const [sortBy, setSortBy] = useState<string>('newest');
   const [gradeFilter, setGradeFilter] = useState<string>('all');
   const [selectedReports, setSelectedReports] = useState<Set<string>>(new Set());
@@ -58,14 +57,14 @@ export function ReportCenter({ onNavigate, onLogout, hideSidebar = false }: Repo
 
   return (
     <div className="flex min-h-screen bg-[#F6F8FB]">
-      {!hideSidebar && <Sidebar currentPage="report-center" onNavigate={onNavigate} onLogout={onLogout} />}
+      <Sidebar currentPage="report-center" onNavigate={onNavigate} onLogout={onLogout} />
       
-      <div className={`flex-1 ${!hideSidebar ? 'ml-64' : ''}`}>
+      <div className="flex-1 ml-64">
         <div className="max-w-7xl mx-auto px-6 py-8">
           {/* Header */}
           <div className="mb-8">
-            <h1 className="text-[#0F172A] mb-2">관계사 보고서 관리</h1>
-            <p className="text-[#8C8C8C]">관계사별 ESG 평가 보고서를 관리 및 다운로드 할 수 있습니다.</p>
+            <h1 className="text-[#0F172A] mb-2">보고서 다운로드 센터</h1>
+            <p className="text-[#8C8C8C]">모든 ESG 평가 보고서를 다운로드할 수 있습니다</p>
           </div>
 
           {/* Filters & Actions */}
@@ -210,3 +209,4 @@ export function ReportCenter({ onNavigate, onLogout, hideSidebar = false }: Repo
     </div>
   );
 }
+

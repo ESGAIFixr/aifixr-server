@@ -11,8 +11,6 @@ import { Tooltip, TooltipContent, TooltipTrigger } from './ui/tooltip';
 interface SMEListProps {
   onNavigate: (screen: any, companyId?: string, reportId?: string) => void;
   onLogout: () => void;
-  hideSidebar?: boolean;
-  cardOnly?: boolean; // 카드형만 보여주는 모드
 }
 
 const companies = [
@@ -33,8 +31,8 @@ interface CompanyRequestStatus {
   rejectionReason?: string;
 }
 
-export function SMEList({ onNavigate, onLogout, hideSidebar = false, cardOnly = false }: SMEListProps) {
-  const [viewMode, setViewMode] = useState<'table' | 'card'>(cardOnly ? 'card' : 'table');
+export function SMEList({ onNavigate, onLogout }: SMEListProps) {
+  const [viewMode, setViewMode] = useState<'table' | 'card'>('table');
   const [searchQuery, setSearchQuery] = useState('');
   const [gradeFilter, setGradeFilter] = useState<string>('all');
   const [industryFilter, setIndustryFilter] = useState<string>('all');
@@ -77,16 +75,16 @@ export function SMEList({ onNavigate, onLogout, hideSidebar = false, cardOnly = 
       const nextStatus: CompanyRequestStatus =
         companyId === '1'
           ? {
-            status: 'rejected',
-            rejectionReason:
-              '요청하신 데이터는 현재 보안상의 이유로 제공이 제한되어 있습니다. 데이터 접근 권한이 필요한 경우 관리자에게 별도로 문의해주시기 바랍니다.',
-          }
-          : companyId === '2'
-            ? {
               status: 'rejected',
               rejectionReason:
-                '해당 기업의 ESG 데이터는 아직 검토 단계에 있어 제공할 수 없습니다. 검토가 완료되는 대로 알려드리겠습니다.',
+                '요청하신 데이터는 현재 보안상의 이유로 제공이 제한되어 있습니다. 데이터 접근 권한이 필요한 경우 관리자에게 별도로 문의해주시기 바랍니다.',
             }
+          : companyId === '2'
+            ? {
+                status: 'rejected',
+                rejectionReason:
+                  '해당 기업의 ESG 데이터는 아직 검토 단계에 있어 제공할 수 없습니다. 검토가 완료되는 대로 알려드리겠습니다.',
+              }
             : { status: 'pending' };
 
       return {
@@ -99,7 +97,7 @@ export function SMEList({ onNavigate, onLogout, hideSidebar = false, cardOnly = 
 
   const filteredCompanies = companies.filter(company => {
     const matchesSearch = company.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      company.industry.toLowerCase().includes(searchQuery.toLowerCase());
+                         company.industry.toLowerCase().includes(searchQuery.toLowerCase());
     const matchesGrade = gradeFilter === 'all' || company.grade === gradeFilter;
     const matchesIndustry = industryFilter === 'all' || company.industry === industryFilter;
     return matchesSearch && matchesGrade && matchesIndustry;
@@ -107,26 +105,23 @@ export function SMEList({ onNavigate, onLogout, hideSidebar = false, cardOnly = 
 
   return (
     <div className="flex min-h-screen bg-[#F6F8FB]">
-      {!hideSidebar && <Sidebar currentPage="sme-list" onNavigate={onNavigate} onLogout={onLogout} />}
-
-      <div className={`flex-1 ${!hideSidebar ? 'ml-64' : ''}`}>
+      <Sidebar currentPage="sme-list" onNavigate={onNavigate} onLogout={onLogout} />
+      
+      <div className="flex-1 ml-64">
         <div className="max-w-7xl mx-auto px-6 py-8">
           {/* Header */}
           <div className="mb-8">
-            <h1 className="text-[#0F172A] mb-2">{cardOnly ? "관계사 진단 관리" : "관계사 목록"}</h1>
+            <h1 className="text-[#0F172A] mb-2">관계사 목록</h1>
             <div className="flex items-center justify-between">
-              <p className="text-[#8C8C8C]">{cardOnly ? "관계사 진단 관리를 위한 화면입니다" : "ESG 평가가 완료된 중소기업 관계사 목록입니다"}</p>
-              {!cardOnly && (
-                <Button
-                  onClick={handleRequestAll}
-                  className="bg-gradient-to-r from-[#5B3BFA] to-[#00B4FF] rounded-xl px-5 hover:shadow-[0_4px_20px_rgba(91,59,250,0.4)] transition-all"
-                >
-                  전체 관계사 데이터 요청
-                </Button>
-              )}
+              <p className="text-[#8C8C8C]">ESG 평가가 완료된 중소기업 관계사 목록입니다</p>
+              <Button
+                onClick={handleRequestAll}
+                className="bg-gradient-to-r from-[#5B3BFA] to-[#00B4FF] rounded-xl px-5 hover:shadow-[0_4px_20px_rgba(91,59,250,0.4)] transition-all"
+              >
+                전체 관계사 데이터 요청
+              </Button>
             </div>
           </div>
-
 
           {/* Filters */}
           <Card className="p-6 rounded-[20px] shadow-[0_4px_20px_rgba(91,59,250,0.1)] mb-6">
@@ -147,7 +142,7 @@ export function SMEList({ onNavigate, onLogout, hideSidebar = false, cardOnly = 
 
               {/* Industry Filter */}
               <Select value={industryFilter} onValueChange={setIndustryFilter}>
-                <SelectTrigger className="h-12 rounded-xl border-2">
+                <SelectTrigger className="h-12 rounded-xl">
                   <SelectValue placeholder="업종" />
                 </SelectTrigger>
                 <SelectContent>
@@ -163,7 +158,7 @@ export function SMEList({ onNavigate, onLogout, hideSidebar = false, cardOnly = 
 
               {/* Grade Filter */}
               <Select value={gradeFilter} onValueChange={setGradeFilter}>
-                <SelectTrigger className="h-12 rounded-xl border-2">
+                <SelectTrigger className="h-12 rounded-xl">
                   <SelectValue placeholder="ESG 등급" />
                 </SelectTrigger>
                 <SelectContent>
@@ -177,7 +172,7 @@ export function SMEList({ onNavigate, onLogout, hideSidebar = false, cardOnly = 
 
               {/* Risk Level Filter */}
               <Select value={riskFilter} onValueChange={setRiskFilter}>
-                <SelectTrigger className="h-12 rounded-xl border-2">
+                <SelectTrigger className="h-12 rounded-xl">
                   <SelectValue placeholder="위험도" />
                 </SelectTrigger>
                 <SelectContent>
@@ -201,20 +196,32 @@ export function SMEList({ onNavigate, onLogout, hideSidebar = false, cardOnly = 
           </Card>
 
           {/* View Mode Toggle */}
-          {cardOnly ? (
-            // 카드형만 보여주는 모드 (관계사 진단 관리)
-            <div className="flex items-center justify-between mb-6">
-              <p className="text-[#8C8C8C]">총 {filteredCompanies.length}개 기업</p>
+          <div className="flex items-center justify-between mb-6">
+            <p className="text-[#8C8C8C]">총 {filteredCompanies.length}개 기업</p>
+            <div className="flex gap-2">
+              <Button
+                variant={viewMode === 'table' ? 'default' : 'outline'}
+                onClick={() => setViewMode('table')}
+                className={viewMode === 'table' 
+                  ? 'bg-gradient-to-r from-[#5B3BFA] to-[#00B4FF] rounded-xl' 
+                  : 'rounded-xl'}
+              >
+                테이블형
+              </Button>
+              <Button
+                variant={viewMode === 'card' ? 'default' : 'outline'}
+                onClick={() => setViewMode('card')}
+                className={viewMode === 'card' 
+                  ? 'bg-gradient-to-r from-[#5B3BFA] to-[#00B4FF] rounded-xl' 
+                  : 'rounded-xl'}
+              >
+                카드형
+              </Button>
             </div>
-          ) : (
-            // 일반 모드 (관계사 목록)
-            <div className="flex items-center justify-between mb-6">
-              <p className="text-[#8C8C8C]">총 {filteredCompanies.length}개 기업</p>
-            </div>
-          )}
+          </div>
 
-          {/* Table View - Only for table mode, not for cardOnly mode */}
-          {!cardOnly && viewMode === 'table' && (
+          {/* Table View */}
+          {viewMode === 'table' && (
             <Card className="rounded-[20px] shadow-[0_4px_20px_rgba(91,59,250,0.1)] overflow-hidden">
               <div className="overflow-x-auto">
                 <table className="w-full">
@@ -267,22 +274,24 @@ export function SMEList({ onNavigate, onLogout, hideSidebar = false, cardOnly = 
                               ) : isDetailReveal ? (
                                 <div className="flex flex-wrap items-center justify-center gap-3 text-sm">
                                   <span
-                                    className={`px-3 py-1 rounded-full ${company.grade === 'A'
-                                      ? 'bg-[#00B4FF]/10 text-[#00B4FF]'
-                                      : company.grade === 'B'
-                                        ? 'bg-[#5B3BFA]/10 text-[#5B3BFA]'
-                                        : 'bg-[#8C8C8C]/10 text-[#8C8C8C]'
-                                      }`}
+                                    className={`px-3 py-1 rounded-full ${
+                                      company.grade === 'A'
+                                        ? 'bg-[#00B4FF]/10 text-[#00B4FF]'
+                                        : company.grade === 'B'
+                                          ? 'bg-[#5B3BFA]/10 text-[#5B3BFA]'
+                                          : 'bg-[#8C8C8C]/10 text-[#8C8C8C]'
+                                    }`}
                                   >
                                     ESG {company.grade}
                                   </span>
                                   <span
-                                    className={`px-3 py-1 rounded-full ${riskLevel === 'high'
-                                      ? 'bg-[#E30074]/10 text-[#E30074]'
-                                      : riskLevel === 'medium'
-                                        ? 'bg-[#A58DFF]/10 text-[#A58DFF]'
-                                        : 'bg-[#00B4FF]/10 text-[#00B4FF]'
-                                      }`}
+                                    className={`px-3 py-1 rounded-full ${
+                                      riskLevel === 'high'
+                                        ? 'bg-[#E30074]/10 text-[#E30074]'
+                                        : riskLevel === 'medium'
+                                          ? 'bg-[#A58DFF]/10 text-[#A58DFF]'
+                                          : 'bg-[#00B4FF]/10 text-[#00B4FF]'
+                                    }`}
                                   >
                                     위험도 {riskLevel === 'high' ? '높음' : riskLevel === 'medium' ? '중간' : '낮음'}
                                   </span>
@@ -334,8 +343,8 @@ export function SMEList({ onNavigate, onLogout, hideSidebar = false, cardOnly = 
             </Card>
           )}
 
-          {/* Card View - Show for cardOnly mode OR card mode */}
-          {(cardOnly || viewMode === 'card') && (
+          {/* Card View */}
+          {viewMode === 'card' && (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {filteredCompanies.map((company) => (
                 <Card
@@ -358,10 +367,11 @@ export function SMEList({ onNavigate, onLogout, hideSidebar = false, cardOnly = 
                   <div className="space-y-3">
                     <div className="flex items-center justify-between">
                       <span className="text-[#8C8C8C]">ESG 등급</span>
-                      <span className={`px-4 py-1 rounded-full ${company.grade === 'A' ? 'bg-[#00B4FF]/10 text-[#00B4FF]' :
+                      <span className={`px-4 py-1 rounded-full ${
+                        company.grade === 'A' ? 'bg-[#00B4FF]/10 text-[#00B4FF]' :
                         company.grade === 'B' ? 'bg-[#5B3BFA]/10 text-[#5B3BFA]' :
-                          'bg-[#8C8C8C]/10 text-[#8C8C8C]'
-                        }`}>
+                        'bg-[#8C8C8C]/10 text-[#8C8C8C]'
+                      }`}>
                         {company.grade}등급
                       </span>
                     </div>
@@ -378,10 +388,9 @@ export function SMEList({ onNavigate, onLogout, hideSidebar = false, cardOnly = 
                   </div>
 
                   <Button
-                    onClick={() => onNavigate('company-detail', company.id)}
                     className="w-full mt-4 bg-gradient-to-r from-[#5B3BFA] to-[#00B4FF] rounded-xl hover:shadow-[0_4px_20px_rgba(91,59,250,0.4)] transition-all"
                   >
-                    상세보기 →
+                    보고서 보기 →
                   </Button>
                 </Card>
               ))}
@@ -392,3 +401,4 @@ export function SMEList({ onNavigate, onLogout, hideSidebar = false, cardOnly = 
     </div>
   );
 }
+

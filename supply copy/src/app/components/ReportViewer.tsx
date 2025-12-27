@@ -7,7 +7,6 @@ interface ReportViewerProps {
   reportId: string;
   onNavigate: (screen: any, companyId?: string) => void;
   onLogout: () => void;
-  hideSidebar?: boolean;
 }
 
 const reportList = [
@@ -17,23 +16,23 @@ const reportList = [
   { id: 'r4', title: '지배구조 평가 리포트', date: '2024.10.15', pages: 24 },
 ];
 
-export function ReportViewer({ reportId, onNavigate, onLogout, hideSidebar = false }: ReportViewerProps) {
+export function ReportViewer({ reportId, onNavigate, onLogout }: ReportViewerProps) {
   const currentReport = reportList.find(r => r.id === reportId) || reportList[0];
 
   return (
     <div className="flex min-h-screen bg-[#F6F8FB]">
-      {!hideSidebar && <Sidebar currentPage="report-center" onNavigate={onNavigate} onLogout={onLogout} />}
+      <Sidebar currentPage="report-center" onNavigate={onNavigate} onLogout={onLogout} />
       
-      <div className={`flex-1 ${!hideSidebar ? 'ml-64' : ''}`}>
+      <div className="flex-1 ml-64">
         <div className="max-w-7xl mx-auto px-6 py-8">
           {/* Back Button */}
           <Button
             variant="ghost"
-            onClick={() => onNavigate('report-center')}
+            onClick={() => onNavigate('company-detail', '1')}
             className="mb-6 rounded-xl text-[#5B3BFA]"
           >
             <ArrowLeft className="w-4 h-4 mr-2" />
-            보고서 관리 페이지로 돌아가기
+            기업 상세로 돌아가기
           </Button>
 
           <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
@@ -202,3 +201,4 @@ export function ReportViewer({ reportId, onNavigate, onLogout, hideSidebar = fal
     </div>
   );
 }
+

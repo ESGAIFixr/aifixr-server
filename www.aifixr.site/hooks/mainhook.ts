@@ -52,10 +52,10 @@ export function useMainPage() {
     setIsEnterpriseLoginModalOpen(true);
   };
 
-  // Enterprise 로그인 성공 핸들러 (3006번 포트로 리다이렉트)
+  // Enterprise 로그인 성공 핸들러 (3003번 포트로 리다이렉트)
   const handleEnterpriseLogin = () => {
     setIsEnterpriseLoginModalOpen(false);
-    window.location.href = 'http://localhost:3006';
+    window.location.href = 'http://localhost:3003';
   };
 
   return {
