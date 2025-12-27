@@ -65,32 +65,25 @@ export default function IntroPage() {
                 <BarChart3 className="w-8 h-8 text-white" />
               </div>
               <h3 className="text-2xl font-bold text-[#1a2332] mb-4">
-                Pillar 1: ESG 등급 진단 (Dual Self-Assessment)
+                Pillar 1: ESG 자가진단 & 성과관리
               </h3>
-              <p className="text-lg font-semibold text-gray-800 mb-4">
-                K-ESG & ESRS Lite 동시 대응 자가진단
-              </p>
               <ul className="space-y-3 text-gray-700 mb-4">
                 <li className="flex items-start">
                   <span className="mr-2">•</span>
-                  <span>한 번의 데이터 입력으로 K-ESG ↔ ESRS Lite 자동 재매핑</span>
+                  <span>연중 E(Environment), S(Social), G(Governance) 영역별 데이터 자유 입력</span>
                 </li>
                 <li className="flex items-start">
                   <span className="mr-2">•</span>
-                  <span>토글 전환으로 국내 공급망 평가와 EU 공시 기준 즉시 확인</span>
+                  <span>AI가 입력 시점까지의 데이터를 기반으로 실시간 자가진단 점수와 예측 등급 제공</span>
                 </li>
                 <li className="flex items-start">
                   <span className="mr-2">•</span>
-                  <span>A~D 등급 자동 산출 및 항목별 점수·리스크 실시간 모니터링</span>
-                </li>
-                <li className="flex items-start">
-                  <span className="mr-2">•</span>
-                  <span>이중 중대성 기반 리스크 분석 및 AI 개선 가이드 제공</span>
+                  <span>결과는 기업 내부 전용, 외부 공유 불가</span>
                 </li>
               </ul>
               <div className="mt-4 p-3 rounded-lg bg-[#0D4ABB]/10">
                 <p className="text-sm font-semibold text-[#0D4ABB]">
-                  💡 ESG 전담 인력 없이도 자가진단 가능
+                  💡 강조 포인트: 연중 실시간 점수 확인 가능
                 </p>
               </div>
             </div>
@@ -101,32 +94,25 @@ export default function IntroPage() {
                 <FileText className="w-8 h-8 text-white" />
               </div>
               <h3 className="text-2xl font-bold text-[#1a2332] mb-4">
-                Pillar 2: ESG 공시·보고서 자동화
+                Pillar 2: GRI 기반 보고서 자동 생성 & 전문 윤문
               </h3>
-              <p className="text-lg font-semibold text-gray-800 mb-4">
-                GRI 기반 ESG 보고서 자동 생성
-              </p>
               <ul className="space-y-3 text-gray-700 mb-4">
                 <li className="flex items-start">
                   <span className="mr-2">•</span>
-                  <span>입력 데이터 기반 GRI 구조 ESG 보고서 자동 생성</span>
+                  <span>입력 데이터를 기반으로 지속가능경영보고서 자동 작성</span>
                 </li>
                 <li className="flex items-start">
                   <span className="mr-2">•</span>
-                  <span>AI 전문 윤문으로 보고서 품질 자동 보정</span>
+                  <span>AI 윤문(TST 모델)로 문체 보정 → 전문가 수준 보고서 완성</span>
                 </li>
                 <li className="flex items-start">
                   <span className="mr-2">•</span>
-                  <span>회계연도 기준 자동 정리 및 최신 ESG 기준 반영</span>
-                </li>
-                <li className="flex items-start">
-                  <span className="mr-2">•</span>
-                  <span>업종별 템플릿 및 ESG 우수 사례 벤치마크 제공</span>
+                  <span>산업별·계열사별 맞춤형 템플릿 적용 가능</span>
                 </li>
               </ul>
               <div className="mt-4 p-3 rounded-lg bg-[#E91E8C]/10">
                 <p className="text-sm font-semibold text-[#E91E8C]">
-                  💡 보고서 완성도 향상, 시간·노력 절감
+                  💡 강조 포인트: 보고서 완성도 높음, 시간·노력 절감
                 </p>
               </div>
             </div>
@@ -137,32 +123,25 @@ export default function IntroPage() {
                 <Scale className="w-8 h-8 text-white" />
               </div>
               <h3 className="text-2xl font-bold text-[#1a2332] mb-4">
-                Pillar 3: ESG 네트워크 모니터링 (옵션)
+                Pillar 3: 규제 대응 & ESRS Lite 연계
               </h3>
-              <p className="text-lg font-semibold text-gray-800 mb-4">
-                조직 간 ESG 현황을 통합 관리하는 연결 플랫폼
-              </p>
               <ul className="space-y-3 text-gray-700 mb-4">
                 <li className="flex items-start">
                   <span className="mr-2">•</span>
-                  <span>관련 조직 및 파트너 ESG 현황을 한 화면에서 통합 관리</span>
+                  <span>EU CSRD, CSDDD 등 글로벌 ESG 규제 변화 실시간 반영</span>
                 </li>
                 <li className="flex items-start">
                   <span className="mr-2">•</span>
-                  <span>데이터 제공 주체가 공유 범위와 시점을 직접 제어</span>
+                  <span>GRI/K-ESG 데이터를 ESRS Lite 기준과 매핑하여 핵심 주제 중심 선제 준비 가능</span>
                 </li>
                 <li className="flex items-start">
                   <span className="mr-2">•</span>
-                  <span>제출 요청, 진행 상태, 리스크 항목 자동 식별</span>
-                </li>
-                <li className="flex items-start">
-                  <span className="mr-2">•</span>
-                  <span>글로벌 ESG 규제 대응을 위한 네트워크 리스크 관리</span>
+                  <span>RAG 기반 AI FIXER가 출처 기반 정확한 답변 제공</span>
                 </li>
               </ul>
               <div className="mt-4 p-3 rounded-lg bg-[#00D4FF]/10">
                 <p className="text-sm font-semibold text-[#00D4FF]">
-                  💡 확장 가능한 ESG 관리 체계
+                  💡 강조 포인트: 규제 변화에 신속·정확 대응
                 </p>
               </div>
             </div>

@@ -6,7 +6,6 @@ import { Button } from './ui/button';
 interface NotificationCenterProps {
   onNavigate: (screen: any) => void;
   onLogout: () => void;
-  hideSidebar?: boolean;
 }
 
 const announcements = [
@@ -77,12 +76,12 @@ const notifications = [
   },
 ];
 
-export function NotificationCenter({ onNavigate, onLogout, hideSidebar = false }: NotificationCenterProps) {
+export function NotificationCenter({ onNavigate, onLogout }: NotificationCenterProps) {
   return (
     <div className="flex min-h-screen bg-[#F6F8FB]">
-      {!hideSidebar && <Sidebar currentPage="notifications" onNavigate={onNavigate} onLogout={onLogout} />}
+      <Sidebar currentPage="notifications" onNavigate={onNavigate} onLogout={onLogout} />
       
-      <div className={`flex-1 ${!hideSidebar ? 'ml-64' : ''}`}>
+      <div className="flex-1 ml-64">
         <div className="max-w-5xl mx-auto px-6 py-8">
           {/* Header */}
           <div className="mb-8">

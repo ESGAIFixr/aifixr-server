@@ -8,7 +8,6 @@ import { PieChart, Pie, Cell, ResponsiveContainer, LineChart, Line, XAxis, YAxis
 interface EnterpriseDashboardProps {
   onNavigate: (screen: any, companyId?: string) => void;
   onLogout: () => void;
-  hideSidebar?: boolean;
 }
 
 const gradeDistribution = [
@@ -44,12 +43,12 @@ const recentUpdates = [
   { id: '5', company: '디지털 솔루션즈', completion: 60, date: '2024.11.18', status: '진행중', statusColor: 'bg-[#A58DFF]' },
 ];
 
-export function EnterpriseDashboard({ onNavigate, onLogout, hideSidebar = false }: EnterpriseDashboardProps) {
+export function EnterpriseDashboard({ onNavigate, onLogout }: EnterpriseDashboardProps) {
   return (
     <div className="flex min-h-screen bg-[#F6F8FB]">
-      {!hideSidebar && <Sidebar currentPage="dashboard" onNavigate={onNavigate} onLogout={onLogout} />}
+      <Sidebar currentPage="dashboard" onNavigate={onNavigate} onLogout={onLogout} />
       
-      <div className={`flex-1 ${!hideSidebar ? 'ml-64' : ''}`}>
+      <div className="flex-1 ml-64">
         <div className="max-w-7xl mx-auto px-6 py-8">
           {/* Header */}
           <div className="mb-8">
