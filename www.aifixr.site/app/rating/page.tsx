@@ -243,23 +243,26 @@ export default function RatingPage() {
             </div>
           </div>
 
-          {/* Toggle and Rating Guide Section - Same Row */}
-          <div className="mb-4 flex items-start gap-4 flex-wrap justify-between">
-            {/* Evaluation Standard Toggle - Left */}
-            <div 
-              className="relative inline-flex items-center h-11 rounded-lg cursor-pointer transition-colors duration-300 overflow-hidden bg-gray-100"
-              style={{
-                width: '120px',
-                padding: '4px',
-              }}
-              onClick={() => setEvaluationStandard(evaluationStandard === 'K-ESG' ? 'ESRS' : 'K-ESG')}
-            >
-              {/* Background Labels Container */}
-              <div className="absolute inset-0 flex items-center" style={{ zIndex: 1 }}>
-                <span
-                  className={`flex-1 text-center text-sm font-medium transition-opacity duration-300 ${
-                    evaluationStandard === 'K-ESG' ? 'text-gray-600 opacity-0' : 'text-gray-600'
-                  }`}
+          {/* Table Section */}
+          <div>
+            {/* Search Bar and Rating Guide - Same Row */}
+            <div className="mb-4 flex items-start gap-4 flex-wrap">
+              {/* Search Bar */}
+              <div className="flex items-center gap-3 flex-1 min-w-[300px]">
+                <div className="relative flex-1 max-w-md">
+                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
+                  <input
+                    type="text"
+                    placeholder="회사명 검색"
+                    value={searchInput}
+                    onChange={(e) => setSearchInput(e.target.value)}
+                    onKeyPress={handleKeyPress}
+                    className="w-full pl-10 pr-4 py-2.5 bg-white text-gray-900 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#0D4ABB] focus:border-transparent"
+                  />
+                </div>
+                <button
+                  onClick={handleSearch}
+                  className="px-6 py-2.5 bg-[#0D4ABB] text-white rounded-lg hover:bg-[#0a3a9b] transition-colors font-medium whitespace-nowrap"
                 >
                   K-ESG
                 </span>
@@ -285,7 +288,6 @@ export default function RatingPage() {
                   {evaluationStandard === 'K-ESG' ? 'K-ESG' : 'ESRS'}
                 </span>
               </div>
-            </div>
 
             {/* Rating Guide - Right */}
             <div className="bg-white border border-gray-200 rounded-lg p-2.5 shadow-sm">
@@ -298,33 +300,38 @@ export default function RatingPage() {
                   <span className="px-1.5 py-0.5 rounded bg-green-100 text-green-800 border border-green-200 font-medium text-[10px]">S</span>
                   <span className="text-gray-600 text-xs">100점</span>
                 </div>
-                <div className="flex items-center gap-1.5">
-                  <span className="px-1.5 py-0.5 rounded bg-green-100 text-green-800 border border-green-200 font-medium text-[10px]">A+</span>
-                  <span className="text-gray-600 text-xs">95점 이상</span>
-                </div>
-                <div className="flex items-center gap-1.5">
-                  <span className="px-1.5 py-0.5 rounded bg-green-100 text-green-800 border border-green-200 font-medium text-[10px]">A</span>
-                  <span className="text-gray-600 text-xs">90점 이상</span>
-                </div>
-                <div className="flex items-center gap-1.5">
-                  <span className="px-1.5 py-0.5 rounded bg-blue-100 text-blue-800 border border-blue-200 font-medium text-[10px]">B+</span>
-                  <span className="text-gray-600 text-xs">85점 이상</span>
-                </div>
-                <div className="flex items-center gap-1.5">
-                  <span className="px-1.5 py-0.5 rounded bg-blue-100 text-blue-800 border border-blue-200 font-medium text-[10px]">B</span>
-                  <span className="text-gray-600 text-xs">80점 이상</span>
-                </div>
-                <div className="flex items-center gap-1.5">
-                  <span className="px-1.5 py-0.5 rounded bg-yellow-100 text-yellow-800 border border-yellow-200 font-medium text-[10px]">C+</span>
-                  <span className="text-gray-600 text-xs">75점 이상</span>
-                </div>
-                <div className="flex items-center gap-1.5">
-                  <span className="px-1.5 py-0.5 rounded bg-yellow-100 text-yellow-800 border border-yellow-200 font-medium text-[10px]">C</span>
-                  <span className="text-gray-600 text-xs">70점 이상</span>
+                <div className="flex items-center gap-3 flex-wrap text-xs">
+                  <div className="flex items-center gap-1.5">
+                    <span className="px-1.5 py-0.5 rounded bg-green-100 text-green-800 border border-green-200 font-medium text-[10px]">S</span>
+                    <span className="text-gray-600 text-xs">100점</span>
+                  </div>
+                  <div className="flex items-center gap-1.5">
+                    <span className="px-1.5 py-0.5 rounded bg-green-100 text-green-800 border border-green-200 font-medium text-[10px]">A+</span>
+                    <span className="text-gray-600 text-xs">95점 이상</span>
+                  </div>
+                  <div className="flex items-center gap-1.5">
+                    <span className="px-1.5 py-0.5 rounded bg-green-100 text-green-800 border border-green-200 font-medium text-[10px]">A</span>
+                    <span className="text-gray-600 text-xs">90점 이상</span>
+                  </div>
+                  <div className="flex items-center gap-1.5">
+                    <span className="px-1.5 py-0.5 rounded bg-blue-100 text-blue-800 border border-blue-200 font-medium text-[10px]">B+</span>
+                    <span className="text-gray-600 text-xs">85점 이상</span>
+                  </div>
+                  <div className="flex items-center gap-1.5">
+                    <span className="px-1.5 py-0.5 rounded bg-blue-100 text-blue-800 border border-blue-200 font-medium text-[10px]">B</span>
+                    <span className="text-gray-600 text-xs">80점 이상</span>
+                  </div>
+                  <div className="flex items-center gap-1.5">
+                    <span className="px-1.5 py-0.5 rounded bg-yellow-100 text-yellow-800 border border-yellow-200 font-medium text-[10px]">C+</span>
+                    <span className="text-gray-600 text-xs">75점 이상</span>
+                  </div>
+                  <div className="flex items-center gap-1.5">
+                    <span className="px-1.5 py-0.5 rounded bg-yellow-100 text-yellow-800 border border-yellow-200 font-medium text-[10px]">C</span>
+                    <span className="text-gray-600 text-xs">70점 이상</span>
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
 
           {/* Company Rating Table */}
           <div className="bg-white border border-gray-200 rounded-lg overflow-hidden">
