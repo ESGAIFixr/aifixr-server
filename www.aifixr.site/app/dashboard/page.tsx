@@ -5,13 +5,14 @@ import { useRouter } from "next/navigation";
 import { AuthService } from "@/lib/oauthservice";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
-import { Sparkles, FileText, Edit3, BarChart3, Clock, CheckCircle2, Award, Newspaper, Megaphone, Network } from "lucide-react";
+import { Sparkles } from "lucide-react";
 import DataSharingModal from "@/components/DataSharingModal";
 import Level1Survey from "@/components/supply/level1-survey";
 import Level2Dashboard from "@/components/supply/level2-dashboard";
 import Level3Reporting from "@/components/supply/level3-reporting";
+import CustomerESGRequests from "@/components/supply/customer-esg-requests";
 
-type TabType = "level1" | "level2" | "level3";
+type TabType = "level1" | "level2" | "level3" | "customerRequests";
 
 export default function DashboardPage() {
   const router = useRouter();
@@ -21,12 +22,24 @@ export default function DashboardPage() {
   const [selectedCompany, setSelectedCompany] = useState<{ name: string; date: string } | null>(null);
   const [sharedCompanies, setSharedCompanies] = useState<Set<string>>(new Set());
   const [activeTab, setActiveTab] = useState<TabType>("level1");
+  const [showWelcome, setShowWelcome] = useState(false);
+  const [showCustomerESGRequests, setShowCustomerESGRequests] = useState(false);
+
+  // sessionStorage에서 activeTab 읽기
+  useEffect(() => {
+    const savedTab = sessionStorage.getItem('activeTab') as TabType | null;
+    if (savedTab && ['level1', 'level2', 'level3', 'customerRequests'].includes(savedTab)) {
+      setActiveTab(savedTab);
+      sessionStorage.removeItem('activeTab'); // 사용 후 제거
+    }
+  }, []);
 
   // SME tabs navigation
   const tabs = [
     { id: "level1" as TabType, name: "Level 1", subtitle: "공급망 제출", color: "#5B3BFA" },
     { id: "level2" as TabType, name: "Level 2", subtitle: "내부 관리", color: "#00A3B5" },
     { id: "level3" as TabType, name: "Level 3", subtitle: "지속가능경영", color: "#6B23C0" },
+    { id: "customerRequests" as TabType, name: "Customer ESG Requests", subtitle: "", color: "#8B5CF6" },
   ];
 
   // 예시 데이터 - 추후 API로 대체
@@ -44,6 +57,18 @@ export default function DashboardPage() {
     }
     const currentUser = AuthService.getCurrentUser();
     setUser(currentUser);
+    
+    // 환영 메시지 표시 (페이지 로드 시마다)
+    if (currentUser) {
+      setShowWelcome(true);
+      
+      // 3초 후 자동으로 사라지기
+      const timer = setTimeout(() => {
+        setShowWelcome(false);
+      }, 3000);
+      
+      return () => clearTimeout(timer);
+    }
   }, [router]);
 
   if (!user) {
@@ -62,85 +87,40 @@ export default function DashboardPage() {
       {/* Header */}
       <Header onLoginClick={() => setIsLoginModalOpen(true)} />
 
+      {/* Welcome Popup */}
+      <div className={`fixed top-20 left-4 z-50 transition-all duration-500 ease-in-out ${
+        showWelcome ? 'translate-x-0 opacity-100' : '-translate-x-full opacity-0 pointer-events-none'
+      }`}>
+        <div className="bg-white rounded-xl shadow-2xl p-4 flex items-center gap-3 border border-gray-200 max-w-[320px]">
+          <div className="w-12 h-12 rounded-full bg-gradient-to-br from-[#0D4ABB] to-[#00D4FF] flex items-center justify-center flex-shrink-0">
+            <Sparkles className="w-6 h-6 text-white" />
+          </div>
+          <div className="flex-1 min-w-0">
+            <h1 className="text-lg font-bold text-[#1a2332] mb-0.5 leading-tight">
+              환영합니다, {user?.nickname || user?.name || '사용자'}님! 👋
+            </h1>
+            <p className="text-gray-600 text-xs">
+              AIFix로 ESG 경영을 시작하세요
+            </p>
+          </div>
+          <button
+            onClick={() => setShowWelcome(false)}
+            className="ml-2 text-gray-400 hover:text-gray-600 transition-colors flex-shrink-0"
+          >
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+        </div>
+      </div>
+
       {/* Main Content */}
       <main className="pt-[72px] pb-20">
-        <div className="max-w-[1440px] mx-auto px-8 py-12">
-          {/* Welcome Section */}
-          <div className="mb-12">
-            <div className="flex items-center gap-4 mb-4">
-              <div className="w-16 h-16 rounded-full bg-gradient-to-br from-[#0D4ABB] to-[#00D4FF] flex items-center justify-center">
-                <Sparkles className="w-8 h-8 text-white" />
-              </div>
-              <div>
-                <h1 className="text-4xl font-bold text-[#1a2332] mb-2">
-                  환영합니다, {user.nickname || user.name || '사용자'}님! 👋
-                </h1>
-                <p className="text-gray-600 text-lg">
-                  AIFix로 ESG 경영을 시작하세요
-                </p>
-              </div>
-            </div>
-          </div>
-
-          {/* Navigation Cards - 얇은 카드 */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
-            {/* 기업 ESG 등급 */}
-            <div
-              onClick={() => router.push('/rating')}
-              className="bg-white rounded-xl p-4 shadow-md hover:shadow-lg transition-all cursor-pointer group border border-gray-100"
-            >
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-[#0D4ABB] to-[#00D4FF] flex items-center justify-center flex-shrink-0">
-                  <Award className="w-5 h-5 text-white" />
-                </div>
-                <div className="flex-1">
-                  <h3 className="font-semibold text-[#1a2332] text-sm">기업 ESG 등급</h3>
-                  <p className="text-xs text-gray-500 mt-0.5">기업 ESG 평가 확인</p>
-                </div>
-              </div>
-            </div>
-
-            {/* ESG 소식 */}
-            <div className="bg-white rounded-xl p-4 shadow-md border border-gray-100 opacity-60">
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-lg bg-gray-100 flex items-center justify-center flex-shrink-0">
-                  <Newspaper className="w-5 h-5 text-gray-400" />
-                </div>
-                <div className="flex-1">
-                  <h3 className="font-semibold text-[#1a2332] text-sm">ESG 소식</h3>
-                  <p className="text-xs text-gray-500 mt-0.5">준비 중입니다</p>
-                </div>
-              </div>
-            </div>
-
-            {/* 공지사항 */}
-            <div className="bg-white rounded-xl p-4 shadow-md border border-gray-100 opacity-60">
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-lg bg-gray-100 flex items-center justify-center flex-shrink-0">
-                  <Megaphone className="w-5 h-5 text-gray-400" />
-                </div>
-                <div className="flex-1">
-                  <h3 className="font-semibold text-[#1a2332] text-sm">공지사항</h3>
-                  <p className="text-xs text-gray-500 mt-0.5">준비 중입니다</p>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* Supply Tabs Navigation */}
-          <div className="bg-white border-b-2 border-gray-200 sticky top-[72px] z-40 shadow-sm mb-6">
-            <div className="max-w-[1440px] mx-auto px-8 py-4">
-              <div className="flex items-center justify-between mb-4">
-                <div className="flex items-center gap-4">
-                  <h2 className="text-xl font-bold">AIFIXR</h2>
-                  <span className="px-3 py-1 bg-[#F6F8FB] rounded-full text-sm text-gray-600">
-                    중소기업 모드
-                  </span>
-                </div>
-              </div>
-
-              {/* Tabs */}
-              <nav className="flex gap-2">
+        {/* Supply Tabs Navigation */}
+        <div className="sticky top-[72px] z-40 mb-0">
+          <div className="max-w-[1440px] mx-auto px-8 py-4">
+            {/* Tabs */}
+            <nav className="flex gap-2">
                 {tabs.map((tab) => (
                   <button
                     key={tab.id}
@@ -148,32 +128,56 @@ export default function DashboardPage() {
                     className={`flex-1 px-6 py-4 rounded-xl transition-all ${
                       activeTab === tab.id
                         ? "bg-gradient-to-r from-[#5B3BFA] to-[#00B4FF] text-white shadow-lg"
-                        : "bg-gray-100 hover:bg-gray-200"
+                        : "bg-gray-200 hover:bg-gray-300 border-2 border-gray-300"
                     }`}
                   >
                     <div className="text-center">
-                      <p className={activeTab === tab.id ? "text-white" : "text-gray-900"}>
+                      <p className={`font-bold ${
+                        activeTab === tab.id ? "text-white text-xl" : "text-gray-900 text-xl"
+                      }`}>
                         {tab.name}
                       </p>
-                      <p
-                        className={`text-sm ${
-                          activeTab === tab.id ? "text-white text-opacity-90" : "text-gray-600"
-                        }`}
-                      >
-                        {tab.subtitle}
-                      </p>
+                      {tab.subtitle && (
+                        <p
+                          className={`font-semibold ${
+                            activeTab === tab.id ? "text-white text-opacity-90 text-base" : "text-gray-700 text-base"
+                          }`}
+                        >
+                          {tab.subtitle}
+                        </p>
+                      )}
                     </div>
                   </button>
                 ))}
-              </nav>
-            </div>
+            </nav>
           </div>
+        </div>
 
+        <div className="max-w-[1440px] mx-auto px-8 pt-0 pb-12">
           {/* Supply Content */}
           <div className="-mx-8">
-            {activeTab === "level1" && <Level1Survey />}
-            {activeTab === "level2" && <Level2Dashboard />}
-            {activeTab === "level3" && <Level3Reporting />}
+            {showCustomerESGRequests ? (
+              <CustomerESGRequests 
+                onTabChange={(tab) => {
+                  setActiveTab(tab)
+                  setShowCustomerESGRequests(false)
+                }}
+              />
+            ) : (
+              <>
+                {activeTab === "level1" && <Level1Survey />}
+                {activeTab === "level2" && <Level2Dashboard />}
+                {activeTab === "level3" && <Level3Reporting />}
+                {activeTab === "customerRequests" && (
+                  <CustomerESGRequests 
+                    onTabChange={(tab) => {
+                      setActiveTab(tab)
+                      setShowCustomerESGRequests(false)
+                    }}
+                  />
+                )}
+              </>
+            )}
           </div>
         </div>
       </main>

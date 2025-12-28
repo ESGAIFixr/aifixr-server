@@ -125,11 +125,9 @@ export default function Level3Reporting() {
 
   return (
     <div className="min-h-screen bg-[#F6F8FB] pb-12">
-      <div className="max-w-7xl mx-auto px-6 py-8">
+      <div className="max-w-[1440px] mx-auto px-8 py-8">
         {/* Dashboard Section */}
         <div className="bg-white rounded-xl shadow-sm p-8 mb-6">
-          <h2 className="text-2xl font-bold text-[#1a2332] mb-6">대시보드</h2>
-          
           {/* Main Features Grid */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
             {/* Self Diagnosis */}

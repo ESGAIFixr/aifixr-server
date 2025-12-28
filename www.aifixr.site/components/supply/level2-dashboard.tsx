@@ -102,7 +102,7 @@ export default function Level2Dashboard({ companyName = "A전자" }: Level2Dashb
 
   return (
     <div className="min-h-screen bg-[#F6F8FB] pb-12">
-      <div className="max-w-7xl mx-auto px-6 py-8">
+      <div className="max-w-[1440px] mx-auto px-8 py-8">
         {/* Section 1: 관리 수준 변화 시각화 */}
         <div className="bg-white rounded-xl shadow-sm p-8 mb-6">
           <h2 className="mb-6">{companyName} ESG 관리 수준 변화 (Level 1 대비)</h2>
