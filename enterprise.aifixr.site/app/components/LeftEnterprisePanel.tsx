@@ -1,22 +1,20 @@
 'use client';
 
 import { useState } from "react";
-import { LayoutDashboard, Building2, FileText, Bell, User, ClipboardList, ChevronLeft, ChevronRight } from "lucide-react";
+import { LayoutDashboard, Building2, Bell, User, ChevronLeft, ChevronRight, FolderOpen } from "lucide-react";
 import { Tooltip, TooltipContent, TooltipTrigger } from "./ui/tooltip";
 
 const menuItems = [
   { id: "portal", icon: LayoutDashboard, label: "대시보드", screen: "portal" },
-  { id: "dashboard", icon: LayoutDashboard, label: "대시보드(백업용)", screen: "dashboard" },
-  { id: "sme-list", icon: Building2, label: "관계사 목록", screen: "sme-list" },
-  { id: "sme-diagnosis", icon: ClipboardList, label: "관계사 진단 관리", screen: "sme-diagnosis" },
-  { id: "report-center", icon: FileText, label: "관계사 보고서 관리", screen: "report-center" },
+  { id: "dashboard", icon: FolderOpen, label: "관계사 문서관리", screen: "dashboard" },
+  { id: "sme-list", icon: Building2, label: "협력사 요청", screen: "sme-list" },
   { id: "notifications", icon: Bell, label: "알림", screen: "notifications" },
   { id: "profile", icon: User, label: "계정 설정", screen: "profile" },
 ];
 
 interface LeftEnterprisePanelProps {
   currentPage?: string;
-  onNavigate?: (screen: string) => void;
+  onNavigate?: (screen: any, companyId?: string, reportId?: string) => void;
   isCollapsed?: boolean;
   onToggle?: () => void;
 }
@@ -29,15 +27,29 @@ export function LeftEnterprisePanel({ currentPage = "portal", onNavigate, isColl
   };
 
   return (
-    <div className={`${isCollapsed ? 'w-20' : 'w-80'} shrink-0 rounded-2xl bg-white shadow-[0_4px_20px_rgba(15,23,42,0.08)] overflow-hidden flex flex-col transition-all duration-300`}>
+    <div className={`${isCollapsed ? 'w-20' : 'w-80'} h-full rounded-2xl bg-white shadow-[0_4px_20px_rgba(15,23,42,0.08)] overflow-hidden flex flex-col transition-all duration-300`}>
       {/* Logo / Title */}
-      <div className={`px-5 py-4 border-b border-gray-200 flex items-center ${isCollapsed ? 'justify-center px-3' : 'gap-3'}`}>
-        <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-[#5B3BFA] to-[#00B4FF]" />
-        {!isCollapsed && (
-          <div>
-            <p className="text-sm font-semibold text-[#0F172A]">AIFIX Enterprise</p>
-            <p className="text-xs text-[#8C8C8C]">대시보드 · 관계사 관리</p>
-          </div>
+      <div className={`px-5 py-4 border-b border-gray-200 flex items-center ${isCollapsed ? 'justify-center px-3' : 'justify-between gap-3'}`}>
+        <div className="flex items-center gap-3">
+          <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-[#5B3BFA] to-[#00B4FF]" />
+          {!isCollapsed && (
+            <div>
+              <p className="text-sm font-semibold text-[#0F172A]">AIFIX Enterprise</p>
+              <p className="text-xs text-[#8C8C8C]">대시보드 · 관계사 관리</p>
+            </div>
+          )}
+        </div>
+        {onToggle && (
+          <button
+            onClick={onToggle}
+            className={`rounded-full bg-white shadow-sm border border-gray-200 flex items-center justify-center hover:bg-gray-50 transition-all ${isCollapsed ? 'w-9 h-9' : 'w-6 h-6'}`}
+          >
+            {isCollapsed ? (
+              <ChevronRight className="w-4 h-4 text-gray-600" />
+            ) : (
+              <ChevronLeft className="w-4 h-4 text-gray-600" />
+            )}
+          </button>
         )}
       </div>
 
