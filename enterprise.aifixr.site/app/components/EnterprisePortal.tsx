@@ -1,7 +1,10 @@
 "use client";
 
 import { useState } from "react";
-import { Search, Filter, AlertTriangle, TrendingUp, FileDown, Building2, ChevronRight } from "lucide-react";
+import { Search, Filter, AlertTriangle, FileDown, ChevronRight } from "lucide-react";
+import { Card } from "./ui/card";
+import { Button } from "./ui/button";
+import { PieChart, Pie, Cell, ResponsiveContainer, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, BarChart, Bar } from "recharts";
 
 interface Supplier {
   id: string;
@@ -86,13 +89,47 @@ const suppliers: Supplier[] = [
 ];
 
 const heatmapData = [
+  { category: "ESG", high: 28, medium: 48, low: 24 },
   { category: "E", high: 35, medium: 45, low: 20 },
   { category: "S", high: 28, medium: 52, low: 20 },
   { category: "G", high: 22, medium: 48, low: 30 },
 ];
 
+const gradeDistribution = [
+  { name: 'A등급', value: 12, color: '#00B4FF' },
+  { name: 'B등급', value: 23, color: '#5B3BFA' },
+  { name: 'C등급', value: 18, color: '#A58DFF' },
+  { name: 'D등급', value: 7, color: '#8C8C8C' },
+];
+
+const trendData = [
+  { month: '1월', environment: 72, social: 68, governance: 75 },
+  { month: '2월', environment: 74, social: 70, governance: 76 },
+  { month: '3월', environment: 76, social: 72, governance: 78 },
+  { month: '4월', environment: 78, social: 74, governance: 80 },
+  { month: '5월', environment: 80, social: 76, governance: 82 },
+  { month: '6월', environment: 82, social: 78, governance: 84 },
+];
+
+const industryData = [
+  { industry: 'IT/소프트웨어', score: 85 },
+  { industry: '제조', score: 78 },
+  { industry: '에너지', score: 82 },
+  { industry: '환경', score: 88 },
+  { industry: '물류', score: 72 },
+  { industry: '바이오', score: 80 },
+];
+
+const recentUpdates = [
+  { id: '1', company: 'A사', level: 'Level 1', revision: '-', date: '26.11.28', status: '완료', statusColor: 'bg-[#00B4FF]' },
+  { id: '2', company: 'B사', level: 'Level 2', revision: '안전 점검 항목 문서화', date: '26.11.25', status: '진행중', statusColor: 'bg-[#A58DFF]' },
+  { id: '3', company: 'C사', level: 'Level 3', revision: '지속가능경영보고서 초안', date: '26.11.22', status: '수정 중', statusColor: 'bg-[#E30074]' },
+  { id: '4', company: 'D사', level: 'Level 1', revision: '환경 영향 평가서 제출', date: '26.11.20', status: '완료', statusColor: 'bg-[#00B4FF]' },
+  { id: '5', company: 'E사', level: 'Level 2', revision: '사회공헌 활동 보고서', date: '26.11.18', status: '진행중', statusColor: 'bg-[#A58DFF]' },
+];
+
 interface EnterprisePortalProps {
-  onNavigate?: (screen: string) => void;
+  onNavigate?: (screen: any, companyId?: string, reportId?: string) => void;
 }
 
 export default function EnterprisePortal({ onNavigate }: EnterprisePortalProps) {
@@ -141,56 +178,10 @@ export default function EnterprisePortal({ onNavigate }: EnterprisePortalProps) 
   return (
     <div className="min-h-screen bg-[#F6F8FB] pb-12">
       <div className="max-w-7xl mx-auto px-6 py-8">
-        {/* Overview Stats */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-6">
-          <div className="bg-white rounded-xl shadow-sm p-6">
-            <div className="flex items-center justify-between mb-2">
-              <p className="text-sm text-gray-600">전체 협력사</p>
-              <Building2 className="w-5 h-5 text-[#0B2562]" />
-            </div>
-            <h2 className="text-[#0B2562]">{suppliers.length}개</h2>
-            <p className="text-sm text-gray-500 mt-1">Level 1 제출 완료</p>
-          </div>
-
-          <div 
-            className="bg-gradient-to-br from-red-50 to-red-100 rounded-xl shadow-sm p-6 border-2 border-red-200 cursor-pointer hover:shadow-md transition-all"
-            onClick={() => setShowHighRiskModal(true)}
-          >
-            <div className="flex items-center justify-between mb-2">
-              <p className="text-sm text-red-700">고위험 협력사</p>
-              <AlertTriangle className="w-5 h-5 text-red-600" />
-            </div>
-            <h2 className="text-red-700">{highRiskSuppliers.length}개</h2>
-            <p className="text-sm text-red-600 mt-1">즉시 관리 필요</p>
-          </div>
-
-          <div className="bg-gradient-to-br from-green-50 to-green-100 rounded-xl shadow-sm p-6 border-2 border-green-200">
-            <div className="flex items-center justify-between mb-2">
-              <p className="text-sm text-green-700">개선 진행 중</p>
-              <TrendingUp className="w-5 h-5 text-green-600" />
-            </div>
-            <h2 className="text-green-700">
-              {suppliers.reduce((sum, s) => sum + s.improvementCount, 0)}건
-            </h2>
-            <p className="text-sm text-green-600 mt-1">Level 2 활동</p>
-          </div>
-
-          <div className="bg-gradient-to-br from-blue-50 to-blue-100 rounded-xl shadow-sm p-6 border-2 border-blue-200">
-            <div className="flex items-center justify-between mb-2">
-              <p className="text-sm text-blue-700">평균 리스크 점수</p>
-              <div className="w-5 h-5 rounded-full bg-[#00A3B5]" />
-            </div>
-            <h2 className="text-blue-700">
-              {Math.round(suppliers.reduce((sum, s) => sum + s.overallRisk, 0) / suppliers.length)}점
-            </h2>
-            <p className="text-sm text-blue-600 mt-1">100점 만점</p>
-          </div>
-        </div>
-
-        {/* Section 1: 공급망 리스크 히트맵 */}
+        {/* Section 1: 공급망 리스크 현황 */}
         <div className="bg-white rounded-xl shadow-sm p-8 mb-6">
           <div className="flex items-center justify-between mb-6">
-            <h2>공급망 리스크 히트맵</h2>
+            <h2>공급망 리스크 현황</h2>
             {onNavigate && (
               <button
                 onClick={() => onNavigate('sme-list')}
@@ -202,67 +193,99 @@ export default function EnterprisePortal({ onNavigate }: EnterprisePortalProps) 
             )}
           </div>
 
-          <div className="grid grid-cols-3 gap-6 mb-8">
-            {heatmapData.map((item) => (
-              <div key={item.category} className="border-2 border-gray-200 rounded-xl p-6">
-                <h4 className="mb-4 text-center">
-                  {item.category === "E" ? "환경" : item.category === "S" ? "사회" : "지배구조"}
-                </h4>
-                <div className="space-y-3">
-                  <div className="flex items-center gap-3">
-                    <div className="w-12 h-8 rounded" style={{ backgroundColor: "#E30074" }} />
-                    <div className="flex-1">
-                      <div className="flex justify-between items-center mb-1">
-                        <span className="text-sm">높음</span>
-                        <span className="text-sm text-gray-600">{item.high}%</span>
-                      </div>
-                      <div className="w-full bg-gray-200 rounded-full h-2">
-                        <div
-                          className="h-2 rounded-full"
-                          style={{ width: `${item.high}%`, backgroundColor: "#E30074" }}
-                        />
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="flex items-center gap-3">
-                    <div className="w-12 h-8 rounded" style={{ backgroundColor: "#F59E0B" }} />
-                    <div className="flex-1">
-                      <div className="flex justify-between items-center mb-1">
-                        <span className="text-sm">중간</span>
-                        <span className="text-sm text-gray-600">{item.medium}%</span>
-                      </div>
-                      <div className="w-full bg-gray-200 rounded-full h-2">
-                        <div
-                          className="h-2 rounded-full"
-                          style={{ width: `${item.medium}%`, backgroundColor: "#F59E0B" }}
-                        />
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="flex items-center gap-3">
-                    <div className="w-12 h-8 rounded" style={{ backgroundColor: "#4CAF50" }} />
-                    <div className="flex-1">
-                      <div className="flex justify-between items-center mb-1">
-                        <span className="text-sm">낮음</span>
-                        <span className="text-sm text-gray-600">{item.low}%</span>
-                      </div>
-                      <div className="w-full bg-gray-200 rounded-full h-2">
-                        <div
-                          className="h-2 rounded-full"
-                          style={{ width: `${item.low}%`, backgroundColor: "#4CAF50" }}
-                        />
-                      </div>
-                    </div>
-                  </div>
+          <div className="flex gap-6">
+            {/* 좌측: 고위험 협력사 및 평균 리스크 점수 */}
+            <div className="flex flex-col gap-6 w-64">
+              <div
+                className="bg-gradient-to-br from-red-50 to-red-100 rounded-xl shadow-sm p-6 border-2 border-red-200 cursor-pointer hover:shadow-md transition-all"
+                onClick={() => setShowHighRiskModal(true)}
+              >
+                <div className="flex items-center justify-between mb-2">
+                  <p className="text-sm text-red-700">고위험 협력사</p>
+                  <AlertTriangle className="w-5 h-5 text-red-600" />
                 </div>
+                <h2 className="text-red-700">{highRiskSuppliers.length}개</h2>
+                <p className="text-sm text-red-600 mt-1">즉시 관리 필요</p>
               </div>
-            ))}
+
+              <div className="bg-gradient-to-br from-blue-50 to-blue-100 rounded-xl shadow-sm p-6 border-2 border-blue-200">
+                <div className="flex items-center justify-between mb-2">
+                  <p className="text-sm text-blue-700">평균 리스크 점수</p>
+                  <div className="w-5 h-5 rounded-full bg-[#00A3B5]" />
+                </div>
+                <h2 className="text-blue-700 mb-1">
+                  {Math.round(suppliers.reduce((sum, s) => sum + s.overallRisk, 0) / suppliers.length)}점
+                </h2>
+                <p className="text-sm text-blue-600">100점 만점</p>
+                <p className="text-sm text-blue-600 mt-1">평균 진단 점수 증가율 +5.2%</p>
+              </div>
+            </div>
+
+            {/* 우측: 히트맵 차트 */}
+            <div className="flex-1">
+              <div className="grid grid-cols-4 gap-6 mb-8">
+                {heatmapData.map((item) => (
+                  <div key={item.category} className="border-2 border-gray-200 rounded-xl p-6">
+                    <h4 className="mb-4 text-center">
+                      {item.category === "E" ? "환경" : item.category === "S" ? "사회" : item.category === "G" ? "지배구조" : "ESG"}
+                    </h4>
+                    <div className="space-y-3">
+                      <div className="flex items-center gap-3">
+                        <div className="w-12 h-8 rounded" style={{ backgroundColor: "#E30074" }} />
+                        <div className="flex-1">
+                          <div className="flex justify-between items-center mb-1">
+                            <span className="text-sm">높음</span>
+                            <span className="text-sm text-gray-600">{item.high}%</span>
+                          </div>
+                          <div className="w-full bg-gray-200 rounded-full h-2">
+                            <div
+                              className="h-2 rounded-full"
+                              style={{ width: `${item.high}%`, backgroundColor: "#E30074" }}
+                            />
+                          </div>
+                        </div>
+                      </div>
+
+                      <div className="flex items-center gap-3">
+                        <div className="w-12 h-8 rounded" style={{ backgroundColor: "#F59E0B" }} />
+                        <div className="flex-1">
+                          <div className="flex justify-between items-center mb-1">
+                            <span className="text-sm">중간</span>
+                            <span className="text-sm text-gray-600">{item.medium}%</span>
+                          </div>
+                          <div className="w-full bg-gray-200 rounded-full h-2">
+                            <div
+                              className="h-2 rounded-full"
+                              style={{ width: `${item.medium}%`, backgroundColor: "#F59E0B" }}
+                            />
+                          </div>
+                        </div>
+                      </div>
+
+                      <div className="flex items-center gap-3">
+                        <div className="w-12 h-8 rounded" style={{ backgroundColor: "#4CAF50" }} />
+                        <div className="flex-1">
+                          <div className="flex justify-between items-center mb-1">
+                            <span className="text-sm">낮음</span>
+                            <span className="text-sm text-gray-600">{item.low}%</span>
+                          </div>
+                          <div className="w-full bg-gray-200 rounded-full h-2">
+                            <div
+                              className="h-2 rounded-full"
+                              style={{ width: `${item.low}%`, backgroundColor: "#4CAF50" }}
+                            />
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
           </div>
 
           {/* Filters */}
-          <div className="flex gap-4 mb-6">
+          <div className="flex gap-4 mt-6">
             <div className="flex-1 relative">
               <Search className="w-5 h-5 absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
               <input
@@ -291,9 +314,41 @@ export default function EnterprisePortal({ onNavigate }: EnterprisePortalProps) 
           </div>
         </div>
 
+        {/* 전체 협력사 레벨별 요약 */}
+        <div className="bg-white rounded-xl shadow-sm p-8 mb-6">
+          <div className="flex items-center justify-between mb-6">
+            <h2>전체 협력사 레벨별 요약</h2>
+            <button className="flex items-center gap-2 px-4 py-2 bg-white border border-gray-200 text-[#0B2562] rounded-lg hover:shadow-md hover:bg-gray-50 transition-all text-sm">
+              <FileDown className="w-4 h-4" />
+              <span>공급망 리스크 관리 현황 보고서 생성</span>
+            </button>
+          </div>
+          <div className="overflow-x-auto">
+            <table className="w-full">
+              <thead className="bg-[#F6F8FB]">
+                <tr>
+                  <th className="text-center p-4 text-[#0F172A] rounded-l-xl">총 협력사 수</th>
+                  <th className="text-center p-4 text-[#0F172A]">레벨 1 (완료)</th>
+                  <th className="text-center p-4 text-[#0F172A]">레벨 2 (진행중)</th>
+                  <th className="text-center p-4 text-[#0F172A]">레벨 3 (진행중)</th>
+                  <th className="text-center p-4 text-[#0F172A] rounded-r-xl">지속가능경영보고서 발간율</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr className="border-t border-gray-100">
+                  <td className="p-4 text-center text-[#0F172A] font-medium">{suppliers.length}개</td>
+                  <td className="p-4 text-center text-[#0F172A]">5개</td>
+                  <td className="p-4 text-center text-[#0F172A]">18건</td>
+                  <td className="p-4 text-center text-[#0F172A]">2건</td>
+                  <td className="p-4 text-center text-[#0F172A]">45%</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
 
         {/* Compliance Report Section */}
-        <div className="bg-gradient-to-br from-[#0B2562] to-[#5B3BFA] rounded-xl shadow-sm p-8 text-white">
+        <div className="bg-gradient-to-br from-[#0B2562] to-[#5B3BFA] rounded-xl shadow-sm p-8 text-white mb-8">
           <h2 className="mb-4 text-white">규제 대응 증빙 보고서 자동 생성</h2>
           <p className="mb-6 text-white text-opacity-90">
             CSRD/CSDDD 등 EU 공급망 실사 규제에 대응하기 위한 증빙 자료를 자동으로 생성합니다.
@@ -303,6 +358,127 @@ export default function EnterprisePortal({ onNavigate }: EnterprisePortalProps) 
             <span>공급망 리스크 관리 현황 보고서 생성</span>
           </button>
         </div>
+
+        {/* ESG Distribution Charts */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+          {/* Donut Chart — ESG rating distribution */}
+          <Card className="p-6 rounded-[20px] shadow-[0_4px_20px_rgba(91,59,250,0.1)]">
+            <h3 className="text-[#0F172A] mb-6">ESG 등급 분포</h3>
+            <ResponsiveContainer width="100%" height={240}>
+              <PieChart>
+                <Pie
+                  data={gradeDistribution}
+                  cx="50%"
+                  cy="50%"
+                  innerRadius={60}
+                  outerRadius={90}
+                  paddingAngle={5}
+                  dataKey="value"
+                >
+                  {gradeDistribution.map((entry, index) => (
+                    <Cell key={`cell-${index}`} fill={entry.color} />
+                  ))}
+                </Pie>
+                <Tooltip />
+              </PieChart>
+            </ResponsiveContainer>
+            <div className="grid grid-cols-2 gap-3 mt-4">
+              {gradeDistribution.map((item) => (
+                <div key={item.name} className="flex items-center gap-2">
+                  <div className="w-3 h-3 rounded-full" style={{ backgroundColor: item.color }} />
+                  <span className="text-[#0F172A] text-sm">{item.name}</span>
+                  <span className="text-[#8C8C8C] text-sm">({item.value})</span>
+                </div>
+              ))}
+            </div>
+          </Card>
+
+          {/* Bar Chart — ESG by Industry */}
+          <Card className="p-6 rounded-[20px] shadow-[0_4px_20px_rgba(91,59,250,0.1)]">
+            <h3 className="text-[#0F172A] mb-6">업종별 ESG 점수</h3>
+            <ResponsiveContainer width="100%" height={240}>
+              <BarChart data={industryData} layout="horizontal">
+                <CartesianGrid strokeDasharray="3 3" stroke="#E5E7EB" />
+                <XAxis type="number" domain={[0, 100]} stroke="#8C8C8C" />
+                <YAxis type="category" dataKey="industry" width={80} stroke="#8C8C8C" style={{ fontSize: '12px' }} />
+                <Tooltip />
+                <Bar dataKey="score" fill="url(#colorGradient)" radius={[0, 8, 8, 0]} />
+                <defs>
+                  <linearGradient id="colorGradient" x1="0" y1="0" x2="1" y2="0">
+                    <stop offset="0%" stopColor="#5B3BFA" />
+                    <stop offset="100%" stopColor="#00B4FF" />
+                  </linearGradient>
+                </defs>
+              </BarChart>
+            </ResponsiveContainer>
+          </Card>
+
+          {/* Line Chart — ESG Trend */}
+          <Card className="p-6 rounded-[20px] shadow-[0_4px_20px_rgba(91,59,250,0.1)]">
+            <h3 className="text-[#0F172A] mb-6">ESG 추세 (6개월)</h3>
+            <ResponsiveContainer width="100%" height={240}>
+              <LineChart data={trendData}>
+                <CartesianGrid strokeDasharray="3 3" stroke="#E5E7EB" />
+                <XAxis dataKey="month" stroke="#8C8C8C" style={{ fontSize: '12px' }} />
+                <YAxis stroke="#8C8C8C" domain={[65, 85]} />
+                <Tooltip />
+                <Line type="monotone" dataKey="environment" stroke="#00B4FF" strokeWidth={2} dot={{ r: 3 }} />
+                <Line type="monotone" dataKey="social" stroke="#5B3BFA" strokeWidth={2} dot={{ r: 3 }} />
+                <Line type="monotone" dataKey="governance" stroke="#A58DFF" strokeWidth={2} dot={{ r: 3 }} />
+              </LineChart>
+            </ResponsiveContainer>
+          </Card>
+        </div>
+
+        {/* Recent Updates Log */}
+        <Card className="p-6 rounded-[20px] shadow-[0_4px_20px_rgba(91,59,250,0.1)]">
+          <div className="flex items-center justify-between mb-6">
+            <h3 className="text-[#0F172A]">Recent Updates Log</h3>
+            {onNavigate && (
+              <Button
+                variant="ghost"
+                onClick={() => onNavigate('sme-list')}
+                className="text-[#5B3BFA] hover:text-[#5B3BFA] rounded-xl"
+              >
+                View All <ChevronRight className="w-4 h-4 ml-1" />
+              </Button>
+            )}
+          </div>
+          <div className="overflow-x-auto">
+            <table className="w-full">
+              <thead className="bg-[#F6F8FB]">
+                <tr>
+                  <th className="text-left p-4 text-[#0F172A] rounded-l-xl">날짜</th>
+                  <th className="text-left p-4 text-[#0F172A]">협력사 이름</th>
+                  <th className="text-center p-4 text-[#0F172A]">단계</th>
+                  <th className="text-center p-4 text-[#0F172A]">최근 수정 내역</th>
+                  <th className="text-center p-4 text-[#0F172A] rounded-r-xl">상태</th>
+                </tr>
+              </thead>
+              <tbody>
+                {recentUpdates.map((update) => (
+                  <tr
+                    key={update.id}
+                    className="border-t border-gray-100 hover:bg-[#F6F8FB] transition-colors cursor-pointer"
+                    onClick={() => onNavigate && onNavigate('company-detail', update.id)}
+                  >
+                    <td className="p-4 text-[#8C8C8C]">{update.date}</td>
+                    <td className="p-4">
+                      <span className="text-[#0F172A]">{update.company}</span>
+                    </td>
+                    <td className="p-4 text-center text-[#0F172A]">{update.level}</td>
+                    <td className="p-4 text-center text-[#0F172A]">{update.revision}</td>
+                    <td className="p-4 text-center">
+                      <span className={`px-3 py-1 rounded-full text-white text-sm ${update.statusColor}`}>
+                        {update.status}
+                      </span>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </Card>
       </div>
 
       {/* High Risk Suppliers List Modal */}
@@ -452,7 +628,7 @@ export default function EnterprisePortal({ onNavigate }: EnterprisePortalProps) 
                 </div>
                 <div className="mt-4 p-4 bg-blue-50 border border-blue-200 rounded-lg">
                   <p className="text-sm text-blue-800">
-                    💼 대기업 방어 논리: "{selectedSupplier.name}는 Level 1 설문을 통해 현황을 투명하게 
+                    💼 대기업 방어 논리: "{selectedSupplier.name}는 Level 1 설문을 통해 현황을 투명하게
                     공개하였으며, 당사는 이를 기반으로 리스크를 파악하고 개선을 요청하였습니다."
                   </p>
                 </div>
