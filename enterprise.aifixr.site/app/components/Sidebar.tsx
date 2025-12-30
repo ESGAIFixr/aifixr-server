@@ -1,6 +1,6 @@
 'use client';
 
-import { LayoutDashboard, Building2, Bell, User, LogOut } from 'lucide-react';
+import { LayoutDashboard, Building2, FileText, Bell, User, LogOut } from 'lucide-react';
 import { Button } from './ui/button';
 
 interface SidebarProps {
@@ -12,7 +12,8 @@ interface SidebarProps {
 export function Sidebar({ currentPage, onNavigate, onLogout }: SidebarProps) {
   const menuItems = [
     { id: 'dashboard', icon: LayoutDashboard, label: '대시보드', screen: 'dashboard' },
-    { id: 'sme-list', icon: Building2, label: '협력사 요청', screen: 'sme-list' },
+    { id: 'sme-list', icon: Building2, label: '관계사 목록', screen: 'sme-list' },
+    { id: 'report-center', icon: FileText, label: '보고서 센터', screen: 'report-center' },
     { id: 'notifications', icon: Bell, label: '알림', screen: 'notifications' },
     { id: 'profile', icon: User, label: '계정 설정', screen: 'profile' },
   ];
