@@ -1,10 +1,12 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
+import { Building2, Search, Filter, RotateCcw, AlertCircle } from 'lucide-react';
 import { Sidebar } from './Sidebar';
 import { Card } from './ui/card';
 import { Button } from './ui/button';
-import { SearchAndFilter, FilterValues } from './SearchAndFilter';
-import { mockCompanies } from '../data/mockCompanies';
-import { Textarea } from './ui/textarea';
+import { Input } from './ui/input';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/select';
+import { Progress } from './ui/progress';
+import { Tooltip, TooltipContent, TooltipTrigger } from './ui/tooltip';
 
 interface SMEListProps {
   onNavigate: (screen: any, companyId?: string, reportId?: string) => void;
@@ -13,206 +15,95 @@ interface SMEListProps {
   cardOnly?: boolean; // 카드형만 보여주는 모드
 }
 
-const companies = mockCompanies;
+const companies = [
+  { id: '1', name: '테크솔루션 주식회사', industry: 'IT/소프트웨어', grade: 'A', score: 87, date: '2024.11.28', logo: '🏢' },
+  { id: '2', name: '그린에너지 코퍼레이션', industry: '에너지', grade: 'B', score: 78, date: '2024.11.25', logo: '⚡' },
+  { id: '3', name: '스마트제조 산업', industry: '제조', grade: 'A', score: 85, date: '2024.11.22', logo: '🏭' },
+  { id: '4', name: '친환경 패키징', industry: '제조', grade: 'B', score: 76, date: '2024.11.20', logo: '📦' },
+  { id: '5', name: '디지털 솔루션즈', industry: 'IT/소프트웨어', grade: 'A', score: 89, date: '2024.11.18', logo: '💻' },
+  { id: '6', name: '바이오텍 연구소', industry: '바이오/헬스케어', grade: 'B', score: 79, date: '2024.11.15', logo: '🧬' },
+  { id: '7', name: '청정수자원', industry: '환경', grade: 'A', score: 86, date: '2024.11.12', logo: '💧' },
+  { id: '8', name: '스마트 물류', industry: '물류', grade: 'C', score: 68, date: '2024.11.10', logo: '🚚' },
+];
 
-// 진행 단계 타입 정의
-type ProgressStage = 'none' | 'level1-completed' | 'level1-in-progress' | 'level2-in-progress' | 'level2-completed' | 'level3-in-progress' | 'level3-completed';
+type RequestStatus = 'none' | 'pending' | 'approved' | 'rejected';
 
-// 각 회사별 진행 단계 매핑 (임시 데이터, 나중에 실제 데이터로 교체 가능)
-const companyProgressStages: Record<string, ProgressStage> = {
-  '1': 'level1-completed',    // Level 1 완료
-  '2': 'none',                 // 미진행
-  '3': 'level2-in-progress',   // Level 2 진행 중
-  '4': 'level3-in-progress',   // Level 3 진행 중
-  '5': 'level1-completed',     // Level 1 완료
-  '6': 'level2-completed',     // Level 2 완료 (바이오텍 연구소)
-  '7': 'level1-in-progress',   // Level 1 진행 중 (청정수자원)
-  '8': 'level3-completed',     // Level 3 완료 (스마트 물류)
-};
-
-// 진행 단계 텍스트 변환 함수
-const getProgressStageText = (stage: ProgressStage): string => {
-  switch (stage) {
-    case 'level1-completed':
-      return 'Level 1 완료';
-    case 'level1-in-progress':
-      return 'Level 1 진행 중';
-    case 'level2-in-progress':
-      return 'Level 2 진행 중';
-    case 'level2-completed':
-      return 'Level 2 완료';
-    case 'level3-in-progress':
-      return 'Level 3 진행 중';
-    case 'level3-completed':
-      return 'Level 3 완료';
-    case 'none':
-    default:
-      return '미진행';
-  }
-};
+interface CompanyRequestStatus {
+  status: RequestStatus;
+  rejectionReason?: string;
+}
 
 export function SMEList({ onNavigate, onLogout, hideSidebar = false, cardOnly = false }: SMEListProps) {
   const [viewMode, setViewMode] = useState<'table' | 'card'>(cardOnly ? 'card' : 'table');
-  const [filters, setFilters] = useState<FilterValues>({
-    searchQuery: '',
-    industryFilter: 'all',
-    gradeFilter: 'all',
-    riskFilter: 'all',
-    completionFilter: 'all',
-  });
-  const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 15;
-  const [isLevel2ModalOpen, setIsLevel2ModalOpen] = useState(false);
-  const [selectedCompanyForLevel2, setSelectedCompanyForLevel2] = useState<string | null>(null);
-  const [selectedDataItems, setSelectedDataItems] = useState<Record<string, boolean>>({});
-  const [dataItemDescriptions, setDataItemDescriptions] = useState<Record<string, string>>({});
+  const [searchQuery, setSearchQuery] = useState('');
+  const [gradeFilter, setGradeFilter] = useState<string>('all');
+  const [industryFilter, setIndustryFilter] = useState<string>('all');
+  const [riskFilter, setRiskFilter] = useState<string>('all');
+  const [completionFilter, setCompletionFilter] = useState<string>('all');
+  const [requestStatuses, setRequestStatuses] = useState<Record<string, CompanyRequestStatus>>({});
 
-  // 데이터 항목 정의
-  const dataItems = {
-    total: [
-      { id: 'total-esg-grade', label: 'ESG 등급' },
-      { id: 'total-risk-level', label: '위험도' },
-      { id: 'total-completion-rate', label: '데이터 완료율' },
-      { id: 'total-recent-updates', label: '최근업데이트' },
-    ],
-    environment: [
-      { id: 'env-carbon', label: '탄소 배출량' },
-      { id: 'env-energy', label: '에너지 사용량' },
-      { id: 'env-waste', label: '폐기물 관리' },
-    ],
-    social: [
-      { id: 'social-welfare', label: '직원 복지' },
-      { id: 'social-safety', label: '안전 관리' },
-      { id: 'social-contribution', label: '사회공헌 활동' },
-    ],
-    governance: [
-      { id: 'gov-board', label: '이사회 구성' },
-      { id: 'gov-ethics', label: '윤리 경영' },
-      { id: 'gov-transparency', label: '투명성 보고' },
-    ],
+  const handleResetFilters = () => {
+    setSearchQuery('');
+    setGradeFilter('all');
+    setIndustryFilter('all');
+    setRiskFilter('all');
+    setCompletionFilter('all');
   };
 
-  // 버튼 핸들러 함수들
-  const handleViewLevel1Results = (companyId: string) => {
-    // Level 1 결과 보기: CompanyDetail 페이지로 이동
-    onNavigate('company-detail', companyId);
+  const handleRequestAll = () => {
+    const next: Record<string, CompanyRequestStatus> = {};
+    companies.forEach((c, idx) => {
+      if (c.id === '1') {
+        next[c.id] = {
+          status: 'rejected',
+          rejectionReason:
+            '요청하신 데이터는 현재 보안상의 이유로 제공이 제한되어 있습니다. 데이터 접근 권한이 필요한 경우 관리자에게 별도로 문의해주시기 바랍니다.',
+        };
+      } else if (c.id === '2') {
+        next[c.id] = {
+          status: 'rejected',
+          rejectionReason:
+            '해당 기업의 ESG 데이터는 아직 검토 단계에 있어 제공할 수 없습니다. 검토가 완료되는 대로 알려드리겠습니다.',
+        };
+      } else {
+        next[c.id] = { status: 'pending' };
+      }
+    });
+    setRequestStatuses(next);
   };
 
-  const handleRequestLevel1 = (companyId: string) => {
-    // TODO: Level 1 요청 기능 구현
-    console.log('Request Level 1 for company:', companyId);
-  };
+  const handleRequestData = (companyId: string) => {
+    setRequestStatuses(prev => {
+      const nextStatus: CompanyRequestStatus =
+        companyId === '1'
+          ? {
+            status: 'rejected',
+            rejectionReason:
+              '요청하신 데이터는 현재 보안상의 이유로 제공이 제한되어 있습니다. 데이터 접근 권한이 필요한 경우 관리자에게 별도로 문의해주시기 바랍니다.',
+          }
+          : companyId === '2'
+            ? {
+              status: 'rejected',
+              rejectionReason:
+                '해당 기업의 ESG 데이터는 아직 검토 단계에 있어 제공할 수 없습니다. 검토가 완료되는 대로 알려드리겠습니다.',
+            }
+            : { status: 'pending' };
 
-  const handleRequestLevel2 = (companyId: string) => {
-    setSelectedCompanyForLevel2(companyId);
-    setSelectedDataItems({});
-    setDataItemDescriptions({});
-    setIsLevel2ModalOpen(true);
-  };
-
-  const handleCloseLevel2Modal = () => {
-    setIsLevel2ModalOpen(false);
-    setSelectedCompanyForLevel2(null);
-    setSelectedDataItems({});
-    setDataItemDescriptions({});
-  };
-
-  const handleToggleDataItem = (itemId: string) => {
-    setSelectedDataItems(prev => ({
-      ...prev,
-      [itemId]: !prev[itemId],
-    }));
-    if (!selectedDataItems[itemId]) {
-      // 체크박스가 체크되면 설명 필드 초기화
-      setDataItemDescriptions(prev => ({
+      return {
         ...prev,
-        [itemId]: '',
-      }));
-    } else {
-      // 체크박스가 해제되면 설명 필드 제거
-      setDataItemDescriptions(prev => {
-        const newDesc = { ...prev };
-        delete newDesc[itemId];
-        return newDesc;
-      });
-    }
+        [companyId]: nextStatus,
+      };
+    });
   };
 
-  const handleSubmitLevel2Request = () => {
-    // TODO: Level 2 요청 제출 로직 구현
-    console.log('Level 2 Request for company:', selectedCompanyForLevel2);
-    console.log('Selected items:', selectedDataItems);
-    console.log('Descriptions:', dataItemDescriptions);
-    handleCloseLevel2Modal();
-  };
-
-  const getCompanyName = (companyId: string | null) => {
-    if (!companyId) return '';
-    const company = companies.find(c => c.id === companyId);
-    return company?.name || '';
-  };
-
-  const handleRequestLevel3 = (companyId: string) => {
-    // TODO: Level 3 요청 기능 구현
-    console.log('Request Level 3 for company:', companyId);
-  };
-
-  const handleViewReport = (companyId: string) => {
-    // 보고서 보기: ReportViewer 페이지로 이동 (임시로 reportId는 'r1' 사용)
-    onNavigate('report-viewer', companyId, 'r1');
-  };
-
-  // cardOnly prop이 변경될 때 viewMode 업데이트
-  useEffect(() => {
-    setViewMode(cardOnly ? 'card' : 'table');
-  }, [cardOnly]);
-
-  const handleFilterChange = (newFilters: FilterValues) => {
-    setFilters(newFilters);
-    setCurrentPage(1);
-  };
 
   const filteredCompanies = companies.filter(company => {
-    const matchesSearch = company.name.toLowerCase().includes(filters.searchQuery?.toLowerCase() || '') ||
-      company.industry.toLowerCase().includes(filters.searchQuery?.toLowerCase() || '');
-    const matchesGrade = !filters.gradeFilter || filters.gradeFilter === 'all' || company.grade === filters.gradeFilter;
-    const matchesIndustry = !filters.industryFilter || filters.industryFilter === 'all' || company.industry === filters.industryFilter;
+    const matchesSearch = company.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      company.industry.toLowerCase().includes(searchQuery.toLowerCase());
+    const matchesGrade = gradeFilter === 'all' || company.grade === gradeFilter;
+    const matchesIndustry = industryFilter === 'all' || company.industry === industryFilter;
     return matchesSearch && matchesGrade && matchesIndustry;
   });
-
-  // 정렬 로직
-  const sortedCompanies = [...filteredCompanies].sort((a, b) => {
-    const sortBy = filters.sortBy || 'name';
-    const sortOrder = filters.sortOrder || 'asc';
-
-    if (sortBy === 'name') {
-      // 이름 기준 정렬
-      const comparison = a.name.localeCompare(b.name, 'ko');
-      return sortOrder === 'asc' ? comparison : -comparison;
-    } else if (sortBy === 'date') {
-      // 날짜 기준 정렬 (YYYY.MM.DD 형식)
-      const parseDate = (dateStr: string) => {
-        const [year, month, day] = dateStr.split('.').map(Number);
-        return new Date(year, month - 1, day).getTime();
-      };
-      const dateA = parseDate(a.date);
-      const dateB = parseDate(b.date);
-      const comparison = dateA - dateB;
-      return sortOrder === 'asc' ? comparison : -comparison;
-    }
-    return 0;
-  });
-
-  // 페이지네이션 계산
-  const totalPages = Math.ceil(sortedCompanies.length / itemsPerPage);
-  const startIndex = (currentPage - 1) * itemsPerPage;
-  const endIndex = startIndex + itemsPerPage;
-  const paginatedCompanies = sortedCompanies.slice(startIndex, endIndex);
-
-  // 필터 변경 시 첫 페이지로 리셋
-  useEffect(() => {
-    setCurrentPage(1);
-  }, [filters.searchQuery, filters.gradeFilter, filters.industryFilter, filters.riskFilter]);
 
   return (
     <div className="flex min-h-screen bg-[#F6F8FB]">
@@ -222,16 +113,92 @@ export function SMEList({ onNavigate, onLogout, hideSidebar = false, cardOnly = 
         <div className="max-w-7xl mx-auto px-6 py-8">
           {/* Header */}
           <div className="mb-8">
-            <h1 className="text-[#0F172A] mb-2">{cardOnly ? "관계사 진단 관리" : "협력사 요청"}</h1>
-            <p className="text-[#8C8C8C]">{cardOnly ? "관계사 진단 관리를 위한 화면입니다" : "관계사 및 협력사 목록입니다."}</p>
+            <h1 className="text-[#0F172A] mb-2">{cardOnly ? "관계사 진단 관리" : "관계사 목록"}</h1>
+            <div className="flex items-center justify-between">
+              <p className="text-[#8C8C8C]">{cardOnly ? "관계사 진단 관리를 위한 화면입니다" : "ESG 평가가 완료된 중소기업 관계사 목록입니다"}</p>
+              {!cardOnly && (
+                <Button
+                  onClick={handleRequestAll}
+                  className="bg-gradient-to-r from-[#5B3BFA] to-[#00B4FF] rounded-xl px-5 hover:shadow-[0_4px_20px_rgba(91,59,250,0.4)] transition-all"
+                >
+                  전체 관계사 데이터 요청
+                </Button>
+              )}
+            </div>
           </div>
 
 
-          {/* Search and Filter */}
-          <SearchAndFilter
-            onFilterChange={handleFilterChange}
-            showCompletionFilter={false}
-          />
+          {/* Filters */}
+          <Card className="p-6 rounded-[20px] shadow-[0_4px_20px_rgba(91,59,250,0.1)] mb-6">
+            <div className="grid grid-cols-1 md:grid-cols-6 gap-4">
+              {/* Search */}
+              <div className="md:col-span-2">
+                <div className="relative">
+                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-[#8C8C8C]" />
+                  <Input
+                    type="text"
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    placeholder="기업명 또는 업종 검색..."
+                    className="pl-10 h-12 rounded-xl border-gray-200"
+                  />
+                </div>
+              </div>
+
+              {/* Industry Filter */}
+              <Select value={industryFilter} onValueChange={setIndustryFilter}>
+                <SelectTrigger className="h-12 rounded-xl border-2">
+                  <SelectValue placeholder="업종" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">전체 업종</SelectItem>
+                  <SelectItem value="IT/소프트웨어">IT/소프트웨어</SelectItem>
+                  <SelectItem value="제조">제조</SelectItem>
+                  <SelectItem value="에너지">에너지</SelectItem>
+                  <SelectItem value="환경">환경</SelectItem>
+                  <SelectItem value="물류">물류</SelectItem>
+                  <SelectItem value="바이오/헬스케어">바이오/헬스케어</SelectItem>
+                </SelectContent>
+              </Select>
+
+              {/* Grade Filter */}
+              <Select value={gradeFilter} onValueChange={setGradeFilter}>
+                <SelectTrigger className="h-12 rounded-xl border-2">
+                  <SelectValue placeholder="ESG 등급" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">전체 등급</SelectItem>
+                  <SelectItem value="A">A등급</SelectItem>
+                  <SelectItem value="B">B등급</SelectItem>
+                  <SelectItem value="C">C등급</SelectItem>
+                  <SelectItem value="D">D등급</SelectItem>
+                </SelectContent>
+              </Select>
+
+              {/* Risk Level Filter */}
+              <Select value={riskFilter} onValueChange={setRiskFilter}>
+                <SelectTrigger className="h-12 rounded-xl border-2">
+                  <SelectValue placeholder="위험도" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">전체 위험도</SelectItem>
+                  <SelectItem value="low">낮음</SelectItem>
+                  <SelectItem value="medium">중간</SelectItem>
+                  <SelectItem value="high">높음</SelectItem>
+                </SelectContent>
+              </Select>
+
+              {/* Reset Button */}
+              <Button
+                variant="outline"
+                onClick={handleResetFilters}
+                className="h-12 rounded-xl border-2"
+              >
+                <RotateCcw className="w-4 h-4 mr-2" />
+                필터 초기화
+              </Button>
+            </div>
+          </Card>
 
           {/* View Mode Toggle */}
           {cardOnly ? (
@@ -253,24 +220,31 @@ export function SMEList({ onNavigate, onLogout, hideSidebar = false, cardOnly = 
                 <table className="w-full">
                   <thead className="bg-[#F6F8FB]">
                     <tr>
-                      <th className="text-left p-4 text-[#0F172A] whitespace-nowrap">날짜</th>
-                      <th className="text-left p-4 text-[#0F172A]">협력사 이름</th>
+                      <th className="text-left p-4 text-[#0F172A]">관계사명</th>
                       <th className="text-left p-4 text-[#0F172A]">업종</th>
-                      <th className="text-center p-4 text-[#0F172A]">진행 단계</th>
-                      <th className="text-center p-4 text-[#0F172A]">요청하기</th>
+                      <th className="text-center p-4 text-[#0F172A]">ESG 등급</th>
+                      <th className="text-center p-4 text-[#0F172A]">위험도</th>
+                      <th className="text-center p-4 text-[#0F172A]">데이터 완료율</th>
+                      <th className="text-center p-4 text-[#0F172A]">최근 업데이트</th>
+                      <th className="text-center p-4 text-[#0F172A]">작업</th>
                     </tr>
                   </thead>
                   <tbody>
-                    {paginatedCompanies.map((company, idx) => {
-                      const progressStage = companyProgressStages[company.id] || 'none';
-                      const progressStageText = getProgressStageText(progressStage);
+                    {filteredCompanies.map((company, idx) => {
+                      const riskLevel = idx % 3 === 0 ? 'high' : idx % 3 === 1 ? 'medium' : 'low';
+                      const completion = idx % 2 === 0 ? 100 : 85;
+                      const requestStatus = requestStatuses[company.id]?.status || 'none';
+                      const isPending = requestStatus === 'pending';
+                      const isRejected = requestStatus === 'rejected';
+                      const isApproved = requestStatus === 'approved';
+                      const rejectionReason = requestStatuses[company.id]?.rejectionReason;
+                      const isDetailReveal = ['6', '7', '8'].includes(company.id) && requestStatus !== 'none';
 
                       return (
                         <tr
                           key={company.id}
                           className="border-t border-gray-100 hover:bg-[#F6F8FB] transition-colors"
                         >
-                          <td className="p-4 text-[#8C8C8C] whitespace-nowrap">{company.date.replace('2024.', '24.').replace('2025.', '25.').replace('2023.', '23.')}</td>
                           <td className="p-4">
                             <div className="flex items-center gap-3">
                               <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-[#5B3BFA] to-[#00B4FF] flex items-center justify-center text-xl">
@@ -280,89 +254,76 @@ export function SMEList({ onNavigate, onLogout, hideSidebar = false, cardOnly = 
                             </div>
                           </td>
                           <td className="p-4 text-[#8C8C8C]">{company.industry}</td>
-                          <td className="p-4 text-center">
-                            <span className="text-[#0F172A]">{progressStageText}</span>
-                          </td>
-                          <td className="p-4 text-center">
-                            {progressStage === 'none' ? (
-                              // 미진행: 레벨 1 요청 버튼
-                              <Button
-                                variant="outline"
-                                onClick={() => handleRequestLevel1(company.id)}
-                                className="rounded-xl border-[#5B3BFA] text-[#5B3BFA] hover:bg-[#5B3BFA]/10 bg-yellow-50 border-yellow-300 hover:border-[#5B3BFA]"
-                              >
-                                레벨 1 요청
-                              </Button>
-                            ) : progressStage === 'level1-in-progress' ? (
-                              // Level 1 진행 중: 텍스트만 표시
-                              <span className="text-[#0F172A]">Level 1 진행 중</span>
-                            ) : progressStage === 'level1-completed' || progressStage === 'level2-in-progress' ? (
-                              // Level 1 완료 또는 Level 2 진행 중: 레벨 1 결과보기 / 레벨 2 요청하기
-                              <div className="flex items-center justify-center gap-2">
+                          <td className="p-4" colSpan={5}>
+                            <div className="relative flex items-center justify-center gap-2">
+                              {requestStatus === 'none' ? (
                                 <Button
                                   variant="outline"
-                                  onClick={() => handleViewLevel1Results(company.id)}
-                                  className="rounded-xl border-[#5B3BFA] text-[#5B3BFA] hover:bg-[#5B3BFA]/10 bg-yellow-50 border-yellow-300 hover:border-[#5B3BFA] text-sm"
+                                  onClick={() => handleRequestData(company.id)}
+                                  className="rounded-xl border-[#5B3BFA] text-[#5B3BFA] hover:bg-[#5B3BFA]/10"
                                 >
-                                  레벨 1 결과보기
+                                  데이터 요청
                                 </Button>
-                                <span className="text-[#8C8C8C]">/</span>
-                                <Button
-                                  variant="outline"
-                                  onClick={() => handleRequestLevel2(company.id)}
-                                  className="rounded-xl border-[#5B3BFA] text-[#5B3BFA] hover:bg-[#5B3BFA]/10 bg-yellow-50 border-yellow-300 hover:border-[#5B3BFA] text-sm"
-                                >
-                                  레벨 2 요청하기
-                                </Button>
-                              </div>
-                            ) : progressStage === 'level2-completed' ? (
-                              // Level 2 완료: 레벨 1 결과보기 / 레벨 3 요청
-                              <div className="flex items-center justify-center gap-2">
-                                <Button
-                                  variant="outline"
-                                  onClick={() => handleViewLevel1Results(company.id)}
-                                  className="rounded-xl border-[#5B3BFA] text-[#5B3BFA] hover:bg-[#5B3BFA]/10 bg-yellow-50 border-yellow-300 hover:border-[#5B3BFA] text-sm"
-                                >
-                                  레벨 1 결과보기
-                                </Button>
-                                <span className="text-[#8C8C8C]">/</span>
-                                <Button
-                                  variant="outline"
-                                  onClick={() => handleRequestLevel3(company.id)}
-                                  className="rounded-xl border-[#5B3BFA] text-[#5B3BFA] hover:bg-[#5B3BFA]/10 bg-yellow-50 border-yellow-300 hover:border-[#5B3BFA] text-sm"
-                                >
-                                  레벨 3 요청
-                                </Button>
-                              </div>
-                            ) : progressStage === 'level3-in-progress' ? (
-                              // Level 3 진행 중: 레벨 1 결과보기 버튼만
-                              <Button
-                                variant="outline"
-                                onClick={() => handleViewLevel1Results(company.id)}
-                                className="rounded-xl border-[#5B3BFA] text-[#5B3BFA] hover:bg-[#5B3BFA]/10 bg-yellow-50 border-yellow-300 hover:border-[#5B3BFA]"
-                              >
-                                레벨 1 결과보기
-                              </Button>
-                            ) : progressStage === 'level3-completed' ? (
-                              // Level 3 완료: 레벨 1 결과보기 / 보고서 보기
-                              <div className="flex items-center justify-center gap-2">
-                                <Button
-                                  variant="outline"
-                                  onClick={() => handleViewLevel1Results(company.id)}
-                                  className="rounded-xl border-[#5B3BFA] text-[#5B3BFA] hover:bg-[#5B3BFA]/10 bg-yellow-50 border-yellow-300 hover:border-[#5B3BFA] text-sm"
-                                >
-                                  레벨 1 결과보기
-                                </Button>
-                                <span className="text-[#8C8C8C]">/</span>
-                                <Button
-                                  variant="outline"
-                                  onClick={() => handleViewReport(company.id)}
-                                  className="rounded-xl border-[#5B3BFA] text-[#5B3BFA] hover:bg-[#5B3BFA]/10 bg-yellow-50 border-yellow-300 hover:border-[#5B3BFA] text-sm"
-                                >
-                                  보고서 보기
-                                </Button>
-                              </div>
-                            ) : null}
+                              ) : isDetailReveal ? (
+                                <div className="flex flex-wrap items-center justify-center gap-3 text-sm">
+                                  <span
+                                    className={`px-3 py-1 rounded-full ${company.grade === 'A'
+                                      ? 'bg-[#00B4FF]/10 text-[#00B4FF]'
+                                      : company.grade === 'B'
+                                        ? 'bg-[#5B3BFA]/10 text-[#5B3BFA]'
+                                        : 'bg-[#8C8C8C]/10 text-[#8C8C8C]'
+                                      }`}
+                                  >
+                                    ESG {company.grade}
+                                  </span>
+                                  <span
+                                    className={`px-3 py-1 rounded-full ${riskLevel === 'high'
+                                      ? 'bg-[#E30074]/10 text-[#E30074]'
+                                      : riskLevel === 'medium'
+                                        ? 'bg-[#A58DFF]/10 text-[#A58DFF]'
+                                        : 'bg-[#00B4FF]/10 text-[#00B4FF]'
+                                      }`}
+                                  >
+                                    위험도 {riskLevel === 'high' ? '높음' : riskLevel === 'medium' ? '중간' : '낮음'}
+                                  </span>
+                                  <span className="text-[#0F172A]">데이터 완료율 {completion}%</span>
+                                  <span className="text-[#8C8C8C]">최근 업데이트 {company.date}</span>
+                                  {/* 상태 아이콘 제거 */}
+                                </div>
+                              ) : (
+                                <>
+                                  {isPending && (
+                                    <Tooltip>
+                                      <TooltipTrigger asChild>
+                                        <div className="absolute inset-0 flex items-center justify-center gap-2 bg-white/80 rounded-xl z-10 cursor-pointer">
+                                          <AlertCircle className="w-5 h-5 text-[#5B3BFA]" />
+                                          <span className="text-[#5B3BFA] font-medium">요청 대기 중</span>
+                                        </div>
+                                      </TooltipTrigger>
+                                      <TooltipContent className="bg-white text-[#0F172A] border border-gray-200 shadow-lg px-4 py-3 rounded-lg max-w-xs">
+                                        <p className="text-sm leading-relaxed">데이터 요청이 접수되었습니다. 확인 후 승인/거절이 처리됩니다.</p>
+                                      </TooltipContent>
+                                    </Tooltip>
+                                  )}
+                                  {isRejected && (
+                                    <Tooltip>
+                                      <TooltipTrigger asChild>
+                                        <div className="absolute inset-0 flex items-center justify-center gap-2 bg-white/80 rounded-xl z-10 cursor-pointer">
+                                          <AlertCircle className="w-5 h-5 text-[#E30074]" />
+                                          <span className="text-[#E30074] font-medium">요청 거절</span>
+                                        </div>
+                                      </TooltipTrigger>
+                                      <TooltipContent className="bg-white text-[#0F172A] border border-gray-200 shadow-lg px-4 py-3 rounded-lg max-w-xs">
+                                        <p className="text-sm leading-relaxed">
+                                          {rejectionReason ||
+                                            '요청하신 데이터는 현재 보안상의 이유로 제공이 제한되어 있습니다. 데이터 접근 권한이 필요한 경우 관리자에게 별도로 문의해주시기 바랍니다.'}
+                                        </p>
+                                      </TooltipContent>
+                                    </Tooltip>
+                                  )}
+                                </>
+                              )}
+                            </div>
                           </td>
                         </tr>
                       );
@@ -370,45 +331,6 @@ export function SMEList({ onNavigate, onLogout, hideSidebar = false, cardOnly = 
                   </tbody>
                 </table>
               </div>
-
-              {/* Pagination */}
-              {totalPages > 1 && (
-                <div className="flex items-center justify-center gap-2 p-4 border-t border-gray-100">
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
-                    disabled={currentPage === 1}
-                    className="h-9 px-3"
-                  >
-                    이전
-                  </Button>
-                  <div className="flex items-center gap-1">
-                    {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
-                      <Button
-                        key={page}
-                        variant={currentPage === page ? "default" : "outline"}
-                        size="sm"
-                        onClick={() => setCurrentPage(page)}
-                        className={`h-9 w-9 ${currentPage === page
-                          ? 'bg-gradient-to-r from-[#5B3BFA] to-[#00B4FF] text-white border-0'
-                          : ''}`}
-                      >
-                        {page}
-                      </Button>
-                    ))}
-                  </div>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
-                    disabled={currentPage === totalPages}
-                    className="h-9 px-3"
-                  >
-                    다음
-                  </Button>
-                </div>
-              )}
             </Card>
           )}
 
@@ -467,178 +389,6 @@ export function SMEList({ onNavigate, onLogout, hideSidebar = false, cardOnly = 
           )}
         </div>
       </div>
-
-      {/* Level 2 요청 모달 */}
-      {isLevel2ModalOpen && selectedCompanyForLevel2 && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-          <div className="bg-white rounded-xl shadow-2xl max-w-4xl w-full max-h-[90vh] overflow-y-auto">
-            <div className="p-8">
-              <div className="relative flex items-center justify-center mb-6">
-                <h2 className="text-2xl font-bold text-[#0F172A] text-center">
-                  {getCompanyName(selectedCompanyForLevel2)} 레벨 2 요청
-                </h2>
-                <button
-                  onClick={handleCloseLevel2Modal}
-                  className="absolute right-0 text-gray-400 hover:text-gray-600 text-3xl leading-none w-8 h-8 flex items-center justify-center"
-                >
-                  ×
-                </button>
-              </div>
-
-              <div className="space-y-4">
-                {/* Total 섹션 */}
-                <div className="border-2 border-gray-200 rounded-xl p-5">
-                  <h3 className="text-lg font-semibold text-[#0F172A] mb-4">Total</h3>
-                  <div className="space-y-4">
-                    {dataItems.total.map((item) => (
-                      <div key={item.id} className="space-y-2">
-                        <label className="flex items-center gap-3 cursor-pointer group">
-                          <input
-                            type="checkbox"
-                            checked={selectedDataItems[item.id] || false}
-                            onChange={() => handleToggleDataItem(item.id)}
-                            className="w-5 h-5 rounded border-2 border-gray-300 text-[#5B3BFA] focus:ring-2 focus:ring-[#5B3BFA] focus:ring-offset-2 cursor-pointer appearance-none checked:bg-[#5B3BFA] checked:border-[#5B3BFA] relative after:content-['✓'] after:absolute after:left-1/2 after:top-1/2 after:-translate-x-1/2 after:-translate-y-1/2 after:text-white after:text-sm after:font-bold after:opacity-0 checked:after:opacity-100"
-                          />
-                          <span className="text-[#0F172A] text-base">{item.label}</span>
-                        </label>
-                        {selectedDataItems[item.id] && (
-                          <div className="ml-8 mt-2">
-                            <Textarea
-                              placeholder="부가 설명을 입력하세요..."
-                              value={dataItemDescriptions[item.id] || ''}
-                              onChange={(e) => setDataItemDescriptions(prev => ({
-                                ...prev,
-                                [item.id]: e.target.value,
-                              }))}
-                              className="min-h-[80px] rounded-xl border-2 border-gray-200 focus:border-[#5B3BFA] focus:ring-2 focus:ring-[#5B3BFA]/20"
-                            />
-                          </div>
-                        )}
-                      </div>
-                    ))}
-                  </div>
-                </div>
-
-                {/* Environment 섹션 */}
-                <div className="border-2 border-gray-200 rounded-xl p-5">
-                  <h3 className="text-lg font-semibold text-[#0F172A] mb-4">Environment</h3>
-                  <div className="space-y-4">
-                    {dataItems.environment.map((item) => (
-                      <div key={item.id} className="space-y-2">
-                        <label className="flex items-center gap-3 cursor-pointer group">
-                          <input
-                            type="checkbox"
-                            checked={selectedDataItems[item.id] || false}
-                            onChange={() => handleToggleDataItem(item.id)}
-                            className="w-5 h-5 rounded border-2 border-gray-300 text-[#5B3BFA] focus:ring-2 focus:ring-[#5B3BFA] focus:ring-offset-2 cursor-pointer appearance-none checked:bg-[#5B3BFA] checked:border-[#5B3BFA] relative after:content-['✓'] after:absolute after:left-1/2 after:top-1/2 after:-translate-x-1/2 after:-translate-y-1/2 after:text-white after:text-sm after:font-bold after:opacity-0 checked:after:opacity-100"
-                          />
-                          <span className="text-[#0F172A] text-base">{item.label}</span>
-                        </label>
-                        {selectedDataItems[item.id] && (
-                          <div className="ml-8 mt-2">
-                            <Textarea
-                              placeholder="부가 설명을 입력하세요..."
-                              value={dataItemDescriptions[item.id] || ''}
-                              onChange={(e) => setDataItemDescriptions(prev => ({
-                                ...prev,
-                                [item.id]: e.target.value,
-                              }))}
-                              className="min-h-[80px] rounded-xl border-2 border-gray-200 focus:border-[#5B3BFA] focus:ring-2 focus:ring-[#5B3BFA]/20"
-                            />
-                          </div>
-                        )}
-                      </div>
-                    ))}
-                  </div>
-                </div>
-
-                {/* Social 섹션 */}
-                <div className="border-2 border-gray-200 rounded-xl p-5">
-                  <h3 className="text-lg font-semibold text-[#0F172A] mb-4">Social</h3>
-                  <div className="space-y-4">
-                    {dataItems.social.map((item) => (
-                      <div key={item.id} className="space-y-2">
-                        <label className="flex items-center gap-3 cursor-pointer group">
-                          <input
-                            type="checkbox"
-                            checked={selectedDataItems[item.id] || false}
-                            onChange={() => handleToggleDataItem(item.id)}
-                            className="w-5 h-5 rounded border-2 border-gray-300 text-[#5B3BFA] focus:ring-2 focus:ring-[#5B3BFA] focus:ring-offset-2 cursor-pointer appearance-none checked:bg-[#5B3BFA] checked:border-[#5B3BFA] relative after:content-['✓'] after:absolute after:left-1/2 after:top-1/2 after:-translate-x-1/2 after:-translate-y-1/2 after:text-white after:text-sm after:font-bold after:opacity-0 checked:after:opacity-100"
-                          />
-                          <span className="text-[#0F172A] text-base">{item.label}</span>
-                        </label>
-                        {selectedDataItems[item.id] && (
-                          <div className="ml-8 mt-2">
-                            <Textarea
-                              placeholder="부가 설명을 입력하세요..."
-                              value={dataItemDescriptions[item.id] || ''}
-                              onChange={(e) => setDataItemDescriptions(prev => ({
-                                ...prev,
-                                [item.id]: e.target.value,
-                              }))}
-                              className="min-h-[80px] rounded-xl border-2 border-gray-200 focus:border-[#5B3BFA] focus:ring-2 focus:ring-[#5B3BFA]/20"
-                            />
-                          </div>
-                        )}
-                      </div>
-                    ))}
-                  </div>
-                </div>
-
-                {/* Governance 섹션 */}
-                <div className="border-2 border-gray-200 rounded-xl p-5">
-                  <h3 className="text-lg font-semibold text-[#0F172A] mb-4">Governance</h3>
-                  <div className="space-y-4">
-                    {dataItems.governance.map((item) => (
-                      <div key={item.id} className="space-y-2">
-                        <label className="flex items-center gap-3 cursor-pointer group">
-                          <input
-                            type="checkbox"
-                            checked={selectedDataItems[item.id] || false}
-                            onChange={() => handleToggleDataItem(item.id)}
-                            className="w-5 h-5 rounded border-2 border-gray-300 text-[#5B3BFA] focus:ring-2 focus:ring-[#5B3BFA] focus:ring-offset-2 cursor-pointer appearance-none checked:bg-[#5B3BFA] checked:border-[#5B3BFA] relative after:content-['✓'] after:absolute after:left-1/2 after:top-1/2 after:-translate-x-1/2 after:-translate-y-1/2 after:text-white after:text-sm after:font-bold after:opacity-0 checked:after:opacity-100"
-                          />
-                          <span className="text-[#0F172A] text-base">{item.label}</span>
-                        </label>
-                        {selectedDataItems[item.id] && (
-                          <div className="ml-8 mt-2">
-                            <Textarea
-                              placeholder="부가 설명을 입력하세요..."
-                              value={dataItemDescriptions[item.id] || ''}
-                              onChange={(e) => setDataItemDescriptions(prev => ({
-                                ...prev,
-                                [item.id]: e.target.value,
-                              }))}
-                              className="min-h-[80px] rounded-xl border-2 border-gray-200 focus:border-[#5B3BFA] focus:ring-2 focus:ring-[#5B3BFA]/20"
-                            />
-                          </div>
-                        )}
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              </div>
-
-              {/* 버튼 */}
-              <div className="flex items-center justify-end gap-3 mt-8 pt-6 border-t border-gray-200">
-                <Button
-                  variant="outline"
-                  onClick={handleCloseLevel2Modal}
-                  className="rounded-xl px-6 h-10 bg-gray-50 border-gray-200 text-gray-700 hover:bg-gray-100"
-                >
-                  취소
-                </Button>
-                <Button
-                  onClick={handleSubmitLevel2Request}
-                  className="bg-gradient-to-r from-[#5B3BFA] to-[#00B4FF] rounded-xl px-6 h-10 text-white hover:opacity-90 shadow-lg"
-                >
-                  수락
-                </Button>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 }

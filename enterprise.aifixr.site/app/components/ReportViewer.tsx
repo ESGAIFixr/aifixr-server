@@ -5,12 +5,9 @@ import { Button } from './ui/button';
 
 interface ReportViewerProps {
   reportId: string;
-  companyId?: string;
-  onNavigate: (screen: any, companyId?: string, reportId?: string) => void;
+  onNavigate: (screen: any, companyId?: string) => void;
   onLogout: () => void;
   hideSidebar?: boolean;
-  // TODO: 나중에 PDF 파일 URL을 prop으로 받을 수 있도록 추가
-  // pdfUrl?: string;
 }
 
 const reportList = [
@@ -20,52 +17,23 @@ const reportList = [
   { id: 'r4', title: '지배구조 평가 리포트', date: '2024.10.15', pages: 24 },
 ];
 
-export function ReportViewer({ 
-  reportId, 
-  companyId,
-  onNavigate, 
-  onLogout, 
-  hideSidebar = false 
-  // pdfUrl 
-}: ReportViewerProps) {
+export function ReportViewer({ reportId, onNavigate, onLogout, hideSidebar = false }: ReportViewerProps) {
   const currentReport = reportList.find(r => r.id === reportId) || reportList[0];
-  
-  // TODO: 나중에 PDF 파일 URL을 동적으로 생성하거나 API에서 받아올 수 있도록 준비
-  // const pdfUrl = pdfUrl || `/api/reports/${companyId}/${reportId}/pdf`;
-  // const [pdfUrl, setPdfUrl] = useState<string | null>(null);
-  // const [isPdfLoading, setIsPdfLoading] = useState(false);
-  
-  // useEffect(() => {
-  //   // PDF URL을 가져오는 로직
-  //   const fetchPdfUrl = async () => {
-  //     setIsPdfLoading(true);
-  //     try {
-  //       // const response = await fetch(`/api/reports/${companyId}/${reportId}`);
-  //       // const data = await response.json();
-  //       // setPdfUrl(data.pdfUrl);
-  //     } catch (error) {
-  //       console.error('Failed to load PDF:', error);
-  //     } finally {
-  //       setIsPdfLoading(false);
-  //     }
-  //   };
-  //   fetchPdfUrl();
-  // }, [companyId, reportId]);
 
   return (
     <div className="flex min-h-screen bg-[#F6F8FB]">
-      {!hideSidebar && <Sidebar currentPage="report-viewer" onNavigate={onNavigate} onLogout={onLogout} />}
+      {!hideSidebar && <Sidebar currentPage="report-center" onNavigate={onNavigate} onLogout={onLogout} />}
       
       <div className={`flex-1 ${!hideSidebar ? 'ml-64' : ''}`}>
         <div className="max-w-7xl mx-auto px-6 py-8">
           {/* Back Button */}
           <Button
             variant="ghost"
-            onClick={() => onNavigate('dashboard')}
+            onClick={() => onNavigate('report-center')}
             className="mb-6 rounded-xl text-[#5B3BFA]"
           >
             <ArrowLeft className="w-4 h-4 mr-2" />
-            관계사 문서관리로 돌아가기
+            보고서 관리 페이지로 돌아가기
           </Button>
 
           <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
@@ -115,19 +83,7 @@ export function ReportViewer({
                       <h3 className="text-[#0F172A]">{currentReport.title}</h3>
                       <p className="text-[#8C8C8C]">{currentReport.date} · {currentReport.pages}페이지</p>
                     </div>
-                    <Button 
-                      className="bg-gradient-to-r from-[#5B3BFA] to-[#00B4FF] rounded-xl hover:shadow-[0_4px_20px_rgba(91,59,250,0.4)] transition-all"
-                      // TODO: 나중에 실제 PDF 다운로드 기능 구현
-                      onClick={() => {
-                        // const pdfUrl = `/api/reports/${companyId}/${reportId}/download`;
-                        // window.open(pdfUrl, '_blank');
-                        // 또는
-                        // const link = document.createElement('a');
-                        // link.href = pdfUrl;
-                        // link.download = `${currentReport.title}.pdf`;
-                        // link.click();
-                      }}
-                    >
+                    <Button className="bg-gradient-to-r from-[#5B3BFA] to-[#00B4FF] rounded-xl hover:shadow-[0_4px_20px_rgba(91,59,250,0.4)] transition-all">
                       <Download className="w-4 h-4 mr-2" />
                       PDF 다운로드
                     </Button>
@@ -136,32 +92,14 @@ export function ReportViewer({
 
                 {/* PDF Content Area */}
                 <div className="bg-[#F6F8FB] p-8" style={{ minHeight: '800px' }}>
-                  {/* TODO: PDF 뷰어 통합 준비
-                    나중에 PDF 파일을 표시하려면 아래 주석을 참고하여 구현하세요:
-                    
-                    옵션 1: react-pdf 라이브러리 사용
-                    - 설치: npm install react-pdf
-                    - import { Document, Page, pdfjs } from 'react-pdf';
-                    - pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.min.js`;
-                    
-                    옵션 2: iframe 사용 (간단한 방법)
-                    - <iframe src={pdfUrl} className="w-full h-full min-h-[800px]" />
-                    
-                    옵션 3: PDF.js 직접 사용
-                    - 더 세밀한 제어가 필요한 경우
-                  */}
-                  
-                  {/* PDF Viewer 영역 - 나중에 실제 PDF 뷰어로 교체 */}
-                  <div id="pdf-viewer-container" className="w-full">
-                    {/* 현재는 Mock Content 표시 */}
-                    <div className="max-w-4xl mx-auto bg-white rounded-lg shadow-lg p-12">
-                      {/* Mock PDF Content */}
-                      <div className="text-center mb-12">
-                        <div className="w-20 h-20 mx-auto mb-6 rounded-2xl bg-gradient-to-br from-[#5B3BFA] to-[#00B4FF]" />
-                        <h1 className="text-[#0F172A] mb-4">테크솔루션 주식회사</h1>
-                        <h2 className="text-[#0F172A] mb-2">{currentReport.title}</h2>
-                        <p className="text-[#8C8C8C]">{currentReport.date}</p>
-                      </div>
+                  <div className="max-w-4xl mx-auto bg-white rounded-lg shadow-lg p-12">
+                    {/* Mock PDF Content */}
+                    <div className="text-center mb-12">
+                      <div className="w-20 h-20 mx-auto mb-6 rounded-2xl bg-gradient-to-br from-[#5B3BFA] to-[#00B4FF]" />
+                      <h1 className="text-[#0F172A] mb-4">테크솔루션 주식회사</h1>
+                      <h2 className="text-[#0F172A] mb-2">{currentReport.title}</h2>
+                      <p className="text-[#8C8C8C]">{currentReport.date}</p>
+                    </div>
 
                     <div className="space-y-8 text-[#0F172A]">
                       <section>
@@ -254,8 +192,6 @@ export function ReportViewer({
                         </p>
                       </section>
                     </div>
-                    </div>
-                    {/* PDF Viewer 영역 끝 */}
                   </div>
                 </div>
               </Card>
