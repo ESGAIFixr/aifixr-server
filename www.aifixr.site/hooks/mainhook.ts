@@ -55,13 +55,13 @@ export function useMainPage() {
     setIsUserTypeModalOpen(true);
   };
 
-  // 중소기업 사용자 시작하기
+  // 하청사 사용자 시작하기
   const handleSMEStart = () => {
     setIsUserTypeModalOpen(false);
     setIsLoginModalOpen(true);
   };
 
-  // 대기업 관리자 시작하기
+  // 원청사 관리자 시작하기
   const handleEnterpriseStart = () => {
     setIsUserTypeModalOpen(false);
     setIsEnterpriseLoginModalOpen(true);

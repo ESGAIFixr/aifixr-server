@@ -17,7 +17,7 @@ export function ReadOnlyTooltip({ children }: ReadOnlyTooltipProps) {
           </div>
         </TooltipTrigger>
         <TooltipContent side="top" className="bg-[#0F172A] text-white rounded-xl px-4 py-2">
-          <p>읽기 전용 | 중소기업만 데이터를 수정할 수 있습니다</p>
+          <p>읽기 전용 | 하청사만 데이터를 수정할 수 있습니다</p>
         </TooltipContent>
       </Tooltip>
     </TooltipProvider>

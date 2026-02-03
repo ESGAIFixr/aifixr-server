@@ -36,7 +36,7 @@ export default function PricingSection() {
           <div className="relative p-8 rounded-3xl bg-white border-2 border-gray-200 hover:border-[#0D4ABB] hover:shadow-2xl transition-all duration-300">
             <div className="mb-6">
               <h3 className="text-2xl font-bold text-[#1a2332] mb-2">SME 요금제</h3>
-              <p className="text-gray-600">중소기업을 위한 맞춤형 솔루션</p>
+              <p className="text-gray-600">하청사을 위한 맞춤형 솔루션</p>
             </div>
 
             {/* Pricing */}
@@ -78,7 +78,7 @@ export default function PricingSection() {
           <div className="relative p-8 rounded-3xl bg-gradient-to-br from-[#0D4ABB] to-[#00D4FF] text-white hover:shadow-2xl transition-all duration-300">
             <div className="mb-6">
               <h3 className="text-2xl font-bold mb-2">Enterprise</h3>
-              <p className="text-white/80">대기업 및 모기업을 위한 통합 솔루션</p>
+              <p className="text-white/80">원청사 및 모기업을 위한 통합 솔루션</p>
             </div>
 
             {/* Features */}

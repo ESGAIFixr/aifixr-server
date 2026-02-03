@@ -113,7 +113,7 @@ export function SMEList({ onNavigate, onLogout }: SMEListProps) {
           <div className="mb-8">
             <h1 className="text-[#0F172A] mb-2">관계사 목록</h1>
             <div className="flex items-center justify-between">
-              <p className="text-[#8C8C8C]">ESG 평가가 완료된 중소기업 관계사 목록입니다</p>
+              <p className="text-[#8C8C8C]">ESG 평가가 완료된 하청사 관계사 목록입니다</p>
               <Button
                 onClick={handleRequestAll}
                 className="bg-gradient-to-r from-[#5B3BFA] to-[#00B4FF] rounded-xl px-5 hover:shadow-[0_4px_20px_rgba(91,59,250,0.4)] transition-all"

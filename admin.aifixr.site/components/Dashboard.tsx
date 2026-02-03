@@ -46,8 +46,8 @@ const monthlyData = [
 ];
 
 const customerTypeData = [
-  { name: "중소기업", value: 142, color: "#5B3BFA" },
-  { name: "대기업", value: 68, color: "#00B4FF" },
+  { name: "하청사", value: 142, color: "#5B3BFA" },
+  { name: "원청사", value: 68, color: "#00B4FF" },
   { name: "공공기관", value: 24, color: "#A58DFF" },
 ];
 

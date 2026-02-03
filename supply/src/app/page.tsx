@@ -26,7 +26,7 @@ export default function Home() {
             <div className="flex items-center gap-4">
               <h2>AIFIXR</h2>
               <span className="px-3 py-1 bg-[#F6F8FB] rounded-full text-sm text-gray-600">
-                중소기업 모드
+                하청사 모드
               </span>
             </div>
           </div>

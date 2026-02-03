@@ -21,7 +21,7 @@ export default function PainSolutionSection() {
     {
       icon: Network,
       title: 'Enterprise Portal로 전체 리스크 한눈에',
-      description: '대기업이 협력사 ESG를 확인하기 어려웠던 문제 해결, 공급망 전체 리스크 실시간 파악',
+      description: '원청사이 협력사 ESG를 확인하기 어려웠던 문제 해결, 공급망 전체 리스크 실시간 파악',
       iconColor: 'bg-[#00D4FF]',
       cardBg: 'from-[#00D4FF]/10 to-[#0D4ABB]/10',
       borderColor: 'border-[#00D4FF]/20'

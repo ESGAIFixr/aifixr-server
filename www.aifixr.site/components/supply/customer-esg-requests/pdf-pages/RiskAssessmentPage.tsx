@@ -27,7 +27,7 @@ export function RiskAssessmentPage() {
       <div className="bg-blue-50 border border-blue-200 rounded-xl p-6 mt-8">
         <h3 className="text-blue-900 mb-3">해석 및 의미</h3>
         <p className="text-blue-800 leading-relaxed mb-4">
-          본 결과는 대기업이 공급망 ESG 리스크를 식별·관리하고 있음을
+          본 결과는 원청사이 공급망 ESG 리스크를 식별·관리하고 있음을
           합리적으로 설명할 수 있는 수준임을 의미합니다.
         </p>
         <p className="text-sm text-blue-700">
