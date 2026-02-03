@@ -10,7 +10,7 @@ export function InfoBanner() {
         </div>
         <div className="flex-1">
           <p className="text-blue-900">
-            본 문서는 대기업 공급망 ESG 관리 대응을 위한 확인서로,{" "}
+            본 문서는 원청사 공급망 ESG 관리 대응을 위한 확인서로,{" "}
             <strong>성과 평가, ESG 등급, 공시 자료가 아닙니다.</strong>
           </p>
           <p className="text-blue-700 text-sm mt-1">

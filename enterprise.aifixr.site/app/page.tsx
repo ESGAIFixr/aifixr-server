@@ -100,7 +100,7 @@ export default function Home() {
               </div>
               <div className="flex items-center gap-2">
                 <h3 className="text-[#0F172A] font-semibold text-xl">AIFIX</h3>
-                <span className="text-[#8C8C8C] text-sm">대기업 포털</span>
+                <span className="text-[#8C8C8C] text-sm">원청사 포털</span>
               </div>
             </button>
 

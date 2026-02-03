@@ -147,7 +147,7 @@ export default function Level1Survey({ companyName = "귀사", clientName = "B�
       <div className="max-w-[1440px] mx-auto px-8 py-8">
         <div className="bg-white border-b-2 border-gray-200 shadow-sm mb-6 rounded-xl">
           <div className="px-8 py-4">
-            <h1 className="text-2xl font-semibold text-[#1a2332] mb-1 text-center">대기업 [{clientName}] 제출용 ESG 공급망 대응 체크리스트 (Level 1)</h1>
+            <h1 className="text-2xl font-semibold text-[#1a2332] mb-1 text-center">원청사 [{clientName}] 제출용 ESG 공급망 대응 체크리스트 (Level 1)</h1>
             <p className="text-gray-600">
               아래 질문은 {companyName}의 '관리 행동'에 대한 최소한의 스냅샷입니다. 전문 지식 없이 현황에 가장 가까운 것을 선택해 주세요.{" "}
               <span className="text-gray-500">(예상 소요 시간: 10분)</span>

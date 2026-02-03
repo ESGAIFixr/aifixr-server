@@ -2,7 +2,7 @@ export function PurposePage() {
   const keywords = [
     { label: "Risk-based", description: "리스크 기반 접근" },
     { label: "Reasonable Effort", description: "합리적 노력" },
-    { label: "SME-appropriate", description: "중소기업 적합" },
+    { label: "SME-appropriate", description: "하청사 적합" },
     { label: "Non-evaluative", description: "비평가적" }
   ];
 
@@ -16,7 +16,7 @@ export function PurposePage() {
           <div>
             <h3 className="text-gray-900 mb-2">공급망 ESG 관리 대응 목적</h3>
             <p className="text-gray-600 leading-relaxed">
-              본 확인서는 대기업이 공급망 ESG 리스크를 관리하고 있음을 증빙하기 위해,
+              본 확인서는 원청사이 공급망 ESG 리스크를 관리하고 있음을 증빙하기 위해,
               협력사의 기본적인 관리 체계 현황을 확인한 문서입니다.
             </p>
           </div>
@@ -24,7 +24,7 @@ export function PurposePage() {
           <div>
             <h3 className="text-gray-900 mb-2">과도한 정보 요구를 지양한 이유</h3>
             <p className="text-gray-600 leading-relaxed">
-              중소기업의 실질적 대응 가능성을 고려하여, 
+              하청사의 실질적 대응 가능성을 고려하여, 
               정책·책임자·절차 유무 중심의 행동 기반 확인 방식을 채택했습니다.
             </p>
           </div>
@@ -55,7 +55,7 @@ export function PurposePage() {
       <div className="mt-8 p-4 bg-gray-50 border-l-4 border-gray-400 rounded">
         <p className="text-sm text-gray-700">
           <strong>중요:</strong> 본 문서는 협력사의 성과를 평가하거나 등급을 부여하는 자료가 아닙니다.
-          대기업이 공급망 관리 책임을 이행하고 있음을 설명하기 위한 증빙 문서입니다.
+          원청사이 공급망 관리 책임을 이행하고 있음을 설명하기 위한 증빙 문서입니다.
         </p>
       </div>
     </div>

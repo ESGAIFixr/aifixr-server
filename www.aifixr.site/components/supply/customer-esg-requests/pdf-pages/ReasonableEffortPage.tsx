@@ -3,8 +3,8 @@ import { ArrowRight, X } from "lucide-react";
 export function ReasonableEffortPage() {
   const principles = [
     {
-      title: "중소기업 실행 가능 범위",
-      description: "대기업 수준의 ESG 관리 체계를 요구하지 않으며, 중소기업이 실질적으로 대응 가능한 수준에서 확인"
+      title: "하청사 실행 가능 범위",
+      description: "원청사 수준의 ESG 관리 체계를 요구하지 않으며, 하청사이 실질적으로 대응 가능한 수준에서 확인"
     },
     {
       title: "정책·책임·절차 중심",
@@ -24,7 +24,7 @@ export function ReasonableEffortPage() {
         <h3 className="text-gray-900 mb-4">Reasonable Effort 접근법</h3>
         <p className="text-gray-600 leading-relaxed mb-6">
           본 확인서는 "합리적 노력(Reasonable Effort)" 원칙에 따라 작성되었습니다.
-          이는 대기업이 공급망 ESG 관리 책임을 이행하되, 
+          이는 원청사이 공급망 ESG 관리 책임을 이행하되, 
           협력사의 규모와 역량을 고려한 현실적 접근을 의미합니다.
         </p>
 
@@ -35,7 +35,7 @@ export function ReasonableEffortPage() {
               <X className="w-5 h-5 text-red-600" />
             </div>
             <p className="text-red-900">과도한 요구</p>
-            <p className="text-sm text-red-700 mt-1">대기업 수준 기준</p>
+            <p className="text-sm text-red-700 mt-1">원청사 수준 기준</p>
           </div>
           
           <ArrowRight className="w-6 h-6 text-gray-400 flex-shrink-0" />
@@ -67,7 +67,7 @@ export function ReasonableEffortPage() {
       <div className="mt-8 p-5 bg-yellow-50 border-l-4 border-yellow-400 rounded">
         <p className="text-gray-800">
           <strong>중요:</strong> 본 접근법은 협력사를 "평가"하는 것이 아니라,
-          대기업이 공급망을 "방치하지 않고 관리하고 있다"는 사실을 증명하기 위한 것입니다.
+          원청사이 공급망을 "방치하지 않고 관리하고 있다"는 사실을 증명하기 위한 것입니다.
         </p>
       </div>
     </div>

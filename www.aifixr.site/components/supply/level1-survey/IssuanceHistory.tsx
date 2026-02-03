@@ -171,7 +171,7 @@ export function IssuanceHistory({ onNewIssuance, onViewDocument }: {
                     className="bg-[#00B4FF] text-white hover:bg-[#00A3E6] rounded-xl px-4 py-2"
                     title="선택한 확인서를 고객사에 제출합니다."
                   >
-                    대기업에 제출
+                    원청사에 제출
                   </Button>
                   <div 
                     className="cursor-pointer"

@@ -36,7 +36,7 @@ export function ConfirmationPage() {
             </li>
             <li className="flex items-start gap-2 text-blue-800">
               <span className="text-blue-600 mt-1">✓</span>
-              <span>대기업의 <strong>공급망 리스크 관리 책임</strong> 이행 근거</span>
+              <span>원청사의 <strong>공급망 리스크 관리 책임</strong> 이행 근거</span>
             </li>
           </ul>
         </div>
@@ -66,7 +66,7 @@ export function ConfirmationPage() {
             향후 관리 체계 변화에 따라 내용이 달라질 수 있습니다.
           </p>
           <p className="text-gray-700 leading-relaxed">
-            대기업은 본 문서를 근거로 공급망 ESG 리스크 관리 활동을 수행하고 있음을 설명할 수 있으며,
+            원청사은 본 문서를 근거로 공급망 ESG 리스크 관리 활동을 수행하고 있음을 설명할 수 있으며,
             필요 시 협력사와 함께 단계적 개선 계획을 수립할 수 있습니다.
           </p>
         </div>

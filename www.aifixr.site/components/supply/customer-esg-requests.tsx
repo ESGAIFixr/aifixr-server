@@ -189,7 +189,7 @@ export default function CustomerESGRequests({ onTabChange }: CustomerESGRequests
             <div>
               <h1 className="text-3xl font-bold text-[#1a2332] mb-2">Customer ESG Requests</h1>
               <p className="text-gray-600">
-                대기업 고객사로부터 접수된 ESG 요청을 확인하고 대응하세요.
+                원청사 고객사로부터 접수된 ESG 요청을 확인하고 대응하세요.
               </p>
             </div>
           </div>
@@ -261,7 +261,7 @@ export default function CustomerESGRequests({ onTabChange }: CustomerESGRequests
                   </h3>
                   <div className="space-y-1 text-sm text-gray-600">
                     <p>요청일: {request.requestDate}</p>
-                    <p>요청 대기업명: {request.companyName}</p>
+                    <p>요청 원청사명: {request.companyName}</p>
                   </div>
                 </div>
 
@@ -411,7 +411,7 @@ export default function CustomerESGRequests({ onTabChange }: CustomerESGRequests
               disabled={selectedDocuments.length === 0}
               className="bg-gradient-to-r from-[#5B3BFA] to-[#00B4FF] text-white rounded-xl hover:shadow-lg"
             >
-              대기업으로 전송하기
+              원청사으로 전송하기
             </Button>
           </DialogFooter>
         </DialogContent>
