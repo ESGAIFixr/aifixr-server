@@ -3,7 +3,7 @@ import "./globals.css";
 
 export const metadata: Metadata = {
   title: "Enterprise Portal",
-  description: "ESG 공급망 관리 플랫폼 - 대기업 포털",
+  description: "ESG 공급망 관리 플랫폼 - 원청사 포털",
 };
 
 export default function RootLayout({

@@ -19,13 +19,28 @@ export function useMainPage() {
   const [isUserTypeModalOpen, setIsUserTypeModalOpen] = useState(false);
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
   const [isEnterpriseLoginModalOpen, setIsEnterpriseLoginModalOpen] = useState(false);
+  const [allowHomeView, setAllowHomeView] = useState(false);
 
   // 토큰이 있으면 자동으로 대시보드로 리다이렉트
+  // 단, allowHomeView가 true인 경우는 제외
   useEffect(() => {
+    if (allowHomeView) {
+      return; // 홈으로 가기 버튼을 통해 온 경우 리다이렉트하지 않음
+    }
+    
     if (AuthService.isAuthenticated()) {
       router.push('/dashboard');
     }
-  }, [router]);
+  }, [router, allowHomeView]);
+
+  // 컴포넌트 마운트 시 sessionStorage 확인
+  useEffect(() => {
+    const fromHomeButton = sessionStorage.getItem('fromHomeButton');
+    if (fromHomeButton === 'true') {
+      setAllowHomeView(true);
+      sessionStorage.removeItem('fromHomeButton');
+    }
+  }, []);
 
   // 핸들러 생성
   const handlers = createMainHandlers(setIsLoginModalOpen, router);
@@ -40,13 +55,13 @@ export function useMainPage() {
     setIsUserTypeModalOpen(true);
   };
 
-  // 중소기업 사용자 시작하기
+  // 하청사 사용자 시작하기
   const handleSMEStart = () => {
     setIsUserTypeModalOpen(false);
     setIsLoginModalOpen(true);
   };
 
-  // 대기업 관리자 시작하기
+  // 원청사 관리자 시작하기
   const handleEnterpriseStart = () => {
     setIsUserTypeModalOpen(false);
     setIsEnterpriseLoginModalOpen(true);

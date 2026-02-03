@@ -2,7 +2,8 @@
 const nextConfig = {
   reactStrictMode: true,
   images: {
-    domains: [],
+    domains: ['cdn.simpleicons.org'],
+    unoptimized: false,
   },
 }
 

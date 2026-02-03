@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { HelpCircle, ChevronDown, ChevronUp } from "lucide-react";
+import { IssuanceHistory } from "./level1-survey/IssuanceHistory";
 
 interface Question {
   id: string;
@@ -115,12 +116,14 @@ const questions: Question[] = [
 interface Level1SurveyProps {
   companyName?: string;
   clientName?: string;
+  onSubmit?: () => void;
 }
 
-export default function Level1Survey({ companyName = "귀사", clientName = "B사" }: Level1SurveyProps) {
+export default function Level1Survey({ companyName = "귀사", clientName = "B사", onSubmit }: Level1SurveyProps) {
   const [answers, setAnswers] = useState<Record<string, string>>({});
   const [openHelp, setOpenHelp] = useState<string | null>(null);
   const [expandedCategory, setExpandedCategory] = useState<string | null>("E");
+  const [activeSubTab, setActiveSubTab] = useState<"checklist" | "history">("checklist");
 
   const totalQuestions = questions.length;
   const answeredQuestions = Object.keys(answers).length;
@@ -140,151 +143,188 @@ export default function Level1Survey({ companyName = "귀사", clientName = "B�
 
   return (
     <div className="min-h-screen bg-[#F6F8FB]">
-      {/* Header */}
-      <div className="bg-white shadow-sm sticky top-0 z-10">
-        <div className="max-w-4xl mx-auto px-6 py-4">
-          <h2 className="mb-3">AIFIXR</h2>
-          
-          {/* Progress Bar */}
-          <div className="space-y-2">
-            <div className="flex justify-between items-center">
-              <span className="text-sm text-gray-600">진행률</span>
-              <span className="text-sm" style={{ color: "#5B3BFA" }}>
-                {answeredQuestions}/{totalQuestions} 문항 완료
-              </span>
-            </div>
-            <div className="w-full bg-gray-200 rounded-full h-2.5">
-              <div
-                className="h-2.5 rounded-full transition-all duration-300"
-                style={{
-                  width: `${progress}%`,
-                  background: "linear-gradient(90deg, #5B3BFA 0%, #00B4FF 100%)",
-                }}
-              />
-            </div>
+      {/* Main Content */}
+      <div className="max-w-[1440px] mx-auto px-8 py-8">
+        <div className="bg-white border-b-2 border-gray-200 shadow-sm mb-6 rounded-xl">
+          <div className="px-8 py-4">
+            <h1 className="text-2xl font-semibold text-[#1a2332] mb-1 text-center">원청사 [{clientName}] 제출용 ESG 공급망 대응 체크리스트 (Level 1)</h1>
+            <p className="text-gray-600">
+              아래 질문은 {companyName}의 '관리 행동'에 대한 최소한의 스냅샷입니다. 전문 지식 없이 현황에 가장 가까운 것을 선택해 주세요.{" "}
+              <span className="text-gray-500">(예상 소요 시간: 10분)</span>
+            </p>
           </div>
         </div>
-      </div>
 
-      {/* Main Content */}
-      <div className="max-w-4xl mx-auto px-6 py-8">
-        <div className="bg-white rounded-xl shadow-sm p-8 mb-6">
-          <h1 className="mb-2">대기업 [{clientName}] 제출용 ESG 공급망 대응 체크리스트 (Level 1)</h1>
-          <p className="text-gray-600">
-            아래 질문은 {companyName}의 '관리 행동'에 대한 최소한의 스냅샷입니다. 전문 지식 없이 현황에 가장 가까운 것을 선택해 주세요.{" "}
-            <span className="text-gray-500">(예상 소요 시간: 10분)</span>
-          </p>
+        {/* 서브 탭 */}
+        <div className="mb-6">
+          <div className="flex gap-8 border-b border-gray-200">
+            <button
+              onClick={() => setActiveSubTab("checklist")}
+              className={`pb-4 px-2 transition-colors ${
+                activeSubTab === "checklist"
+                  ? "font-bold text-[#1a2332] border-b-2 border-[#5B3BFA]"
+                  : "text-[#8C8C8C]"
+              }`}
+            >
+              ESG 체크리스트 작성
+            </button>
+            <button
+              onClick={() => setActiveSubTab("history")}
+              className={`pb-4 px-2 transition-colors ${
+                activeSubTab === "history"
+                  ? "font-bold text-[#1a2332] border-b-2 border-[#5B3BFA]"
+                  : "text-[#8C8C8C]"
+              }`}
+            >
+              확인서 발급 이력
+            </button>
+          </div>
         </div>
 
-        {/* Questions by Category */}
-        {categories.map((category) => {
-          const categoryQuestions = questions.filter((q) => q.category === category.id);
-          const isExpanded = expandedCategory === category.id;
+        {/* 탭 콘텐츠 */}
+        {activeSubTab === "history" ? (
+          <IssuanceHistory
+            onNewIssuance={() => setActiveSubTab("checklist")}
+            onViewDocument={(record) => {
+              // 문서 보기 로직은 IssuanceHistory 내부에서 처리
+            }}
+          />
+        ) : (
+          <>
+            {/* Questions by Category */}
+            {categories.map((category) => {
+              const categoryQuestions = questions.filter((q) => q.category === category.id);
+              const isExpanded = expandedCategory === category.id;
 
-          return (
-            <div key={category.id} className="mb-4">
-              <button
-                onClick={() => setExpandedCategory(isExpanded ? null : category.id)}
-                className="w-full bg-white rounded-xl shadow-sm p-6 flex items-center justify-between hover:shadow-md transition-shadow"
-              >
-                <div className="flex items-center gap-3">
-                  <div
-                    className="w-1 h-12 rounded-full"
-                    style={{ backgroundColor: category.color }}
-                  />
-                  <div className="text-left">
-                    <h3>{category.name}</h3>
-                    <p className="text-sm text-gray-500">
-                      {categoryQuestions.filter((q) => answers[q.id]).length}/{categoryQuestions.length} 완료
-                    </p>
-                  </div>
-                </div>
-                {isExpanded ? (
-                  <ChevronUp className="w-5 h-5 text-gray-400" />
-                ) : (
-                  <ChevronDown className="w-5 h-5 text-gray-400" />
-                )}
-              </button>
-
-              {isExpanded && (
-                <div className="mt-4 space-y-4">
-                  {categoryQuestions.map((question, index) => (
-                    <div key={question.id} className="bg-white rounded-xl shadow-sm p-6">
-                      <div className="flex items-start justify-between gap-4 mb-4">
-                        <div className="flex-1">
-                          <div className="flex items-start gap-2">
-                            <span className="text-sm text-gray-500 mt-1">{index + 1}.</span>
-                            <p className="flex-1">{question.text}</p>
-                          </div>
-                        </div>
-                        <button
-                          onClick={() => setOpenHelp(openHelp === question.id ? null : question.id)}
-                          className="flex-shrink-0 p-2 rounded-full hover:bg-gray-100 transition-colors"
-                          style={{ color: "#00B4FF" }}
-                        >
-                          <HelpCircle className="w-5 h-5" />
-                        </button>
-                      </div>
-
-                      {/* Help Text */}
-                      {openHelp === question.id && (
-                        <div className="mb-4 p-4 bg-blue-50 rounded-lg border border-blue-200">
-                          <p className="text-sm text-gray-700">{question.help}</p>
-                        </div>
-                      )}
-
-                      {/* Radio Options */}
-                      <div className="flex gap-3">
-                        {["없음", "일부 있음", "있음"].map((option) => (
-                          <button
-                            key={option}
-                            onClick={() => handleAnswer(question.id, option)}
-                            className={`flex-1 py-3 px-4 rounded-lg border-2 transition-all ${
-                              answers[question.id] === option
-                                ? "border-[#5B3BFA] bg-[#5B3BFA] bg-opacity-10"
-                                : "border-gray-200 hover:border-gray-300"
-                            }`}
-                          >
-                            <span
-                              className={
-                                answers[question.id] === option
-                                  ? "text-[#5B3BFA]"
-                                  : "text-gray-700"
-                              }
-                            >
-                              {option}
-                            </span>
-                          </button>
-                        ))}
+              return (
+                <div key={category.id} className="mb-4 bg-white rounded-xl shadow-sm overflow-hidden">
+                  <button
+                    onClick={() => setExpandedCategory(isExpanded ? null : category.id)}
+                    className="w-full p-6 flex items-center justify-between hover:bg-gray-50 transition-colors"
+                  >
+                    <div className="flex items-center gap-3">
+                      <div
+                        className="w-1 h-12 rounded-full"
+                        style={{ backgroundColor: category.color }}
+                      />
+                      <div className="text-left">
+                        <h3>{category.name}</h3>
+                        <p className="text-sm text-gray-500">
+                          {categoryQuestions.filter((q) => answers[q.id]).length}/{categoryQuestions.length} 완료
+                        </p>
                       </div>
                     </div>
-                  ))}
-                </div>
-              )}
-            </div>
-          );
-        })}
-      </div>
+                    {isExpanded ? (
+                      <ChevronUp className="w-5 h-5 text-gray-400" />
+                    ) : (
+                      <ChevronDown className="w-5 h-5 text-gray-400" />
+                    )}
+                  </button>
 
-      {/* Footer */}
-      <div className="sticky bottom-0 bg-white border-t shadow-lg">
-        <div className="max-w-4xl mx-auto px-6 py-4">
-          <button
-            disabled={!isComplete}
-            className={`w-full py-4 rounded-xl transition-all ${
-              isComplete
-                ? "bg-gradient-to-r from-[#5B3BFA] to-[#00B4FF] text-white hover:shadow-lg"
-                : "bg-gray-300 text-gray-500 cursor-not-allowed"
-            }`}
-          >
-            제출 및 확인서 발급
-          </button>
-          {!isComplete && (
-            <p className="text-center text-sm text-gray-500 mt-2">
-              모든 문항에 응답해 주세요 (남은 문항: {totalQuestions - answeredQuestions}개)
-            </p>
-          )}
-        </div>
+                  {isExpanded && (
+                    <div className="px-6 pb-6 space-y-4 border-t border-gray-100 pt-4">
+                      {categoryQuestions.map((question, index) => (
+                        <div key={question.id} className="pb-4 border-b border-gray-100 last:border-b-0 last:pb-0">
+                          <div className="flex items-start justify-between gap-4 mb-4">
+                            <div className="flex-1">
+                              <div className="flex items-start gap-2">
+                                <span className="text-sm text-gray-500 mt-1">{index + 1}.</span>
+                                <p className="flex-1">{question.text}</p>
+                              </div>
+                            </div>
+                            <button
+                              onClick={() => setOpenHelp(openHelp === question.id ? null : question.id)}
+                              className="flex-shrink-0 p-2 rounded-full hover:bg-gray-100 transition-colors"
+                              style={{ color: "#00B4FF" }}
+                            >
+                              <HelpCircle className="w-5 h-5" />
+                            </button>
+                          </div>
+
+                          {/* Help Text */}
+                          {openHelp === question.id && (
+                            <div className="mb-4 p-4 bg-blue-50 rounded-lg border border-blue-200">
+                              <p className="text-sm text-gray-700">{question.help}</p>
+                            </div>
+                          )}
+
+                          {/* Radio Options */}
+                          <div className="flex gap-3">
+                            {["없음", "일부 있음", "있음"].map((option) => (
+                              <button
+                                key={option}
+                                onClick={() => handleAnswer(question.id, option)}
+                                className={`flex-1 py-3 px-4 rounded-lg border-2 transition-all ${
+                                  answers[question.id] === option
+                                    ? "border-[#5B3BFA] bg-[#5B3BFA] bg-opacity-10"
+                                    : "border-gray-200 hover:border-gray-300"
+                                }`}
+                              >
+                                <span
+                                  className={
+                                    answers[question.id] === option
+                                      ? "text-[#5B3BFA]"
+                                      : "text-gray-700"
+                                  }
+                                >
+                                  {option}
+                                </span>
+                              </button>
+                            ))}
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              );
+            })}
+            {/* Footer */}
+            <div className="sticky bottom-0 bg-white border-b-2 border-gray-200 shadow-sm mt-6 rounded-xl">
+              <div className="px-8 py-4">
+                <button
+                  disabled={!isComplete}
+                  onClick={() => {
+                    if (isComplete) {
+                      setActiveSubTab("history");
+                    }
+                  }}
+                  className="relative w-full py-4 rounded-xl overflow-hidden transition-all"
+                  style={{
+                    backgroundColor: '#E5E7EB', // 기본 회색 배경
+                  }}
+                >
+                  {/* 진행률에 따른 그라데이션 배경 */}
+                  <div
+                    className="absolute inset-0 transition-all duration-300"
+                    style={{
+                      width: `${progress}%`,
+                      background: "linear-gradient(90deg, #5B3BFA 0%, #00B4FF 100%)",
+                    }}
+                  />
+                  {/* 버튼 텍스트 */}
+                  <span
+                    className={`relative z-10 font-medium ${
+                      progress > 0 || isComplete
+                        ? "text-white drop-shadow-sm"
+                        : "text-gray-500"
+                    }`}
+                  >
+                    ESG 공급망 대응 확인서 발급
+                  </span>
+                </button>
+                {!isComplete && (
+                  <p className="text-center text-sm text-gray-500 mt-2">
+                    모든 문항에 응답해 주세요 (남은 문항: {totalQuestions - answeredQuestions}개)
+                  </p>
+                )}
+                <p className="text-center text-xs text-gray-400 mt-2">
+                  발급된 확인서는 '확인서 발급 이력'에서 관리됩니다.
+                </p>
+              </div>
+            </div>
+          </>
+        )}
       </div>
     </div>
   );

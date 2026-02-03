@@ -40,7 +40,7 @@ export default function UserTypeModal({ isOpen, onClose, onSMEStart, onEnterpris
 
         {/* Cards */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-          {/* 중소기업 사용자 카드 */}
+          {/* 하청사 사용자 카드 */}
           <button
             onClick={onSMEStart}
             className="bg-white rounded-2xl shadow-2xl p-8 hover:scale-105 transition-transform text-left"
@@ -49,7 +49,7 @@ export default function UserTypeModal({ isOpen, onClose, onSMEStart, onEnterpris
               <div className="w-16 h-16 bg-gradient-to-br from-[#5B3BFA] to-[#00B4FF] rounded-xl flex items-center justify-center mb-4">
                 <Building2 className="w-8 h-8 text-white" />
               </div>
-              <h2 className="text-xl font-bold text-[#1a2332] mb-2">중소기업 사용자</h2>
+              <h2 className="text-xl font-bold text-[#1a2332] mb-2">하청사 사용자</h2>
               <p className="text-gray-600 text-sm">
                 공급망 제출부터 내부 관리, 지속가능경영 보고서까지
               </p>
@@ -75,7 +75,7 @@ export default function UserTypeModal({ isOpen, onClose, onSMEStart, onEnterpris
             </div>
           </button>
 
-          {/* 대기업 관리자 카드 */}
+          {/* 원청사 관리자 카드 */}
           <button
             onClick={onEnterpriseStart}
             className="bg-white rounded-2xl shadow-2xl p-8 hover:scale-105 transition-transform text-left"
@@ -84,7 +84,7 @@ export default function UserTypeModal({ isOpen, onClose, onSMEStart, onEnterpris
               <div className="w-16 h-16 bg-gradient-to-br from-[#0B2562] to-[#5B3BFA] rounded-xl flex items-center justify-center mb-4">
                 <Factory className="w-8 h-8 text-white" />
               </div>
-              <h2 className="text-xl font-bold text-[#1a2332] mb-2">대기업 관리자</h2>
+              <h2 className="text-xl font-bold text-[#1a2332] mb-2">원청사 관리자</h2>
               <p className="text-gray-600 text-sm">
                 공급망 전체 리스크 관리 및 규제 대응
               </p>
@@ -115,7 +115,7 @@ export default function UserTypeModal({ isOpen, onClose, onSMEStart, onEnterpris
         <div className="text-center">
           <p className="text-white text-opacity-80 text-sm flex items-center justify-center gap-2">
             <span className="text-lg">💡</span>
-            AIFIXR는 중소기업과 대기업이 함께 성장하는 ESG 생태계를 만듭니다
+            AIFIXR는 하청사과 원청사이 함께 성장하는 ESG 생태계를 만듭니다
           </p>
         </div>
       </div>

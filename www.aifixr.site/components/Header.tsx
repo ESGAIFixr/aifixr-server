@@ -1,6 +1,6 @@
 'use client';
 
-import { Sparkles, User, LogOut, ChevronDown, Settings } from 'lucide-react';
+import { Sparkles, User, LogOut, ChevronDown, Settings, Home } from 'lucide-react';
 import Link from 'next/link';
 import { useEffect, useState, useRef } from 'react';
 import { useRouter } from 'next/navigation';
@@ -120,6 +120,17 @@ export default function Header({ onLoginClick }: HeaderProps) {
                     <p className="text-sm font-medium text-[#1a2332]">{user.name}</p>
                     <p className="text-xs text-gray-500 mt-0.5">{user.email}</p>
                   </div>
+                  <button
+                    onClick={() => {
+                      setIsProfileOpen(false);
+                      sessionStorage.setItem('fromHomeButton', 'true');
+                      router.push('/');
+                    }}
+                    className="w-full flex items-center gap-3 px-4 py-2.5 text-[#1a2332] hover:bg-gray-50 transition-colors"
+                  >
+                    <Home className="w-5 h-5 text-gray-500" />
+                    <span>홈으로 가기</span>
+                  </button>
                   <Link
                     href="/profile"
                     onClick={() => setIsProfileOpen(false)}

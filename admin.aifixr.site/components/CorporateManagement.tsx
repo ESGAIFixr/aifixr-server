@@ -244,8 +244,8 @@ export function CorporateManagement({ user, onNavigate, onLogout }: CorporateMan
                       </SelectTrigger>
                       <SelectContent>
                         <SelectItem value="all">전체 유형</SelectItem>
-                        <SelectItem value="SME">중소기업</SelectItem>
-                        <SelectItem value="Enterprise">대기업</SelectItem>
+                        <SelectItem value="SME">하청사</SelectItem>
+                        <SelectItem value="Enterprise">원청사</SelectItem>
                         <SelectItem value="Public">공공기관</SelectItem>
                       </SelectContent>
                     </Select>
@@ -289,8 +289,8 @@ export function CorporateManagement({ user, onNavigate, onLogout }: CorporateMan
                                 <SelectValue placeholder="선택" />
                               </SelectTrigger>
                               <SelectContent>
-                                <SelectItem value="sme">중소기업</SelectItem>
-                                <SelectItem value="enterprise">대기업</SelectItem>
+                                <SelectItem value="sme">하청사</SelectItem>
+                                <SelectItem value="enterprise">원청사</SelectItem>
                                 <SelectItem value="public">공공기관</SelectItem>
                               </SelectContent>
                             </Select>
@@ -351,8 +351,8 @@ export function CorporateManagement({ user, onNavigate, onLogout }: CorporateMan
                         </TableCell>
                         <TableCell>
                           <Badge variant="outline" className="rounded-lg">
-                            {company.type === "SME" && "중소기업"}
-                            {company.type === "Enterprise" && "대기업"}
+                            {company.type === "SME" && "하청사"}
+                            {company.type === "Enterprise" && "원청사"}
                             {company.type === "Public" && "공공기관"}
                           </Badge>
                         </TableCell>

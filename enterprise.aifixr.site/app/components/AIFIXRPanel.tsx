@@ -63,28 +63,15 @@ export default function AIFIXRPanel({ isOpen, onClose }: AIFIXRPanelProps) {
     }, 1000);
   };
 
-  return (
-    <>
-      {/* Backdrop */}
-      {isOpen && (
-        <div
-          className="fixed inset-0 bg-black/20 backdrop-blur-sm z-40"
-          onClick={onClose}
-        />
-      )}
+  if (!isOpen) return null;
 
-      {/* Sidebar Panel */}
-      <div
-        className={`fixed top-0 right-0 h-screen z-50 w-[500px] transition-all duration-300 ${
-          isOpen ? 'translate-x-0' : 'translate-x-full'
-        }`}
-      >
-        <div className="h-full flex flex-col shadow-2xl backdrop-blur-[20px] bg-white border-l border-gray-200/50">
+  return (
+    <div className="h-full w-[500px] flex flex-col shadow-2xl bg-white border-l border-gray-200">
           {/* Header */}
           <div className="p-6 bg-gradient-to-r from-[#5B3BFA] to-[#00B4FF] text-white">
             <div className="flex items-center justify-between mb-4">
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center">
+                <div className="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center">
                   <Bot className="w-6 h-6" />
                 </div>
                 <div>
@@ -225,9 +212,7 @@ export default function AIFIXRPanel({ isOpen, onClose }: AIFIXRPanelProps) {
               </div>
             )}
           </div>
-        </div>
-      </div>
-    </>
+    </div>
   );
 }
 

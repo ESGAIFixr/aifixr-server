@@ -386,7 +386,7 @@ export default function EnterprisePortal() {
 
               {/* Level 1 Snapshot */}
               <div className="mb-6 p-6 bg-gray-50 rounded-xl">
-                <h4 className="mb-4">Level 1 스냅샷 (대기업 방어 논리용)</h4>
+                <h4 className="mb-4">Level 1 스냅샷 (원청사 방어 논리용)</h4>
                 <div className="grid grid-cols-3 gap-4">
                   <div className="bg-white p-4 rounded-lg">
                     <p className="text-sm text-gray-600 mb-1">환경 (E)</p>
@@ -412,7 +412,7 @@ export default function EnterprisePortal() {
                 </div>
                 <div className="mt-4 p-4 bg-blue-50 border border-blue-200 rounded-lg">
                   <p className="text-sm text-blue-800">
-                    💼 대기업 방어 논리: "{selectedSupplier.name}는 Level 1 설문을 통해 현황을 투명하게 
+                    💼 원청사 방어 논리: "{selectedSupplier.name}는 Level 1 설문을 통해 현황을 투명하게 
                     공개하였으며, 당사는 이를 기반으로 리스크를 파악하고 개선을 요청하였습니다."
                   </p>
                 </div>

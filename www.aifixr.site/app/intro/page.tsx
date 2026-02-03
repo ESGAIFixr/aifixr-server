@@ -245,7 +245,7 @@ export default function IntroPage() {
                 <Lightbulb className="w-8 h-8 text-[#0D4ABB]" />
                 <h3 className="text-2xl font-semibold text-[#0D4ABB]">사회적 효과</h3>
               </div>
-              <p className="text-gray-700 text-lg">ESG 진입 장벽 완화, 중소기업 ESG 역량 강화</p>
+              <p className="text-gray-700 text-lg">ESG 진입 장벽 완화, 하청사 ESG 역량 강화</p>
             </div>
             <div className="p-8 rounded-2xl bg-gradient-to-br from-[#E91E8C]/10 to-[#8B5CF6]/10 border border-[#E91E8C]/20">
               <div className="flex items-center gap-3 mb-4">
